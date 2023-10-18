@@ -1,0 +1,20 @@
+{
+	"name": "Un acte",
+	"chapter": 1,
+	"questions": [{
+		"content": "Ma question",
+		"order": 1,
+		"image": "image.jpg",
+		"answer_type": "choix 1",
+		"thematic": "Ma thematique",
+		"answers": [{
+			"content": "Ma réponse 1",
+			"score": 5,
+			"feedback": "Un feedback"
+			},{
+			"content": "Ma réponse 2",
+			"score": 10,
+			"feedback": "Un feedback 2"
+			}]
+		}]
+}
