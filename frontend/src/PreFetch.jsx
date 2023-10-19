@@ -25,8 +25,8 @@ const PreFetch = () => {
   }, [refresh]);
 
   useEffect(() => {
+    // Update Act
     if (newActs.type == "updated") {
-      console.log(newActs);
       axios
         .put(`http://localhost:5555/acts/${newActs.idAct}`, newActs.act)
         .then(() => {
@@ -35,7 +35,9 @@ const PreFetch = () => {
         .catch((error) => {
           console.log(error.message);
         });
-    } else if (newActs.type == "deleted") {
+    }
+    // Delete Act 
+    else if (newActs.type == "deleted") {
       axios
         .delete(`http://localhost:5555/acts/${newActs.idAct}`)
         .then(() => setRefresh((refresh) => ++refresh))

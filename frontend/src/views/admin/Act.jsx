@@ -77,6 +77,12 @@ const Act = () => {
     setIsUpdateQuestion(false);
     setIsDeleteAnswer(false);
     setIsUpdateQuestion(false);
+    setContentQuestion("");
+    setAnswerTypeQuestion("");
+    setThematicQuestion("");
+    setContentAnswer("");
+    setScoreAnswer(0);
+    setFeedbackAnswer("");
   };
 
   const displayInputQuestion = () => setShowInputQuestion(true);
@@ -85,21 +91,25 @@ const Act = () => {
     // Add question with answer
     if (isAddQuestion) {
       //First needed answer for the question with type proposition
-      const newAnswer = {
-        content: contentAnswer,
-        score: scoreAnswer,
-        feedback: feedbackAnswer,
-      };
+      const newAnswer = [];
+      if (contentAnswer && scoreAnswer && feedbackAnswer) {
+        newAnswer.push( {
+          content: contentAnswer,
+          score: scoreAnswer,
+          feedback: feedbackAnswer,
+        });
+      }
+      console.log(newAnswer);
 
       const newQuestions = [
         ...act.questions,
         {
-          contentQuestion,
-          order: act.questions.length + 1,
+          content: contentQuestion,
+          order: act?.questions.length + 1,
           image: "image.jpg",
-          answerTypeQuestion,
-          thematicQuestion,
-          answer: newAnswer,
+          answer_type: answerTypeQuestion,
+          thematic: thematicQuestion,
+          answers: newAnswer,
         },
       ];
       let newAct = {
@@ -124,9 +134,8 @@ const Act = () => {
           delete question._id;
           return question;
         });
-      console.log(newQuestion);
       const newAct = {
-        act: act?.name,
+        name: act?.name,
         chapter: act?.chapter,
         questions: newQuestion,
       };
@@ -152,7 +161,7 @@ const Act = () => {
       let newQuestions = [...act.questions.filter((e) => e !== question)];
 
       //Updating the final table
-      question.answers.push(newAnswer);
+      question?.answers.push(newAnswer);
       newQuestions.push(question);
 
       //Updated the question
@@ -192,7 +201,7 @@ const Act = () => {
         displayQuestion: actControl.displayQuestion,
         questions: questions.map((element) =>
           element.question == questionSelected
-            ? { question: element.question, displayAnswers: true }
+            ? { question: element.question, displayAnswers: !element.displayAnswers }
             : { question: element.question, displayAnswers: false }
         ),
       }))
