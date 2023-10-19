@@ -9,8 +9,13 @@ export const addAct = async (req, res) => {
     const { name, chapter, questions } = req.body;
 
     //Getting the errors
-    const error = handleValidationErrorsAct(name, chapter, questions, constants);
-    if(error) return res.status(error.status).json(error.message);
+    const error = handleValidationErrorsAct(
+      name,
+      chapter,
+      questions,
+      constants
+    );
+    if (error) return res.status(error.status).json({ message: error.message });
 
     const newAct = {
       name,
@@ -52,8 +57,13 @@ export const updateAct = async (req, res) => {
     const { name, chapter, questions } = req.body;
 
     //Getting the errors
-    const error = handleValidationErrorsAct(name, chapter, questions, constants);
-    if(error) return res.status(error.status).json(error.message);
+    const error = handleValidationErrorsAct(
+      name,
+      chapter,
+      questions,
+      constants
+    );
+    if (error) return res.status(error.status).json({ message: error.message });
 
     //Updating information
     const act = await Act.findByIdAndUpdate(id_act, {
