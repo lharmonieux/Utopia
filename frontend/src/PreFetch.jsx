@@ -25,14 +25,22 @@ const PreFetch = () => {
   }, [refresh]);
 
   useEffect(() => {
-    axios
-      .put(`http://localhost:5555/acts/${newActs.idAct}`, newActs.act)
-      .then(() => {
-        setRefresh((refresh) => refresh + 1);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    if (newActs.type == "updated") {
+      console.log(newActs);
+      axios
+        .put(`http://localhost:5555/acts/${newActs.idAct}`, newActs.act)
+        .then(() => {
+          setRefresh((refresh) => ++refresh);
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    } else if (newActs.type == "deleted") {
+      axios
+        .delete(`http://localhost:5555/acts/${newActs.idAct}`)
+        .then(() => setRefresh((refresh) => ++refresh))
+        .catch((error) => console.log(error.message));
+    }
   }, [newActs]);
   return (
     <AppContext.Provider value={{ acts, loading, dispatch }}>
