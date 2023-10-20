@@ -15,8 +15,9 @@ const PreFetch = () => {
   //Getting actes from api
   useEffect(() => {
     setLoading(true);
+    console.log(import.meta.env.VITE_REACT_URL_BACK);
     axios
-      .get("http://localhost:5555/acts")
+      .get(`${import.meta.env.VITE_REACT_URL_BACK}/acts`)
       .then((response) => {
         setActs(response.data);
         setLoading(false);
@@ -32,7 +33,7 @@ const PreFetch = () => {
     // Update Act
     if (newActs.type == "updated") {
       axios
-        .put(`http://localhost:5555/acts/${newActs.idAct}`, newActs.act)
+        .put(`${import.meta.env.VITE_REACT_URL_BACK}/acts/${newActs.idAct}`, newActs.act)
         .then(() => {
           setRefresh((refresh) => ++refresh);
         })
@@ -43,7 +44,7 @@ const PreFetch = () => {
     // Delete Act
     else if (newActs.type == "deleted") {
       axios
-        .delete(`http://localhost:5555/acts/${newActs.idAct}`)
+        .delete(`${import.meta.env.VITE_REACT_URL_BACK}/acts/${newActs.idAct}`)
         .then(() => setRefresh((refresh) => ++refresh))
         .catch((error) => console.log(error.message));
     }
