@@ -17,7 +17,17 @@ app.use(express.json());
 
 // Middleware for handling CORS POLICY
 // Option 1: Allow All Origins with Default of cors(*)
-app.use(cors());
+let whitelist = ['http://localhost:5173', 'https://utopia-xv7i.onrender.com/']
+let corsOptions = {
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    }
+  }
+app.use(cors(corsOptions));
 
 // Routes admin
 app.use('/acts', actRoute);
