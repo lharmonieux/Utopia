@@ -1,9 +1,12 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AppContext } from "./GameContext.jsx";
 // import { useState, useEffect, useContext } from "react";
 // import axios from "axios";
 // import { ActContext } from "./GameContext";
 
-const Home = ({loading}) => {
+const Home = () => {
+  const {loading} = useContext(AppContext);
 //   const [acts, setActs] = useState([]);
 //   const [loading, setLoading] = useState(false);
   //Getting actes from api
@@ -30,7 +33,7 @@ const Home = ({loading}) => {
               to= 'acts'
             //   state={acts}
             >
-              <button type="button">Administrer les actes</button>
+              <button className="border" type="button">Administrer les actes</button>
             </Link>
           </div>
         )}

@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 // import { useLocation } from "react-router-dom";
-import { ActContext } from "./GameContext";
+import { AppContext } from "./GameContext.jsx";
 
 const Act = () => {
-  const { acts, dispatch } = useContext(ActContext);
+  const { acts, dispatch } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [actsControl, setActsControl] = useState([]);
   const [showInputQuestion, setShowInputQuestion] = useState(false);
@@ -215,10 +215,10 @@ const Act = () => {
       ) : (
         <>
           <div>
-            <button>Ajouter un acte</button>
+            <button className="border">Ajouter un acte</button>
           </div>
           {actsControl?.map((element) => (
-            <div key={element.act._id}>
+            <div className="bg-gray-700" key={element.act._id}>
               <button onClick={() => showQuestions(element.act)}>
                 Acte {element.act.chapter} : {element.act.name}
               </button>
@@ -227,7 +227,7 @@ const Act = () => {
               {element.displayQuestion ? (
                 <>
                   {element?.questions?.map((e) => (
-                    <div key={e.question._id}>
+                    <div className="bg-gray-400" key={e.question._id}>
                       <div>
                         <button
                           onClick={() =>
@@ -254,7 +254,7 @@ const Act = () => {
                       {e.displayAnswers ? (
                         <>
                           {e.question?.answers?.map((answer) => (
-                            <div key={answer._id}>
+                            <div className="bg-gray-200" key={answer._id}>
                               <p>{answer.content}</p>
                             </div>
                           ))}
@@ -362,7 +362,7 @@ const Act = () => {
                           onChange={(e) => setThematicQuestion(e.target.value)}
                         />
                       </div>
-                      <button
+                      <button className="border"
                         onClick={() => {
                           setIsAddQuestion(true);
                           handleExistingAct({ act: element?.act });
@@ -371,7 +371,7 @@ const Act = () => {
                         Enregistrer
                       </button>
 
-                      <button onClick={() => displayInputAnswer()}>
+                      <button className="border" onClick={() => displayInputAnswer()}>
                         Ajouter des réponses
                       </button>
 
@@ -405,7 +405,7 @@ const Act = () => {
                             />
                           </div>
                           <div>
-                            <button
+                            <button className="border"
                               onClick={() => {
                                 setIsAddQuestion(true);
                                 handleExistingAct({ act: element?.act });
