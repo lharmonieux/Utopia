@@ -7,22 +7,7 @@ import { AppContext } from "./GameContext.jsx";
 
 const Home = () => {
   const {loading} = useContext(AppContext);
-//   const [acts, setActs] = useState([]);
-//   const [loading, setLoading] = useState(false);
-  //Getting actes from api
-//   useEffect(() => {
-//     setLoading(true);
-//     axios
-//       .get("http://localhost:5555/acts")
-//       .then((response) => {
-//         setActs(response.data);
-//         setLoading(false);
-//       })
-//       .catch((error) => {
-//         console.error(error.message);
-//         setLoading(false);
-//       });
-//   }, []);
+  
   return (
       <div>
         {loading ? (
@@ -31,7 +16,6 @@ const Home = () => {
           <div>
             <Link
               to= 'acts'
-            //   state={acts}
             >
               <button className="border" type="button">Administrer les actes</button>
             </Link>
