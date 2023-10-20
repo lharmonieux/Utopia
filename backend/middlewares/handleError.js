@@ -25,4 +25,6 @@ export const handleValidationErrorsAct = (
       status: constants.VALIDATION_ERROR,
       message: "Deux questions ne doivent pas avoir le même ordre",
     };
+  
+  return false;
 };
