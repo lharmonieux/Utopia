@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 import unique_validator from "mongoose-unique-validator";
 
 const characterSchema = mongoose.Schema({
-    nom: {
+    name: {
         type: String,
         required: true,
         unique: true
     },
-    caracteristique: {
+    caracteristic: {
         type: String,
         required: true
     }

@@ -1,20 +1,156 @@
+//Actes
 {
-	"name": "Un acte",
+	"name": "Il était un rêve…",
 	"chapter": 1,
-	"questions": [{
-		"content": "Ma question",
-		"order": 1,
-		"image": "image.jpg",
-		"answer_type": "choix 1",
-		"thematic": "Ma thematique",
-		"answers": [{
-			"content": "Ma réponse 1",
-			"score": 5,
-			"feedback": "Un feedback"
-			},{
-			"content": "Ma réponse 2",
-			"score": 10,
-			"feedback": "Un feedback 2"
+	"questions": [
+		{
+			"content": "CHOISISSEZ LE PERSONNAGE QUI VOUS RESSEMBLE LE PLUS !",
+			"order": 1,
+			"image": "image.jpg",
+			"answer_type": "personnage",
+			"thematic": "Immersion",
+			"answers": []
+		},
+		{
+			"content": "Il est temps de dessiner votre projet. Dans quel territoire allez-vous bâtir votre Cité ?",
+			"order": 2,
+			"image": "image.jpg",
+			"answer_type": "proposition",
+			"thematic": "Audace",
+			"answers": [
+			{
+				"content": "Au nord de la capitale, dans des marais à assécher. Une alternative à Méridian, assez différente",
+				"score": 5,
+				"feedback": "Vous partez plusieurs semaines en expédition pour repérer l’emplacement idéal. A la confluence de plusieurs cours d’eau, un ensemble d’îlots un plus immergés que les autres vous attire l’œil. Il vous faudra rivaliser d’ingéniosité pour vous installer ici, mais le potentiel est immense. Vous pourriez régner sur les mers et concurrencer directement Méridian dans ce domaine." 
+			},
+			{
+				"content": "Sur un autre continent, encore jamais exploré, au-delà de la mer de l’Ambre Gris. Autant s’installer là où personne n’est jamais allé !",
+				"score": 10,
+				"feedback": "Vous partez en exploration des semaines durant… allant au-delà des frontières présentes sur toutes vos cartes et n’hésitant pas à vous jeter à corps perdu dans les labyrinthes se dressant sur votre passage.C’est alors que durant votre sixième semaine de voyage, vous tombez nez à nez avec ce qui vous semble être une évidence… une gigantesque forêt, réunissant une faune et une flore d’une diversité et d’une complexité jamais vues auparavant.Pour vous c’est clair : votre cité s’inscrira ici ! " 
+			},
+			{
+				"content": "Tout au sud du continent de Méridian, dans des conditions idéales, à quelques encablures de la dernière colonie créée ",
+				"score": 0,
+				"feedback": "Vous décidez donc de vous installer dans la  magnifique région de l’extrême sud, au sein de laquelle s'épanouit une végétation luxuriante. Vous dépassez la Cité de Vairise, tout juste construite, et dès qu’elle n’est plus en vue, vous décidez de vous installer près d’un immense lac, décisif pour votre approvisionnement en eau." 
 			}]
-		}]
+		},
+		{
+			"content": "Nuit après nuit, vous ne cessez de rêver de ce grand projet qui occupe tout votre esprit depuis plusieurs semaines maintenant.Il est temps de rendre tout cela concret, et de commencer par le début… Votre ville s'appellera: ",
+			"order": 3,
+			"image": "image.jpg",
+			"answer_type": "texte",
+			"thematic": "Immersion",
+			"answers": []
+		},
+		{
+			"content": "Pour choisir la devise de votre Cité, notez de 1 à 10 les propositions faites par vos conseillers :",
+			"order": 4,
+			"image": "image.jpg",
+			"answer_type": "proposition",
+			"thematic": "Immersion",
+			"answers": [
+			{
+				"content": "Le collectif avant l’individu",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "La victoire appartient aux plus opiniâtres",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Pas de bonheur dans le confort",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Le pouvoir aux plus méritants",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Tout part de l’école",
+				"score": 0,
+				"feedback": ""
+			}
+			]
+		},
+		{
+			"content": "Dans ce moment de planification, voici l’heure de définir un calendrier plus précis des actions à réaliser pour mener votre Cité au succès ! Voici les 7 possibles, choisissez-en 3 sur lesquelles vous concentrer : ",
+			"order": 5,
+			"image": "image.jpg",
+			"answer_type": "proposition_multiple",
+			"thematic": "Ambition",
+			"answers": [
+			{
+				"content": "Elaborer un plan de communication",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Construire les infrastructures générales ",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Inciter à l’installation d’entreprises",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Réaliser une étude de terrain",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Lancer le projet agricole",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Penser l’organisation collective",
+				"score": 0,
+				"feedback": ""
+			},
+			{
+				"content": "Définir une stratégie d’implantation",
+				"score": 0,
+				"feedback": ""
+			}
+			]
+		},	
+		{
+			"content": "S’il y avait un modèle pour votre Cité, ce serait… ",
+			"order": 6,
+			"image": "image.jpg",
+			"answer_type": "proposition",
+			"thematic": "Audace",
+			"answers": [
+			{
+				"content": "Méridian, la Cité originelle. Un modèle de réussite dont le succès n’a jamais été égalé",
+				"score": 0,
+				"feedback": "" 
+			},
+			{
+				"content": "Raimo, la nouvelle Cité de l’Est. Post-moderne, une nouvelle génération d’urbanisme, ses habitants l’adorent !",
+				"score": 5,
+				"feedback": "" 
+			},
+			{
+				"content": "Aucun ! Pour séduire des habitants, il faut assumer un choix radicalement différent",
+				"score": 10,
+				"feedback": "" 
+			}]
+		}	
+	]
+}
+
+
+
+
+//  Personnage
+
+{
+	
 }
