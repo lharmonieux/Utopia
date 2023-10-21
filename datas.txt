@@ -151,6 +151,25 @@
 
 //  Personnage
 
-{
-	
-}
+[
+	{
+		"name": "Veemetti KAURA",
+		"caracteristic": "Aventurier par excellence ! Doté d’un esprit rebelle, totalement intrépide, voire même souvent imprudent, rien ne vous arrête, même les obstacles les plus infranchissables !"
+	},
+	{
+		"name": "Alerei MADRINGER",
+		"caracteristic": "Fin d’esprit, on dit de vous que vous avez le don de lire en chacun de vos interlocuteurs. Véritable stratège, vous pensez toujours trois coups à l’avance… "
+	},
+	{
+		"name": "Ainji AHONDROTH",
+		"caracteristic": "Leader charismatique, vous êtes un véritable meneur d’Hommes… Vous savez faire un collectif insubmersible d’une poignée d’individus perdus… On dit de vos équipes qu’elles pourraient soulever des montagnes !"
+	},
+	{
+		"name": "Kim JUVOMI",
+		"caracteristic": "Vous connaissez tout le monde, et tout le monde vous connait. On vous apprécie énormément car vous inspirez naturellement une grande confiance, cela explique pourquoi on se confie aussi facilement à vous."
+	},
+	{
+		"name": "Pirone SUOHNER",
+		"caracteristic": "Vous êtes une personne aux convictions très affirmées… Vous savez faire basculer n’importe quel débat et votre sens de la répartie n’a d’égal que votre éloquence…"
+	}
+]

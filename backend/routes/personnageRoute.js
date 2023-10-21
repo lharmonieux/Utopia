@@ -7,4 +7,5 @@ const router = express.Router();
 
 router.post('/', addPersonnage);
 router.get('/', getAllPersonnage);
+
 export default router;

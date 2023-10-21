@@ -1,3 +1,5 @@
+import constants from "../constants.js";
+
 export const handleValidationErrorsAct = (
   name,
   chapter,
@@ -28,3 +30,14 @@ export const handleValidationErrorsAct = (
   
   return false;
 };
+
+export const handleValidationErrorsPersonnages = (name, caracteristic) => {
+  if (!name || !caracteristic) {
+    return {
+      status: constants.VALIDATION_ERROR,
+      message: "Renseignez tous les champs obligatoires"
+    }
+  }
+
+  return false;
+}
