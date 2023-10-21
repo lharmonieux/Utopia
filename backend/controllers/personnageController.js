@@ -1,25 +1,60 @@
 import Personnage from "../models/personnageModel.js";
 import constants from "../constants.js";
+import { handleValidationErrorsPersonnages } from "../middlewares/handleError.js";
 
 //Add personnage
 export const addPersonnage = async (req, res) => {
   try {
-    const { nom, caracteristique } = req.body;
-    if (!nom || !caracteristique) {
-      return res.status(constants.VALIDATION_ERROR).send({
-        message: "Veuillez renseigner tous les champs",
-      });
-    }
 
-    //Save data
-    const newPersonnage = await Personnage.create({
-      nom: nom,
-      caracteristique: caracteristique,
-    });
-    return res.status(constants.CREATED).send(newPersonnage);
+    if (Array.isArray(req.body)) {
+      const datas = [...req.body];
+      let resultValidation;
+      for (const data of datas) {
+        resultValidation = handleValidationErrorsPersonnages(
+          data.name,
+          data.caracteristic
+        );
+      }
+
+      //If error exist in list of datas
+      if (resultValidation)
+        return res
+          .status(resultValidation.status)
+          .json({ message: resultValidation.message });
+
+      for (const data of datas)
+        await Personnage.create({
+          name: data.name,
+          caracteristic: data.caracteristic,
+        });
+      return res
+        .status(constants.CREATED)
+        .json({ message: "Personnages créés avec succès." });
+    } else {
+      const { name, caracteristic } = req.body;
+      const resultValidation = handleValidationErrorsPersonnages(
+        name,
+        caracteristic
+      );
+
+      //If error
+      if (resultValidation)
+        return res
+          .status(resultValidation.status)
+          .json({ message: resultValidation.message });
+
+      //Save data
+      await Personnage.create({
+        name,
+        caracteristic,
+      });
+      return res
+        .status(constants.CREATED)
+        .json({ message: "Personnages créé avec succès." });
+    }
   } catch (error) {
     console.error(error);
-    return res.status(constants.SERVER_ERROR).send({ message: error.message });
+    return res.status(constants.SERVER_ERROR).json({ message: error.message });
   }
 };
 
@@ -29,12 +64,12 @@ export const getAllPersonnage = async (req, res) => {
     const personnages = await Personnage.find({});
     if (personnages) return res.status(constants.SUCCESS).send(personnages);
 
-    return res.status(constants.SUCCESS).send({
+    return res.status(constants.SUCCESS).json({
       message: "Aucun personnage trouvé.",
     });
   } catch (error) {
     console.error();
-    return res.status(constants.SERVER_ERROR).send({
+    return res.status(constants.SERVER_ERROR).json({
       message: error.message,
     });
   }
