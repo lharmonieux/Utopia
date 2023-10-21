@@ -1,9 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./admin/GameContext.jsx";
+import { CssVarsProvider } from "@mui/joy/styles";
+import * as Joy from "@mui/joy";
 
 const Game = () => {
   const { currentAct, characters } = useContext(AppContext);
   const [currentQuestion, setCurrentQuestion] = useState({});
+  const [idCharacterSelected, setIdCharacterSelected] = useState("")
   let orderQuestion = 0;
 
   useEffect(() => {
@@ -12,22 +15,21 @@ const Game = () => {
     }
   }, [currentAct, orderQuestion]);
 
-  const selectCharacter = () => {
-
-  }
+  const selectCharacter = () => {};
 
   const answerToDisplay = (answerType) => {
     switch (answerType) {
+      //Affichage du choix des persos
       case "personnage":
         return (
           <>
             {characters.map((character) => (
-              <button key={character._id}>
-                <div className="border">
-                  <p className="text-xl font-bold">{character.name}</p>
-                  <p>{character.caracteristic}</p>
-                </div>
-              </button>
+              <Joy.ToggleButtonGroup key={character._id}>
+                <Joy.Button>
+                  <Joy.Typography level="title-md">{character.name}</Joy.Typography>
+                  <Joy.Typography level="title-sm">{character.caracteristic}</Joy.Typography>
+                </Joy.Button>
+              </Joy.ToggleButtonGroup>
             ))}
           </>
         );
@@ -38,16 +40,23 @@ const Game = () => {
   };
 
   return (
-    <div className="border">
-      <h1 className="text-2xl font-bold">Acte {currentAct?.chapter}</h1>
-      <h3 className="">{currentAct?.name}</h3>
+    <CssVarsProvider>
+      <Joy.Stack justifyContent="center" alignItems="center">
+        <Joy.Sheet variant="soft" sx={{ maxWidth: "60%" }}>
+          <Joy.Typography level="h2">
+            Acte {currentAct?.chapter}: {currentAct?.name}
+          </Joy.Typography>
 
-      <div>
-        <p>{currentQuestion?.content}</p>
-      </div>
-      <>{answerToDisplay(currentQuestion?.answer_type)}</>
-      <button className="border">Valider</button>
-    </div>
+          <Joy.Sheet variant="soft" sx={{ padding: "40PX" }}>
+            <Joy.Typography level="title-lg">
+              {currentQuestion?.content}
+            </Joy.Typography>
+          </Joy.Sheet>
+          <>{answerToDisplay(currentQuestion?.answer_type)}</>
+          <Joy.Button>Valider</Joy.Button>
+        </Joy.Sheet>
+      </Joy.Stack>
+    </CssVarsProvider>
   );
 };
 
