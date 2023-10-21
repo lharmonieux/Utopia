@@ -6,8 +6,8 @@ import { actReducer } from "./middlewares/ActReducer.js";
 
 const PreFetch = () => {
   const [acts, setActs] = useState([]);
+  const [characters, setCharacters] = useState([]);
   const [currentAct, setCurrentAct] = useState({});
-  const [currentQuestion, setCurrentQuestion] = useState({});
   const [refresh, setRefresh] = useState(0);
   const [loading, setLoading] = useState(false);
   const [newActs, dispatch] = useReducer(actReducer, acts);
@@ -15,7 +15,6 @@ const PreFetch = () => {
   //Getting actes from api
   useEffect(() => {
     setLoading(true);
-    console.log(import.meta.env.VITE_REACT_URL_BACK);
     axios
       .get(`${import.meta.env.VITE_REACT_URL_BACK}/acts`)
       .then((response) => {
@@ -28,12 +27,29 @@ const PreFetch = () => {
       });
   }, [refresh]);
 
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_REACT_URL_BACK}/personnages`)
+      .then((response) => {
+        //Add a bool selected to a new data structure for character
+        const formatDatas = response.data.map((e) => ({
+          ...e,
+          selected: false,
+        }));
+        setCharacters(formatDatas);
+      })
+      .catch((err) => console.log(err.message));
+  }, []);
+
   //CRUD
   useEffect(() => {
     // Update Act
     if (newActs.type == "updated") {
       axios
-        .put(`${import.meta.env.VITE_REACT_URL_BACK}/acts/${newActs.idAct}`, newActs.act)
+        .put(
+          `${import.meta.env.VITE_REACT_URL_BACK}/acts/${newActs.idAct}`,
+          newActs.act
+        )
         .then(() => {
           setRefresh((refresh) => ++refresh);
         })
@@ -53,14 +69,12 @@ const PreFetch = () => {
   //Current act for gaming
   useEffect(() => {
     setCurrentAct(acts[0]);
-    setCurrentQuestion(() => {
-      const actCopy = [...acts];
-      return actCopy[0]?.questions.shift();
-    });
   }, [acts]);
 
   return (
-    <AppContext.Provider value={{ acts, loading, dispatch, currentAct, currentQuestion }}>
+    <AppContext.Provider
+      value={{ acts, loading, dispatch, currentAct, characters }}
+    >
       <App />
     </AppContext.Provider>
   );
