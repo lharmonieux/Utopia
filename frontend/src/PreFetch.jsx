@@ -18,7 +18,19 @@ const PreFetch = () => {
     axios
       .get(`${import.meta.env.VITE_REACT_URL_BACK}/acts`)
       .then((response) => {
-        setActs(response.data);
+        //Formatting of act structure
+        const formatDatas = response.data.map((act) => ({
+          ...act,
+          questions: act?.questions.map((question) => ({
+            ...question,
+            answers: question.answers.map((answer) => ({
+              ...answer,
+              selected: false,
+            })),
+          })),
+        }));
+
+        setActs(formatDatas);
         setLoading(false);
       })
       .catch((error) => {

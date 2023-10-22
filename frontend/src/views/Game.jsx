@@ -2,6 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./admin/GameContext.jsx";
 import { CssVarsProvider } from "@mui/joy/styles";
 import * as Joy from "@mui/joy";
+import Propositions from "../components/Propositions.jsx";
+import Characters from "../components/Characters.jsx";
 
 const Game = () => {
   const { currentAct, characters } = useContext(AppContext);
@@ -9,9 +11,11 @@ const Game = () => {
   const [idCharacterSelected, setIdCharacterSelected] = useState("");
   const [openCaracteristic, setOpenCaracteristic] = useState(false);
   const [caracteristicToDisplay, setCaracteristicToDisplay] = useState("");
-
-  let orderQuestion = 0;
-
+  const [containsFeedback, setContainsFeedback] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
+  const [orderQuestion, setOrderQuestion] = useState(0);
+  
   useEffect(() => {
     if (currentAct && currentAct.questions) {
       setCurrentQuestion(currentAct?.questions[orderQuestion]);
@@ -19,78 +23,55 @@ const Game = () => {
   }, [currentAct, orderQuestion]);
 
   const handleSelectedCharacter = (idCharacter) => {
-    characters.map(character => {
-      if(character._id == idCharacter) character.selected = true;
+    idCharacter == idCharacterSelected
+      ? setIdCharacterSelected("")
+      : setIdCharacterSelected(idCharacter);
+    characters.map((character) => {
+      if (character._id == idCharacter)
+        character.selected = !character.selected;
       else character.selected = false;
-    })
-  }
+    });
+  };
 
-  const answerToDisplay = (answerType) => {
-    switch (answerType) {
+  const handleSelectedProposition = (selectedAnswer) => {
+    if (selectedAnswer.feedback.length != 0) {
+      setFeedback(selectedAnswer.feedback);
+      setContainsFeedback(true);
+    } else setContainsFeedback(false);
+    setCurrentQuestion(() => ({
+      ...currentQuestion,
+      answers: currentQuestion?.answers.map((answer) => ({
+        ...answer,
+        selected:
+          selectedAnswer._id == answer._id
+            ? (answer.selected = !answer.selected)
+            : (answer.selected = false),
+      })),
+    }));
+  };
+
+  const answerToDisplay = () => {
+    switch (currentQuestion?.answer_type) {
       //Affichage du choix des persos
       case "personnage":
         return (
-          <Joy.Stack direction="row" spacing={2} flexWrap="wrap" justifyContent="space-evenly" useFlexGap>
-            {/* Carte de personnage  */}
-            {characters.map((character) => (
-              <Joy.Stack spacing={0} key={character._id} direction="column">
-                <Joy.Button
-                  
-                  value={character._id}
-                  onClick={() => {
-                    setIdCharacterSelected(character._id);
-                    handleSelectedCharacter(character._id);
-                  }}
-                  variant="soft"
-                  sx={{
-                    padding: 5,
-                    backgroundColor: character.selected ? "#0EC586" : "",
-                  }}
-                >
-                  <Joy.Typography
-                    level="title-md"
-                    sx={{
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {character.name}
-                  </Joy.Typography>
-                </Joy.Button>
-
-                {/* Button voir display Modal  */}
-                <Joy.Button
-                  variant="soft"
-                  sx={{ border: 1, borderRadius: 5 }}
-                  onClick={() => {
-                    setOpenCaracteristic(true);
-                    setCaracteristicToDisplay(character.caracteristic);
-                  }}
-                >
-                  Details
-                </Joy.Button>
-
-                {/* Content of Modal */}
-                <Joy.Modal
-                  open={openCaracteristic}
-                  onClose={() => setOpenCaracteristic(false)}
-                >
-                  <Joy.ModalDialog>
-                    <Joy.ModalClose variant="outlined" />
-
-                    <Joy.DialogTitle>
-                      Caractéristiques du personnage
-                    </Joy.DialogTitle>
-
-                    <Joy.Typography level="title-md">
-                      {caracteristicToDisplay}
-                    </Joy.Typography>
-                  </Joy.ModalDialog>
-                </Joy.Modal>
-              </Joy.Stack>
-            ))}
-          </Joy.Stack>
+          <Characters
+            characters={characters}
+            handleSelectedCharacter={handleSelectedCharacter}
+            setOpenCaracteristic={setOpenCaracteristic}
+            setCaracteristicToDisplay={setCaracteristicToDisplay}
+            openCaracteristic={openCaracteristic}
+            caracteristicToDisplay={caracteristicToDisplay}
+          />
         );
 
+      case "proposition":
+        return (
+          <Propositions
+            currentQuestion={currentQuestion}
+            handleSelectedProposition={handleSelectedProposition}
+          />
+        );
       default:
         break;
     }
@@ -98,10 +79,21 @@ const Game = () => {
 
   return (
     <CssVarsProvider>
-      <Joy.Stack justifyContent="center" alignItems="center">
+      <Joy.Stack
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: "100vh" }}
+      >
         <Joy.Sheet
           variant="soft"
-          sx={{ width: "60%", justifyContent: "center", alignItems: "center" }}
+          sx={{
+            width: "60vw",
+            height: "80vh",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
           <Joy.Typography level="h3">
             Acte {currentAct?.chapter}: {currentAct?.name}
@@ -112,14 +104,61 @@ const Game = () => {
               {currentQuestion?.content}
             </Joy.Typography>
           </Joy.Sheet>
-          <>{answerToDisplay(currentQuestion?.answer_type)}</>
+          <>{answerToDisplay()}</>
 
           <Joy.Sheet
             variant="soft"
-            sx={{ marginTop: "10px", textAlign: "center" }}
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
           >
-            <Joy.Button size="lg">Valider</Joy.Button>
+            <Joy.Button
+              size="lg"
+              onClick={
+                containsFeedback
+                  ? () => setOpenFeedbackModal(true)
+                  : () => {
+                      setOrderQuestion(orderQuestion + 1);
+                      setCurrentQuestion(
+                        currentAct?.questions[orderQuestion + 1]
+                      );
+                    }
+              }
+            >
+              Valider
+            </Joy.Button>
           </Joy.Sheet>
+
+          {/* Modal for feedbacks  */}
+          <Joy.Modal
+            open={openFeedbackModal}
+            onClose={() => {
+              setContainsFeedback(false);
+              setOrderQuestion(orderQuestion + 1);
+              setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+              setOpenFeedbackModal(false);
+            }}
+          >
+            <Joy.ModalDialog>
+              <Joy.ModalClose variant="outlined" />
+
+              <Joy.Typography level="title-md">{feedback}</Joy.Typography>
+
+              <Joy.Button
+                onClick={() => {
+                  setContainsFeedback(false);
+                  setOrderQuestion(orderQuestion + 1);
+                  setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+                  setOpenFeedbackModal(false);
+                }}
+              >
+                Continuer
+              </Joy.Button>
+            </Joy.ModalDialog>
+          </Joy.Modal>
         </Joy.Sheet>
       </Joy.Stack>
     </CssVarsProvider>
