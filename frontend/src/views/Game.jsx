@@ -4,6 +4,7 @@ import { CssVarsProvider } from "@mui/joy/styles";
 import * as Joy from "@mui/joy";
 import Propositions from "../components/Propositions.jsx";
 import Characters from "../components/Characters.jsx";
+import TextArea from "../components/TextArea.jsx";
 
 const Game = () => {
   const { currentAct, characters } = useContext(AppContext);
@@ -15,7 +16,9 @@ const Game = () => {
   const [feedback, setFeedback] = useState("");
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
   const [orderQuestion, setOrderQuestion] = useState(0);
-  
+  const [storeAnswer, setStoredAnswer] = useState([]);
+  console.log(currentQuestion);
+
   useEffect(() => {
     if (currentAct && currentAct.questions) {
       setCurrentQuestion(currentAct?.questions[orderQuestion]);
@@ -33,21 +36,45 @@ const Game = () => {
     });
   };
 
-  const handleSelectedProposition = (selectedAnswer) => {
+  const handleSelectedProposition = (selectedAnswer, answerType) => {
     if (selectedAnswer.feedback.length != 0) {
       setFeedback(selectedAnswer.feedback);
       setContainsFeedback(true);
     } else setContainsFeedback(false);
-    setCurrentQuestion(() => ({
-      ...currentQuestion,
-      answers: currentQuestion?.answers.map((answer) => ({
-        ...answer,
-        selected:
-          selectedAnswer._id == answer._id
-            ? (answer.selected = !answer.selected)
-            : (answer.selected = false),
-      })),
-    }));
+    setCurrentQuestion(() => {
+      let newCurrentQuestion = {};
+      // For unique answer
+      if (answerType == "proposition") {
+        newCurrentQuestion = {
+          ...currentQuestion,
+          answers: currentQuestion?.answers.map((answer) => ({
+            ...answer,
+            selected:
+              selectedAnswer._id == answer._id ? !answer.selected : false,
+          })),
+        };
+      }
+      // For multiples answers
+      else {
+        newCurrentQuestion = {
+          ...currentQuestion,
+          answers: currentQuestion?.answers.map((answer) => ({
+            ...answer,
+            selected:
+              selectedAnswer._id == answer._id
+                ? !answer.selected
+                : answer.selected,
+          })),
+        };
+
+        setStoredAnswer([...storeAnswer, newCurrentQuestion]);
+        if (storeAnswer.length == 3) {
+          //Desactiver les autres propositions
+        }
+      }
+
+      return newCurrentQuestion;
+    });
   };
 
   const answerToDisplay = () => {
@@ -66,6 +93,17 @@ const Game = () => {
         );
 
       case "proposition":
+        return (
+          <Propositions
+            currentQuestion={currentQuestion}
+            handleSelectedProposition={handleSelectedProposition}
+          />
+        );
+
+      case "texte":
+        return <TextArea />;
+
+      case "proposition_multiple":
         return (
           <Propositions
             currentQuestion={currentQuestion}
