@@ -7,6 +7,7 @@ const Propositions = ({ currentQuestion, handleSelectedProposition }) => {
       spacing={2}
       justifyContent="space-evenly"
       flexWrap="wrap"
+      direction="row"
       useFlexGap
     >
       {currentQuestion?.answers.map((answer) => (
@@ -16,7 +17,10 @@ const Propositions = ({ currentQuestion, handleSelectedProposition }) => {
           onClick={() =>
             handleSelectedProposition(answer, currentQuestion?.answer_type)
           }
-          sx={{ backgroundColor: answer.selected ? "#0EC586" : null }}
+          sx={{
+            backgroundColor: answer.selected ? "#0EC586" : null,
+            width: "30%",
+          }}
         >
           {answer.content}
         </Joy.Button>

@@ -16,8 +16,7 @@ const Game = () => {
   const [feedback, setFeedback] = useState("");
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
   const [orderQuestion, setOrderQuestion] = useState(0);
-  const [storeAnswer, setStoredAnswer] = useState([]);
-  console.log(currentQuestion);
+  const [storeAnswer, setStoreAnswer] = useState([]);
 
   useEffect(() => {
     if (currentAct && currentAct.questions) {
@@ -36,6 +35,20 @@ const Game = () => {
     });
   };
 
+  const updateStoreAnswer = (selectedAnswer, answerType) => {
+    // Remove answer if selected again
+    if (selectedAnswer.selected) {
+      setStoreAnswer(() =>
+        storeAnswer.filter((e) => e._id != selectedAnswer._id)
+      );
+    }
+
+    // Add Answer selected
+    else if (answerType == "proposition_multiple")
+      setStoreAnswer([...storeAnswer, selectedAnswer]);
+    else setStoreAnswer([selectedAnswer]);
+  };
+
   const handleSelectedProposition = (selectedAnswer, answerType) => {
     if (selectedAnswer.feedback.length != 0) {
       setFeedback(selectedAnswer.feedback);
@@ -45,6 +58,7 @@ const Game = () => {
       let newCurrentQuestion = {};
       // For unique answer
       if (answerType == "proposition") {
+        updateStoreAnswer(selectedAnswer, answerType);
         newCurrentQuestion = {
           ...currentQuestion,
           answers: currentQuestion?.answers.map((answer) => ({
@@ -53,27 +67,30 @@ const Game = () => {
               selectedAnswer._id == answer._id ? !answer.selected : false,
           })),
         };
+
+        return newCurrentQuestion;
       }
       // For multiples answers
       else {
-        newCurrentQuestion = {
-          ...currentQuestion,
-          answers: currentQuestion?.answers.map((answer) => ({
-            ...answer,
-            selected:
-              selectedAnswer._id == answer._id
-                ? !answer.selected
-                : answer.selected,
-          })),
-        };
+        // 3 answers max for update question State
+        if (storeAnswer.length < 3 || selectedAnswer.selected) {
+          updateStoreAnswer(selectedAnswer, answerType);
+          newCurrentQuestion = {
+            ...currentQuestion,
+            answers: currentQuestion?.answers.map((answer) => ({
+              ...answer,
+              selected:
+                selectedAnswer._id == answer._id
+                  ? !answer.selected
+                  : answer.selected,
+            })),
+          };
 
-        setStoredAnswer([...storeAnswer, newCurrentQuestion]);
-        if (storeAnswer.length == 3) {
-          //Desactiver les autres propositions
+          return newCurrentQuestion;
         }
       }
 
-      return newCurrentQuestion;
+      return currentQuestion;
     });
   };
 
@@ -92,17 +109,8 @@ const Game = () => {
           />
         );
 
+      // Affichage des propositions de reponse
       case "proposition":
-        return (
-          <Propositions
-            currentQuestion={currentQuestion}
-            handleSelectedProposition={handleSelectedProposition}
-          />
-        );
-
-      case "texte":
-        return <TextArea />;
-
       case "proposition_multiple":
         return (
           <Propositions
@@ -110,6 +118,11 @@ const Game = () => {
             handleSelectedProposition={handleSelectedProposition}
           />
         );
+
+      // Affichage d'une zone de texte
+      case "texte":
+        return <TextArea />;
+
       default:
         break;
     }
@@ -163,6 +176,7 @@ const Game = () => {
                       setCurrentQuestion(
                         currentAct?.questions[orderQuestion + 1]
                       );
+                      setStoreAnswer([]);
                     }
               }
             >
@@ -177,6 +191,7 @@ const Game = () => {
               setContainsFeedback(false);
               setOrderQuestion(orderQuestion + 1);
               setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+              setStoreAnswer([]);
               setOpenFeedbackModal(false);
             }}
           >
@@ -190,6 +205,7 @@ const Game = () => {
                   setContainsFeedback(false);
                   setOrderQuestion(orderQuestion + 1);
                   setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+                  setStoreAnswer([]);
                   setOpenFeedbackModal(false);
                 }}
               >
