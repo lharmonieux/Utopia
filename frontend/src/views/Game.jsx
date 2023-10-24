@@ -5,9 +5,14 @@ import * as Joy from "@mui/joy";
 import Propositions from "../components/Propositions.jsx";
 import Characters from "../components/Characters.jsx";
 import TextArea from "../components/TextArea.jsx";
+import { Link, useNavigate } from "react-router-dom";
 
 const Game = () => {
+  // variables
   const { currentAct, characters } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  // State
   const [currentQuestion, setCurrentQuestion] = useState({});
   const [idCharacterSelected, setIdCharacterSelected] = useState("");
   const [openCaracteristic, setOpenCaracteristic] = useState(false);
@@ -15,12 +20,16 @@ const Game = () => {
   const [containsFeedback, setContainsFeedback] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
-  const [orderQuestion, setOrderQuestion] = useState(0);
+  const [orderQuestion, setOrderQuestion] = useState(1);
   const [storeAnswer, setStoreAnswer] = useState([]);
+  const [openEndModal, setOpenEndModal] = useState(false);
+
+  // Getting total number of questions for current act
+  let nbQuestions = currentAct?.questions?.length;
 
   useEffect(() => {
     if (currentAct && currentAct.questions) {
-      setCurrentQuestion(currentAct?.questions[orderQuestion]);
+      setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
     }
   }, [currentAct, orderQuestion]);
 
@@ -51,9 +60,16 @@ const Game = () => {
 
   const handleSelectedProposition = (selectedAnswer, answerType) => {
     if (selectedAnswer.feedback.length != 0) {
-      setFeedback(selectedAnswer.feedback);
-      setContainsFeedback(true);
+      // If answer selected again
+      if (feedback) {
+        setFeedback("");
+        setContainsFeedback(false);
+      } else {
+        setFeedback(selectedAnswer.feedback);
+        setContainsFeedback(true);
+      }
     } else setContainsFeedback(false);
+
     setCurrentQuestion(() => {
       let newCurrentQuestion = {};
       // For unique answer
@@ -128,6 +144,79 @@ const Game = () => {
     }
   };
 
+  const modalFeedback = () => (
+    // Modal for feedbacks
+    <Joy.Modal
+      open={openFeedbackModal}
+      onClose={() => {
+        setContainsFeedback(false);
+        setFeedback("");
+        setOrderQuestion(orderQuestion + 1);
+        setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+        setStoreAnswer([]);
+        setOpenFeedbackModal(false);
+      }}
+    >
+      <Joy.ModalDialog>
+        <Joy.ModalClose variant="outlined" />
+
+        <Joy.Typography level="title-md">{feedback}</Joy.Typography>
+
+        <Joy.Button
+          onClick={() => {
+            setContainsFeedback(false);
+            setFeedback("");
+            setOrderQuestion(orderQuestion + 1);
+            setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+            setStoreAnswer([]);
+            setOpenFeedbackModal(false);
+          }}
+        >
+          Continuer
+        </Joy.Button>
+      </Joy.ModalDialog>
+    </Joy.Modal>
+  );
+
+  // Modal for end of act / Summary
+  const endOfAct = () => (
+    <Joy.Modal
+      open={openEndModal}
+      onClose={() => {
+        setOpenEndModal(false);
+        navigate("/");
+      }}
+    >
+      <Joy.ModalDialog>
+        <Joy.ModalClose variant="outlined" />
+        <Joy.DialogTitle>Fin de l&apos;acte</Joy.DialogTitle>
+
+        <Joy.Typography>
+          Bravo !Nombre habitants ont d&apos;ores et déjà fait part de leur
+          intérêt pour rejoindre votre ville !Statut de la ville : en projet
+        </Joy.Typography>
+
+        <Link to="/">
+          <Joy.Button onClick={() => setOpenEndModal(false)}>Next</Joy.Button>
+        </Link>
+      </Joy.ModalDialog>
+    </Joy.Modal>
+  );
+
+  // Manage for the next element to display
+  const nextPage = () => {
+    //Display end modal to summarize act
+    if (orderQuestion == nbQuestions) setOpenEndModal(true);
+
+    //Display next page of act
+    if (containsFeedback) () => setOpenFeedbackModal(true);
+    else {
+      setOrderQuestion(orderQuestion + 1);
+      setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+      setStoreAnswer([]);
+    }
+  };
+
   return (
     <CssVarsProvider>
       <Joy.Stack
@@ -166,53 +255,12 @@ const Game = () => {
               justifyContent: "center",
             }}
           >
-            <Joy.Button
-              size="lg"
-              onClick={
-                containsFeedback
-                  ? () => setOpenFeedbackModal(true)
-                  : () => {
-                      setOrderQuestion(orderQuestion + 1);
-                      setCurrentQuestion(
-                        currentAct?.questions[orderQuestion + 1]
-                      );
-                      setStoreAnswer([]);
-                    }
-              }
-            >
+            <Joy.Button size="lg" onClick={() => nextPage()}>
               Valider
             </Joy.Button>
           </Joy.Sheet>
-
-          {/* Modal for feedbacks  */}
-          <Joy.Modal
-            open={openFeedbackModal}
-            onClose={() => {
-              setContainsFeedback(false);
-              setOrderQuestion(orderQuestion + 1);
-              setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
-              setStoreAnswer([]);
-              setOpenFeedbackModal(false);
-            }}
-          >
-            <Joy.ModalDialog>
-              <Joy.ModalClose variant="outlined" />
-
-              <Joy.Typography level="title-md">{feedback}</Joy.Typography>
-
-              <Joy.Button
-                onClick={() => {
-                  setContainsFeedback(false);
-                  setOrderQuestion(orderQuestion + 1);
-                  setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
-                  setStoreAnswer([]);
-                  setOpenFeedbackModal(false);
-                }}
-              >
-                Continuer
-              </Joy.Button>
-            </Joy.ModalDialog>
-          </Joy.Modal>
+          {modalFeedback()}
+          {endOfAct()}
         </Joy.Sheet>
       </Joy.Stack>
     </CssVarsProvider>

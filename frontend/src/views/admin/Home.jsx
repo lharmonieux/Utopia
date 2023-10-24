@@ -31,7 +31,6 @@ const Home = () => {
         <div>
           <Link
             to="acts"
-            //   state={acts}
           >
             <button className="border" type="button">
               Administrer les actes
