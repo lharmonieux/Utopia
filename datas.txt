@@ -26,16 +26,16 @@
 			{
 				"content": "Sur un autre continent, encore jamais exploré, au-delà de la mer de l’Ambre Gris. Autant s’installer là où personne n’est jamais allé !",
 				"score": 10,
-				"feedback": "Vous partez en exploration des semaines durant… allant au-delà des frontières présentes sur toutes vos cartes et n’hésitant pas à vous jeter à corps perdu dans les labyrinthes se dressant sur votre passage.C’est alors que durant votre sixième semaine de voyage, vous tombez nez à nez avec ce qui vous semble être une évidence… une gigantesque forêt, réunissant une faune et une flore d’une diversité et d’une complexité jamais vues auparavant.Pour vous c’est clair : votre cité s’inscrira ici ! " 
+				"feedback": "Vous partez en exploration des semaines durant… allant au-delà des frontières présentes sur toutes vos cartes et n’hésitant pas à vous jeter à corps perdu dans les labyrinthes se dressant sur votre passage.C’est alors que durant votre sixième semaine de voyage, vous tombez nez à nez avec ce qui vous semble être une évidence… une gigantesque forêt, réunissant une faune et une flore d’une diversité et d’une complexité jamais vues auparavant. Pour vous c’est clair : votre cité s’inscrira ici ! " 
 			},
 			{
-				"content": "Tout au sud du continent de Méridian, dans des conditions idéales, à quelques encablures de la dernière colonie créée ",
+				"content": "Tout au sud du continent de Méridian, dans des conditions idéales, à quelques encablures de la dernière colonie créée",
 				"score": 0,
 				"feedback": "Vous décidez donc de vous installer dans la  magnifique région de l’extrême sud, au sein de laquelle s'épanouit une végétation luxuriante. Vous dépassez la Cité de Vairise, tout juste construite, et dès qu’elle n’est plus en vue, vous décidez de vous installer près d’un immense lac, décisif pour votre approvisionnement en eau." 
 			}]
 		},
 		{
-			"content": "Nuit après nuit, vous ne cessez de rêver de ce grand projet qui occupe tout votre esprit depuis plusieurs semaines maintenant.Il est temps de rendre tout cela concret, et de commencer par le début… Votre ville s'appellera: ",
+			"content": "Nuit après nuit, vous ne cessez de rêver de ce grand projet qui occupe tout votre esprit depuis plusieurs semaines maintenant. Il est temps de rendre tout cela concret, et de commencer par le début… Votre ville s'appellera: ",
 			"order": 3,
 			"image": "image.jpg",
 			"answer_type": "texte",
@@ -51,27 +51,27 @@
 			"answers": [
 			{
 				"content": "Le collectif avant l’individu",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			},
 			{
 				"content": "La victoire appartient aux plus opiniâtres",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			},
 			{
 				"content": "Pas de bonheur dans le confort",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			},
 			{
 				"content": "Le pouvoir aux plus méritants",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			},
 			{
 				"content": "Tout part de l’école",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			}
 			]
@@ -85,37 +85,37 @@
 			"answers": [
 			{
 				"content": "Elaborer un plan de communication",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			},
 			{
 				"content": "Construire les infrastructures générales ",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			},
 			{
 				"content": "Inciter à l’installation d’entreprises",
-				"score": 0,
+				"score": 3,
 				"feedback": ""
 			},
 			{
 				"content": "Réaliser une étude de terrain",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			},
 			{
 				"content": "Lancer le projet agricole",
-				"score": 0,
+				"score": -1,
 				"feedback": ""
 			},
 			{
 				"content": "Penser l’organisation collective",
-				"score": 0,
+				"score": 3,
 				"feedback": ""
 			},
 			{
 				"content": "Définir une stratégie d’implantation",
-				"score": 0,
+				"score": 3,
 				"feedback": ""
 			}
 			]
@@ -128,7 +128,7 @@
 			"thematic": "Audace",
 			"answers": [
 			{
-				"content": "Méridian, la Cité originelle. Un modèle de réussite dont le succès n’a jamais été égalé",
+				"content": "Méridian, la Cité originelle. Un modèle de réussite dont le succès n’a jamais été égalé.",
 				"score": 0,
 				"feedback": "" 
 			},
@@ -138,7 +138,7 @@
 				"feedback": "" 
 			},
 			{
-				"content": "Aucun ! Pour séduire des habitants, il faut assumer un choix radicalement différent",
+				"content": "Aucun ! Pour séduire des habitants, il faut assumer un choix radicalement différent.",
 				"score": 10,
 				"feedback": "" 
 			}]

@@ -1,9 +1,14 @@
+/* eslint-disable react/prop-types */
 import * as Joy from "@mui/joy";
 
-const TextArea = () => {
+const TextArea = ({ town, setTown }) => {
   return (
-    <Joy.Input placeholder="Nom de votre ville..." />
-  )
-}
+    <Joy.Input
+      placeholder="Nom de votre ville..."
+      value={town}
+      onChange={(e) => setTown(e.target.value)}
+    />
+  );
+};
 
-export default TextArea
+export default TextArea;

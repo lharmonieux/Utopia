@@ -50,7 +50,7 @@ const Characters = ({
               setCaracteristicToDisplay(character.caracteristic);
             }}
           >
-            Details
+            Découvrir
           </Joy.Button>
 
           {/* Content of Modal */}

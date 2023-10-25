@@ -11,15 +11,15 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  rule: {
+  role: {
     type: String,
     required: true,
   },
   sauvegarde: {
-    thematic: [
+    thematics: [
       {
-        name: String,
-        total_score: Number,
+        thematic: String,
+        totalScore: Number,
       },
     ],
     answers: [

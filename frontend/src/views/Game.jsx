@@ -6,6 +6,8 @@ import Propositions from "../components/Propositions.jsx";
 import Characters from "../components/Characters.jsx";
 import TextArea from "../components/TextArea.jsx";
 import { Link, useNavigate } from "react-router-dom";
+import { AlertNoAnswer } from "../components/Alert.jsx";
+import Scores from "../components/Scores.jsx";
 
 const Game = () => {
   // variables
@@ -23,9 +25,13 @@ const Game = () => {
   const [orderQuestion, setOrderQuestion] = useState(1);
   const [storeAnswer, setStoreAnswer] = useState([]);
   const [openEndModal, setOpenEndModal] = useState(false);
+  const [scoresThematic, setScoresThematic] = useState([]);
+  const [showAlertNoAnswer, setShowAlertNoAnswer] = useState(false);
+  const [town, setTown] = useState("");
 
   // Getting total number of questions for current act
   let nbQuestions = currentAct?.questions?.length;
+  console.log(storeAnswer, scoresThematic);
 
   useEffect(() => {
     if (currentAct && currentAct.questions) {
@@ -61,7 +67,7 @@ const Game = () => {
   const handleSelectedProposition = (selectedAnswer, answerType) => {
     if (selectedAnswer.feedback.length != 0) {
       // If answer selected again
-      if (feedback) {
+      if (feedback == selectedAnswer.feedback) {
         setFeedback("");
         setContainsFeedback(false);
       } else {
@@ -137,7 +143,7 @@ const Game = () => {
 
       // Affichage d'une zone de texte
       case "texte":
-        return <TextArea />;
+        return <TextArea town={town} setTown={setTown} />;
 
       default:
         break;
@@ -169,6 +175,7 @@ const Game = () => {
             setOrderQuestion(orderQuestion + 1);
             setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
             setStoreAnswer([]);
+            setShowAlertNoAnswer(false);
             setOpenFeedbackModal(false);
           }}
         >
@@ -203,65 +210,148 @@ const Game = () => {
     </Joy.Modal>
   );
 
+  const storeScore = () => {
+    if (storeAnswer.length > 0) {
+      let copyScoresThematic = [...scoresThematic];
+      for (const answer of storeAnswer) {
+        // If score is eligible to store
+        if (answer.score == -1) continue
+        else {
+          if (scoresThematic.length == 0)
+            setScoresThematic(
+              [
+                {
+                  thematic: currentQuestion?.thematic,
+                  totalScore: answer.score,
+                }
+              ])
+
+          //If scoresThematic wasn't empty
+          else {
+           
+            let newScoresThematic = [];
+            let exist = {};
+            for (const line of copyScoresThematic) { 
+              if (line.thematic == currentQuestion?.thematic) {
+                exist = line;
+              }
+              else{
+                console.log(line);
+                newScoresThematic.push({
+                  thematic: line.thematic,
+                  totalScore: line.totalScore,
+                });
+              }
+                
+            }
+
+            if (exist) copyScoresThematic = [...newScoresThematic, { thematic: exist.thematic, totalScore: exist.totalScore + answer.score }]
+            else copyScoresThematic = [...newScoresThematic, { thematic: currentQuestion?.thematic, totalScore: answer.score }]
+          }
+        }
+      }
+
+      setScoresThematic(copyScoresThematic);
+    }
+  };
+
   // Manage for the next element to display
   const nextPage = () => {
-    //Display end modal to summarize act
-    if (orderQuestion == nbQuestions) setOpenEndModal(true);
+    //Control of if there are an given answer
+    if (storeAnswer.length > 0 || town || idCharacterSelected) {
+      //Display end modal to summarize act
+      if (orderQuestion == nbQuestions) setOpenEndModal(true);
 
-    //Display next page of act
-    if (containsFeedback) () => setOpenFeedbackModal(true);
-    else {
-      setOrderQuestion(orderQuestion + 1);
-      setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
-      setStoreAnswer([]);
-    }
+      //Store score of the answer if proposition
+      storeScore();
+
+      //Display next page of act
+      if (containsFeedback) setOpenFeedbackModal(true);
+      else {
+        setOrderQuestion(orderQuestion + 1);
+        setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+        setStoreAnswer([]);
+        setTown("");
+        setIdCharacterSelected("");
+        setShowAlertNoAnswer(false);
+      }
+    } else setShowAlertNoAnswer(true);
   };
 
   return (
     <CssVarsProvider>
-      <Joy.Stack
-        justifyContent="center"
-        alignItems="center"
-        sx={{ height: "100vh" }}
-      >
+      <Joy.Stack alignItems="center" sx={{ height: "100vh" }} spacing={2}>
+        {/* Alert zone */}
         <Joy.Sheet
-          variant="soft"
           sx={{
-            width: "60vw",
-            height: "80vh",
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "column",
+            width: "50vw",
+            marginLeft: "10px",
+            display: showAlertNoAnswer ? "block" : "none",
           }}
         >
-          <Joy.Typography level="h3">
-            Acte {currentAct?.chapter}: {currentAct?.name}
-          </Joy.Typography>
+          <AlertNoAnswer />
+        </Joy.Sheet>
 
-          <Joy.Sheet variant="soft" sx={{ padding: "30px" }}>
-            <Joy.Typography level="title-md" sx={{ textAlign: "center" }}>
-              {currentQuestion?.content}
-            </Joy.Typography>
-          </Joy.Sheet>
-          <>{answerToDisplay()}</>
-
+        {/* Principal content zone  */}
+        <Joy.Stack
+          sx={{
+            height: "85vh",
+          }}
+          alignItems="center"
+          direction="row"
+          spacing={2}
+        >
+          {/* Container for scores  */}
           <Joy.Sheet
             variant="soft"
             sx={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              width: "20vw",
+              height: "100%",
             }}
           >
-            <Joy.Button size="lg" onClick={() => nextPage()}>
-              Valider
-            </Joy.Button>
+            <Scores scoresThematic={scoresThematic} />
           </Joy.Sheet>
-          {modalFeedback()}
-          {endOfAct()}
-        </Joy.Sheet>
+
+          {/* Container for act  */}
+          <Joy.Sheet
+            variant="soft"
+            sx={{
+              width: "70vw",
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Joy.Typography level="h3">
+              Acte {currentAct?.chapter} : {currentAct?.name}
+            </Joy.Typography>
+
+            <Joy.Sheet variant="soft" sx={{ padding: "30px" }}>
+              <Joy.Typography level="title-md" sx={{ textAlign: "center" }}>
+                {currentQuestion?.content}
+              </Joy.Typography>
+            </Joy.Sheet>
+            {answerToDisplay()}
+
+            <Joy.Sheet
+              variant="soft"
+              sx={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <Joy.Button size="lg" onClick={() => nextPage()}>
+                Valider
+              </Joy.Button>
+            </Joy.Sheet>
+            {modalFeedback()}
+            {endOfAct()}
+          </Joy.Sheet>
+        </Joy.Stack>
       </Joy.Stack>
     </CssVarsProvider>
   );
