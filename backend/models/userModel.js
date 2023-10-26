@@ -30,12 +30,13 @@ const userSchema = mongoose.Schema({
     ],
     devise: String,
     ville: String,
+    statutVille: String,
     character: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "Character",
     },
     act: String,
-    current_question: String,
+    currentQuestion: String,
   },
 });
 

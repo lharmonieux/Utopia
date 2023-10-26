@@ -85,12 +85,12 @@
 			"answers": [
 			{
 				"content": "Elaborer un plan de communication",
-				"score": -1,
+				"score": 0,
 				"feedback": ""
 			},
 			{
 				"content": "Construire les infrastructures générales ",
-				"score": -1,
+				"score": 0,
 				"feedback": ""
 			},
 			{
@@ -100,12 +100,12 @@
 			},
 			{
 				"content": "Réaliser une étude de terrain",
-				"score": -1,
+				"score": 0,
 				"feedback": ""
 			},
 			{
 				"content": "Lancer le projet agricole",
-				"score": -1,
+				"score": 0,
 				"feedback": ""
 			},
 			{
