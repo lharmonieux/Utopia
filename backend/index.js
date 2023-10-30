@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import actRoute from "./routes/actRoute.js";
-import personnageRoute from "./routes/personnageRoute.js";
+import characterRoute from "./routes/characterRoute.js";
 import dotenv from "dotenv";
 import cors from 'cors';
 
@@ -25,7 +25,7 @@ app.use(cors(corsOptions));
 
 // Routes admin
 app.use('/acts', actRoute);
-app.use('/personnages', personnageRoute);
+app.use('/characters', characterRoute);
 
 //Connection Database, Then running server
 mongoose

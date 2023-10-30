@@ -2,15 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./admin/GameContext.jsx";
 import { CssVarsProvider } from "@mui/joy/styles";
 import * as Joy from "@mui/joy";
+import * as Icon from "@mui/icons-material";
 import Propositions from "../components/Propositions.jsx";
 import Characters from "../components/Characters.jsx";
 import TextArea from "../components/TextArea.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { AlertNoAnswer } from "../components/Alert.jsx";
+import Drawer from "../components/Drawer.jsx";
 
 const Game = () => {
   // variables
-  const { currentAct, characters } = useContext(AppContext);
+  const { currentAct, characters, acts } = useContext(AppContext);
   const navigate = useNavigate();
 
   // State
@@ -27,6 +29,8 @@ const Game = () => {
   const [scoresThematic, setScoresThematic] = useState([]);
   const [showAlertNoAnswer, setShowAlertNoAnswer] = useState(false);
   const [town, setTown] = useState("");
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   // Getting total number of questions for current act
   let nbQuestions = currentAct?.questions?.length;
@@ -187,31 +191,35 @@ const Game = () => {
   const endOfAct = () => {
     let nbConvincedResident = 0;
     if (currentAct?.chapter == 1) {
-      // calculation of max score that we can obtain 
+      // calculation of max score that we can obtain
       let scoreMax = 0;
       if (currentAct.questions.length > 0) {
         for (const question of currentAct.questions) {
           let maxOfQuestion = 0;
           if (question.answers.length > 0) {
-            // accumulate all score bigger than 0 for proposition multiple 
+            // accumulate all score bigger than 0 for proposition multiple
             if (question.answer_type == "proposition_multiple") {
               for (const answer of question.answers) {
                 if (answer.score > 0) maxOfQuestion += answer.score;
               }
             } else {
               for (const answer of question.answers) {
-                // Break automatically the loop for score -1 (question not eligible to score) 
+                // Break automatically the loop for score -1 (question not eligible to score)
                 if (answer.score == -1) break;
-                else if (answer.score > maxOfQuestion) maxOfQuestion = answer.score;
+                else if (answer.score > maxOfQuestion)
+                  maxOfQuestion = answer.score;
               }
             }
-
           }
           scoreMax += maxOfQuestion;
         }
       }
 
-      nbConvincedResident = parseInt((scoresThematic.reduce((acc, curr) => acc + curr.totalScore, 0) / scoreMax) * 1000);
+      nbConvincedResident = parseInt(
+        (scoresThematic.reduce((acc, curr) => acc + curr.totalScore, 0) /
+          scoreMax) *
+          1000
+      );
     }
     return (
       <Joy.Modal
@@ -227,29 +235,37 @@ const Game = () => {
 
           <Joy.Stack direction="column" sx={{ display: "flex" }} spacing={1}>
             <Joy.Typography>
-              {currentAct?.chapter == 1 ? (
-                `Bravo ! ${nbConvincedResident} habitants ont d'ores et déjà fait part de leur
+              {currentAct?.chapter == 1
+                ? `Bravo ! ${nbConvincedResident} habitants ont d'ores et déjà fait part de leur
             intérêt pour rejoindre votre ville ! Statut de la ville : En projet`
-              ) : ''}
+                : ""}
             </Joy.Typography>
 
-            <Joy.Stack direction="row" spacing={2} justifyContent="space-evenly">
-              {scoresThematic.map(e => (
-                <Joy.Typography key={e.thematic}>{e.thematic} : {e.totalScore}</Joy.Typography>
+            <Joy.Stack
+              direction="row"
+              spacing={2}
+              justifyContent="space-evenly"
+            >
+              {scoresThematic.map((e) => (
+                <Joy.Typography key={e.thematic}>
+                  {e.thematic} : {e.totalScore}
+                </Joy.Typography>
               ))}
             </Joy.Stack>
 
-            <Joy.Sheet sx={{ flex: 1, display: "flex", justifyContent: 'center' }}>
+            <Joy.Sheet
+              sx={{ flex: 1, display: "flex", justifyContent: "center" }}
+            >
               <Link to="/">
-                <Joy.Button onClick={() => setOpenEndModal(false)}>Next</Joy.Button>
+                <Joy.Button onClick={() => setOpenEndModal(false)}>
+                  Next
+                </Joy.Button>
               </Link>
             </Joy.Sheet>
-
           </Joy.Stack>
-
         </Joy.ModalDialog>
       </Joy.Modal>
-    )
+    );
   };
 
   const storeScore = () => {
@@ -257,13 +273,13 @@ const Game = () => {
       let copyScoresThematic = [...scoresThematic];
       for (const answer of storeAnswer) {
         // If score is eligible to store
-        if (answer.score == -1) continue
+        if (answer.score == -1) continue;
         else {
           if (copyScoresThematic.length == 0) {
             copyScoresThematic.push({
               thematic: currentQuestion?.thematic,
               totalScore: answer.score,
-            })
+            });
           }
 
           //If scoresThematic wasn't empty
@@ -272,10 +288,9 @@ const Game = () => {
             let exist = new Map();
             for (const line of copyScoresThematic) {
               if (line.thematic == currentQuestion?.thematic) {
-                exist.set('thematic', line.thematic);
-                exist.set('totalScore', line.totalScore);
-              }
-              else {
+                exist.set("thematic", line.thematic);
+                exist.set("totalScore", line.totalScore);
+              } else {
                 newScoresThematic.push({
                   thematic: line.thematic,
                   totalScore: line.totalScore,
@@ -283,9 +298,22 @@ const Game = () => {
               }
             }
 
-            if (exist.size != 0) copyScoresThematic = [...newScoresThematic, { thematic: exist.get('thematic'), totalScore: exist.get('totalScore') + answer.score }]
+            if (exist.size != 0)
+              copyScoresThematic = [
+                ...newScoresThematic,
+                {
+                  thematic: exist.get("thematic"),
+                  totalScore: exist.get("totalScore") + answer.score,
+                },
+              ];
             else {
-              copyScoresThematic = [...newScoresThematic, { thematic: currentQuestion?.thematic, totalScore: answer.score }]
+              copyScoresThematic = [
+                ...newScoresThematic,
+                {
+                  thematic: currentQuestion?.thematic,
+                  totalScore: answer.score,
+                },
+              ];
             }
           }
         }
@@ -318,9 +346,30 @@ const Game = () => {
     } else setShowAlertNoAnswer(true);
   };
 
+  const modalSummary = () => (
+    <Joy.Modal open={showSummary} onClose={() => setShowSummary(false)}>
+      <Joy.ModalDialog>
+        <Joy.ModalClose variant="outlined" />
+        <Joy.DialogTitle>
+          <Joy.Typography level="h3" sx={{ textAlign: "center" }}>Sommaire</Joy.Typography>
+        </Joy.DialogTitle>
+
+        <Joy.List>
+          {acts.map((act) => (
+            <Joy.ListItem key={act._id}>
+              <Joy.ListItemButton>
+                Acte {act.chapter} : {act.name}
+              </Joy.ListItemButton>
+            </Joy.ListItem>
+          ))}
+        </Joy.List>
+      </Joy.ModalDialog>
+    </Joy.Modal>
+  );
+
   return (
     <CssVarsProvider>
-      <Joy.Stack alignItems="center" sx={{ height: "100vh" }} spacing={2}>
+      <Joy.Stack alignItems="center" sx={{ height: "100vh" }} spacing={1}>
         {/* Alert zone */}
         <Joy.Sheet
           sx={{
@@ -333,45 +382,57 @@ const Game = () => {
         </Joy.Sheet>
 
         {/* Principal content zone  */}
-        {/* Container for act  */}
-        <Joy.Sheet
-          variant="soft"
-          sx={{
-            width: "80vw",
-            height: "90%",
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Joy.Typography level="h3">
-            Acte {currentAct?.chapter} : {currentAct?.name}
-          </Joy.Typography>
+        <Joy.Stack spacing={2} direction="row" sx={{ height: "90%" }}>
+          {/* Drawer button  */}
+          <Drawer
+            showDrawer={showDrawer}
+            setShowDrawer={setShowDrawer}
+            setShowSummary={setShowSummary}
+          />
+          <Joy.IconButton variant="outlined" sx={{ height: "5%" }}>
+            <Icon.Menu onClick={() => setShowDrawer(true)} />
+          </Joy.IconButton>
 
-          <Joy.Sheet variant="soft" sx={{ padding: "30px" }}>
-            <Joy.Typography level="title-md" sx={{ textAlign: "center" }}>
-              {currentQuestion?.content}
-            </Joy.Typography>
-          </Joy.Sheet>
-          {answerToDisplay()}
-
+          {/* Container for act  */}
           <Joy.Sheet
             variant="soft"
             sx={{
-              flex: 1,
+              width: "80vw",
+              justifyContent: "center",
+              alignItems: "center",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center",
             }}
           >
-            <Joy.Button size="lg" onClick={() => nextPage()}>
-              Valider
-            </Joy.Button>
+            <Joy.Typography level="h3">
+              Acte {currentAct?.chapter} : {currentAct?.name}
+            </Joy.Typography>
+
+            <Joy.Sheet variant="soft" sx={{ padding: "30px" }}>
+              <Joy.Typography level="title-md" sx={{ textAlign: "center" }}>
+                {currentQuestion?.content}
+              </Joy.Typography>
+            </Joy.Sheet>
+            {answerToDisplay()}
+
+            <Joy.Sheet
+              variant="soft"
+              sx={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <Joy.Button size="lg" onClick={() => nextPage()}>
+                Valider
+              </Joy.Button>
+            </Joy.Sheet>
+            {modalFeedback()}
+            {endOfAct()}
+            {modalSummary()}
           </Joy.Sheet>
-          {modalFeedback()}
-          {endOfAct()}
-        </Joy.Sheet>
+        </Joy.Stack>
       </Joy.Stack>
     </CssVarsProvider>
   );

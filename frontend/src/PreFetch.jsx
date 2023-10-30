@@ -41,7 +41,7 @@ const PreFetch = () => {
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_REACT_URL_BACK}/personnages`)
+      .get(`${import.meta.env.VITE_REACT_URL_BACK}/characters`)
       .then((response) => {
         //Add a bool selected to a new data structure for character
         const formatDatas = response.data.map((e) => ({

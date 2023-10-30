@@ -1,7 +1,7 @@
 import express from "express";
 import { 
     addPersonnage, getAllPersonnage 
-} from "../controllers/personnageController.js";
+} from "../controllers/characterController.js";
 
 const router = express.Router();
 

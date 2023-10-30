@@ -1,4 +1,4 @@
-import Personnage from "../models/personnageModel.js";
+import Personnage from "../models/characterModel.js";
 import constants from "../constants.js";
 import { handleValidationErrorsPersonnages } from "../middlewares/handleError.js";
 

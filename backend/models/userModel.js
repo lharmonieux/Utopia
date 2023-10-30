@@ -7,6 +7,11 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  email: {
+    type: String, 
+    required: true,
+    unique: true
+  },
   password: {
     type: String,
     required: true,
@@ -15,28 +20,32 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  sauvegarde: {
-    thematics: [
+  save: {
+    logScores: [
       {
         thematic: String,
         totalScore: Number,
       },
     ],
-    answers: [
+    logAnswers: [
       {
         question: String,
         answer: String,
       },
     ],
-    devise: String,
-    ville: String,
-    statutVille: String,
+    currentAct: String,   //Voir si possible de rendre une clé étrangère variable
+    currentQuestion: String,
+    motto: String,
+    town: String,
+    townStatus: String,
     character: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "Character",
     },
-    act: String,
-    currentQuestion: String,
+    secondCharacter: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "Character",
+    }
   },
 });
 

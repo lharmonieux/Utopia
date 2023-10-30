@@ -27,11 +27,7 @@ const actSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      answer_type: {
-        type: String,
-        required: true,
-      },
-      thematic: {
+      answerType: {
         type: String,
         required: true,
       },
@@ -40,6 +36,8 @@ const actSchema = new mongoose.Schema({
           content: String,
           score: Number,
           feedback: String,
+          thematic: String,
+          givenResidents: Number
         },
       ],
     },
