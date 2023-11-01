@@ -6,20 +6,26 @@ import { handleValidationErrorsAct } from "../middlewares/handleError.js";
 export const addAct = async (req, res) => {
   try {
     //Getting body informations
-    const { name, chapter, questions } = req.body;
+    const { name, chapter, description, townStatus, resolution, questions } =
+      req.body;
 
     //Getting the errors
     const error = handleValidationErrorsAct(
-      name,
+      {name,
       chapter,
       questions,
-      constants
+      townStatus,
+      resolution,
+      constants}
     );
     if (error) return res.status(error.status).json({ message: error.message });
 
     const newAct = {
       name,
       chapter,
+      description,
+      townStatus,
+      resolution,
       questions,
     };
 
@@ -40,7 +46,12 @@ export const getAct = async (req, res) => {
   try {
     //Getting acts from DB
     const acts = await Act.find({});
-    return res.status(constants.SUCCESS).send(acts);
+    if (acts) return res.status(constants.SUCCESS).send(acts);
+
+    //No act in DB
+    return res
+      .status(constants.SUCCESS)
+      .json({ message: "Aucun acte trouvé." });
   } catch (error) {
     console.error(error);
     return res.status(constants.SERVER_ERROR).json({
@@ -54,14 +65,17 @@ export const updateAct = async (req, res) => {
   try {
     const { id_act } = req.params;
     //Getting body informations
-    const { name, chapter, questions } = req.body;
+    const { name, chapter, description, townStatus, resolution, questions } =
+      req.body;
 
     //Getting the errors
-    const error = handleValidationErrorsAct(
+    const error = handleValidationErrorsAct({
       name,
       chapter,
+      townStatus,
+      resolution,
       questions,
-      constants
+      constants}
     );
     if (error) return res.status(error.status).json({ message: error.message });
 
@@ -69,12 +83,15 @@ export const updateAct = async (req, res) => {
     const act = await Act.findByIdAndUpdate(id_act, {
       name,
       chapter,
+      townStatus,
+      resolution,
+      description,
       questions,
     });
 
     if (!act)
       return res.status(constants.NOT_FOUND).json({
-        message: "Cet acte n'existe pas",
+        message: `L'acte ${name} n'existe pas.`,
       });
 
     return res.status(constants.CREATED).json({
@@ -101,5 +118,8 @@ export const deleteAct = async (req, res) => {
     return res.status(constants.SUCCESS).json({
       message: "Acte supprimé avec succès !",
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error.message);
+    return res.status(constants.SERVER_ERROR).json({ message: error.message });
+  }
 };

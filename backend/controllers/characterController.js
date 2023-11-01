@@ -5,14 +5,16 @@ import { handleValidationErrorsPersonnages } from "../middlewares/handleError.js
 //Add personnage
 export const addPersonnage = async (req, res) => {
   try {
-
+    //Save of multiple character
     if (Array.isArray(req.body)) {
       const datas = [...req.body];
       let resultValidation;
       for (const data of datas) {
         resultValidation = handleValidationErrorsPersonnages(
           data.name,
-          data.caracteristic
+          data.caracteristic,
+          data.thematic,
+          data.score
         );
       }
 
@@ -22,19 +24,25 @@ export const addPersonnage = async (req, res) => {
           .status(resultValidation.status)
           .json({ message: resultValidation.message });
 
+      //Save characters
       for (const data of datas)
         await Personnage.create({
           name: data.name,
           caracteristic: data.caracteristic,
+          thematic: data.thematic,
+          score: data.score,
         });
+
       return res
         .status(constants.CREATED)
         .json({ message: "Personnages créés avec succès." });
     } else {
-      const { name, caracteristic } = req.body;
+      const { name, caracteristic, thematic, score } = req.body;
       const resultValidation = handleValidationErrorsPersonnages(
         name,
-        caracteristic
+        caracteristic,
+        thematic, 
+        score
       );
 
       //If error
@@ -47,6 +55,8 @@ export const addPersonnage = async (req, res) => {
       await Personnage.create({
         name,
         caracteristic,
+        thematic, 
+        score
       });
       return res
         .status(constants.CREATED)
@@ -68,7 +78,7 @@ export const getAllPersonnage = async (req, res) => {
       message: "Aucun personnage trouvé.",
     });
   } catch (error) {
-    console.error();
+    console.log(error.message);
     return res.status(constants.SERVER_ERROR).json({
       message: error.message,
     });

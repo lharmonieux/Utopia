@@ -33,6 +33,7 @@ const userSchema = mongoose.Schema({
         answer: String,
       },
     ],
+    totalResidents: String,
     currentAct: String,   //Voir si possible de rendre une clé étrangère variable
     currentQuestion: String,
     motto: String,

@@ -10,6 +10,14 @@ const characterSchema = mongoose.Schema({
     caracteristic: {
         type: String,
         required: true
+    },
+    thematic : {
+        type: String,
+        required: true
+    },
+    score: {
+        type: Number,
+        required: true
     }
 });
 

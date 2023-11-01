@@ -15,7 +15,7 @@ const Propositions = ({ currentQuestion, handleSelectedProposition }) => {
           color="neutral"
           key={answer._id}
           onClick={() =>
-            handleSelectedProposition(answer, currentQuestion?.answer_type)
+            handleSelectedProposition(answer, currentQuestion?.answerType)
           }
           sx={{
             backgroundColor: answer.selected ? "#0EC586" : null,

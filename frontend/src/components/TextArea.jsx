@@ -1,12 +1,13 @@
 /* eslint-disable react/prop-types */
-import * as Joy from "@mui/joy";
+import { Input } from "@mui/joy";
 
 const TextArea = ({ town, setTown }) => {
   return (
-    <Joy.Input
+    <Input
       placeholder="Nom de votre ville..."
       value={town}
       onChange={(e) => setTown(e.target.value)}
+      slotProps={{ input: { pattern: "[A-Za-z]+" } }}
     />
   );
 };

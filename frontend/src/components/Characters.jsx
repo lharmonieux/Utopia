@@ -23,7 +23,7 @@ const Characters = ({
           <Joy.Button
             value={character._id}
             onClick={() => {
-              handleSelectedCharacter(character._id);
+              handleSelectedCharacter(character);
             }}
             variant="soft"
             sx={{

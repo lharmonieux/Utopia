@@ -9,6 +9,7 @@ import TextArea from "../components/TextArea.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { AlertNoAnswer } from "../components/Alert.jsx";
 import Drawer from "../components/Drawer.jsx";
+import DisplayingText from "../components/DisplayingText.jsx";
 
 const Game = () => {
   // variables
@@ -41,12 +42,18 @@ const Game = () => {
     }
   }, [currentAct, orderQuestion]);
 
-  const handleSelectedCharacter = (idCharacter) => {
-    idCharacter == idCharacterSelected
-      ? setIdCharacterSelected("")
-      : setIdCharacterSelected(idCharacter);
+  const handleSelectedCharacter = (selectedCharacter) => {
+    //If selected again
+    if (selectedCharacter._id == idCharacterSelected) {
+      setIdCharacterSelected("");
+      setStoreAnswer([]);
+    } else {
+      setIdCharacterSelected(selectedCharacter._id);
+      setStoreAnswer([selectedCharacter]);
+    }
+
     characters.map((character) => {
-      if (character._id == idCharacter)
+      if (character._id == selectedCharacter._id)
         character.selected = !character.selected;
       else character.selected = false;
     });
@@ -119,7 +126,7 @@ const Game = () => {
   };
 
   const answerToDisplay = () => {
-    switch (currentQuestion?.answer_type) {
+    switch (currentQuestion?.answerType) {
       //Affichage du choix des persos
       case "personnage":
         return (
@@ -168,7 +175,9 @@ const Game = () => {
       <Joy.ModalDialog>
         <Joy.ModalClose variant="outlined" />
 
-        <Joy.Typography level="title-md">{feedback}</Joy.Typography>
+        <Joy.Typography level="title-md">
+          <DisplayingText sentence={feedback} />
+        </Joy.Typography>
 
         <Joy.Button
           onClick={() => {
@@ -188,60 +197,34 @@ const Game = () => {
   );
 
   // Modal for end of act / Summary
-  const endOfAct = () => {
-    let nbConvincedResident = 0;
-    if (currentAct?.chapter == 1) {
-      // calculation of max score that we can obtain
-      let scoreMax = 0;
-      if (currentAct.questions.length > 0) {
-        for (const question of currentAct.questions) {
-          let maxOfQuestion = 0;
-          if (question.answers.length > 0) {
-            // accumulate all score bigger than 0 for proposition multiple
-            if (question.answer_type == "proposition_multiple") {
-              for (const answer of question.answers) {
-                if (answer.score > 0) maxOfQuestion += answer.score;
-              }
-            } else {
-              for (const answer of question.answers) {
-                // Break automatically the loop for score -1 (question not eligible to score)
-                if (answer.score == -1) break;
-                else if (answer.score > maxOfQuestion)
-                  maxOfQuestion = answer.score;
-              }
-            }
-          }
-          scoreMax += maxOfQuestion;
-        }
-      }
+  const endOfAct = () => (
+    <Joy.Modal
+      open={openEndModal}
+      onClose={() => {
+        setOpenEndModal(false);
+        navigate("/");
+      }}
+    >
+      <Joy.ModalDialog>
+        <Joy.ModalClose variant="outlined" />
+        <Joy.DialogTitle>
+          Résolution de l&apos;Acte {currentAct?.chapter}
+        </Joy.DialogTitle>
 
-      nbConvincedResident = parseInt(
-        (scoresThematic.reduce((acc, curr) => acc + curr.totalScore, 0) /
-          scoreMax) *
-          1000
-      );
-    }
-    return (
-      <Joy.Modal
-        open={openEndModal}
-        onClose={() => {
-          setOpenEndModal(false);
-          navigate("/");
-        }}
-      >
-        <Joy.ModalDialog>
-          <Joy.ModalClose variant="outlined" />
-          <Joy.DialogTitle>Fin de l&apos;acte !!</Joy.DialogTitle>
+        <Joy.Stack direction="column" sx={{ display: "flex" }} spacing={1}>
+          <Joy.Typography>
+            <DisplayingText
+              sentence={currentAct?.resolution
+                ?.replace(
+                  "totalResidents",
+                  scoresThematic.filter((e) => e.thematic == "Residents")[0]
+                    ?.totalScore
+                )
+                .replace("townStatus", currentAct?.townStatus)}
+            />
+          </Joy.Typography>
 
-          <Joy.Stack direction="column" sx={{ display: "flex" }} spacing={1}>
-            <Joy.Typography>
-              {currentAct?.chapter == 1
-                ? `Bravo ! ${nbConvincedResident} habitants ont d'ores et déjà fait part de leur
-            intérêt pour rejoindre votre ville ! Statut de la ville : En projet`
-                : ""}
-            </Joy.Typography>
-
-            <Joy.Stack
+          {/* <Joy.Stack
               direction="row"
               spacing={2}
               justifyContent="space-evenly"
@@ -251,22 +234,21 @@ const Game = () => {
                   {e.thematic} : {e.totalScore}
                 </Joy.Typography>
               ))}
-            </Joy.Stack>
+            </Joy.Stack> */}
 
-            <Joy.Sheet
-              sx={{ flex: 1, display: "flex", justifyContent: "center" }}
-            >
-              <Link to="/">
-                <Joy.Button onClick={() => setOpenEndModal(false)}>
-                  Next
-                </Joy.Button>
-              </Link>
-            </Joy.Sheet>
-          </Joy.Stack>
-        </Joy.ModalDialog>
-      </Joy.Modal>
-    );
-  };
+          <Joy.Sheet
+            sx={{ flex: 1, display: "flex", justifyContent: "center" }}
+          >
+            <Link to="/">
+              <Joy.Button onClick={() => setOpenEndModal(false)}>
+                Next
+              </Joy.Button>
+            </Link>
+          </Joy.Sheet>
+        </Joy.Stack>
+      </Joy.ModalDialog>
+    </Joy.Modal>
+  );
 
   const storeScore = () => {
     if (storeAnswer.length > 0) {
@@ -277,19 +259,30 @@ const Game = () => {
         else {
           if (copyScoresThematic.length == 0) {
             copyScoresThematic.push({
-              thematic: currentQuestion?.thematic,
+              thematic: answer?.thematic,
               totalScore: answer.score,
+            });
+
+            //Initializing of number of residents won
+            copyScoresThematic.push({
+              thematic: "Residents",
+              totalScore: answer?.givenResidents || 0,
             });
           }
 
           //If scoresThematic wasn't empty
           else {
             let newScoresThematic = [];
-            let exist = new Map();
+            let existThematic = new Map();
+            let existResidents = new Map();
             for (const line of copyScoresThematic) {
-              if (line.thematic == currentQuestion?.thematic) {
-                exist.set("thematic", line.thematic);
-                exist.set("totalScore", line.totalScore);
+              //Save thematic into a variable if already existThematic as score
+              if (line.thematic == answer?.thematic) {
+                existThematic.set("thematic", line.thematic);
+                existThematic.set("totalScore", line.totalScore);
+              } else if (line.thematic == "Residents") {
+                existResidents.set("thematic", line.thematic);
+                existResidents.set("totalScore", line.totalScore);
               } else {
                 newScoresThematic.push({
                   thematic: line.thematic,
@@ -298,20 +291,33 @@ const Game = () => {
               }
             }
 
-            if (exist.size != 0)
+            //Update states of thematic's scores
+            if (existThematic.size != 0)
               copyScoresThematic = [
                 ...newScoresThematic,
                 {
-                  thematic: exist.get("thematic"),
-                  totalScore: exist.get("totalScore") + answer.score,
+                  thematic: existThematic.get("thematic"),
+                  totalScore: existThematic.get("totalScore") + answer.score,
+                },
+                {
+                  thematic: existResidents.get("thematic"),
+                  totalScore:
+                    existResidents.get("totalScore") +
+                    (answer?.givenResidents || 0),
                 },
               ];
             else {
               copyScoresThematic = [
                 ...newScoresThematic,
                 {
-                  thematic: currentQuestion?.thematic,
+                  thematic: answer?.thematic,
                   totalScore: answer.score,
+                },
+                {
+                  thematic: existResidents.get("thematic"),
+                  totalScore:
+                    existResidents.get("totalScore") +
+                    (answer?.givenResidents || 0),
                 },
               ];
             }
@@ -326,7 +332,7 @@ const Game = () => {
   // Manage for the next element to display
   const nextPage = () => {
     //Control of if there are an given answer
-    if (storeAnswer.length > 0 || town || idCharacterSelected) {
+    if (storeAnswer.length > 0 || town) {
       //Display end modal to summarize act
       if (orderQuestion == nbQuestions) setOpenEndModal(true);
 
@@ -351,7 +357,9 @@ const Game = () => {
       <Joy.ModalDialog>
         <Joy.ModalClose variant="outlined" />
         <Joy.DialogTitle>
-          <Joy.Typography level="h3" sx={{ textAlign: "center" }}>Sommaire</Joy.Typography>
+          <Joy.Typography level="h3" sx={{ textAlign: "center" }}>
+            Sommaire
+          </Joy.Typography>
         </Joy.DialogTitle>
 
         <Joy.List>
@@ -404,14 +412,14 @@ const Game = () => {
               flexDirection: "column",
             }}
           >
-            <Joy.Typography level="h3">
-              Acte {currentAct?.chapter} : {currentAct?.name}
-            </Joy.Typography>
+            <Joy.Box sx={{ width: "100%", padding: "5px" }}>
+              <Joy.Typography level="h3" sx={{ textAlign: "left" }}>
+                Acte {currentAct?.chapter} : {currentAct?.name}
+              </Joy.Typography>
+            </Joy.Box>
 
             <Joy.Sheet variant="soft" sx={{ padding: "30px" }}>
-              <Joy.Typography level="title-md" sx={{ textAlign: "center" }}>
-                {currentQuestion?.content}
-              </Joy.Typography>
+              <DisplayingText sentence={currentQuestion?.content} />
             </Joy.Sheet>
             {answerToDisplay()}
 

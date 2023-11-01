@@ -12,6 +12,17 @@ const actSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  description: {
+    type: String
+  },
+  townStatus: {
+    type: String,
+    required: true
+  },
+  resolution: {
+    type: String,
+    required: true
+  },
   questions: [
     {
       content: {
