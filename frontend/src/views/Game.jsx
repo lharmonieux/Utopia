@@ -407,8 +407,12 @@ const Game = () => {
             setShowDrawer={setShowDrawer}
             setShowSummary={setShowSummary}
           />
-          <IconButton variant="outlined" sx={{ height: "5%" }} onClick={() => setShowDrawer(true)}>
-            <AiOutlineMenuFold size={25} /> 
+          <IconButton
+            variant="outlined"
+            sx={{ height: "5%" }}
+            onClick={() => setShowDrawer(true)}
+          >
+            <AiOutlineMenuFold size={25} />
           </IconButton>
 
           {/* Container for act  */}
