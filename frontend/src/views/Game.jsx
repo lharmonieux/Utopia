@@ -16,7 +16,7 @@ import {
   ModalClose,
   DialogTitle,
 } from "@mui/joy";
-// import { Menu } from "@mui/icons-material";
+import { AiOutlineMenuFold } from "react-icons/ai";
 import Propositions from "../components/Propositions.jsx";
 import Characters from "../components/Characters.jsx";
 import TextArea from "../components/TextArea.jsx";
@@ -408,7 +408,7 @@ const Game = () => {
             setShowSummary={setShowSummary}
           />
           <IconButton variant="outlined" sx={{ height: "5%" }} onClick={() => setShowDrawer(true)}>
-            
+            <AiOutlineMenuFold size={25} /> 
           </IconButton>
 
           {/* Container for act  */}
