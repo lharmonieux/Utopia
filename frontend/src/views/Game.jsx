@@ -1,14 +1,28 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./admin/GameContext.jsx";
 import { CssVarsProvider } from "@mui/joy/styles";
-import * as Joy from "@mui/joy";
-import * as Icon from "@mui/icons-material";
+import {
+  Stack,
+  Sheet,
+  IconButton,
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  Typography,
+  Button,
+  Modal,
+  ModalDialog,
+  ModalClose,
+  DialogTitle,
+} from "@mui/joy";
+import { Menu } from "@mui/icons-material";
 import Propositions from "../components/Propositions.jsx";
 import Characters from "../components/Characters.jsx";
 import TextArea from "../components/TextArea.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { AlertNoAnswer } from "../components/Alert.jsx";
-import Drawer from "../components/Drawer.jsx";
+import MenuComponent from "../components/Menu.jsx";
 import DisplayingText from "../components/DisplayingText.jsx";
 
 const Game = () => {
@@ -161,7 +175,7 @@ const Game = () => {
 
   const modalFeedback = () => (
     // Modal for feedbacks
-    <Joy.Modal
+    <Modal
       open={openFeedbackModal}
       onClose={() => {
         setContainsFeedback(false);
@@ -172,14 +186,14 @@ const Game = () => {
         setOpenFeedbackModal(false);
       }}
     >
-      <Joy.ModalDialog>
-        <Joy.ModalClose variant="outlined" />
+      <ModalDialog>
+        <ModalClose variant="outlined" />
 
-        <Joy.Typography level="title-md">
+        <Typography level="title-md">
           <DisplayingText sentence={feedback} />
-        </Joy.Typography>
+        </Typography>
 
-        <Joy.Button
+        <Button
           onClick={() => {
             setContainsFeedback(false);
             setFeedback("");
@@ -191,28 +205,28 @@ const Game = () => {
           }}
         >
           Continuer
-        </Joy.Button>
-      </Joy.ModalDialog>
-    </Joy.Modal>
+        </Button>
+      </ModalDialog>
+    </Modal>
   );
 
   // Modal for end of act / Summary
   const endOfAct = () => (
-    <Joy.Modal
+    <Modal
       open={openEndModal}
       onClose={() => {
         setOpenEndModal(false);
         navigate("/");
       }}
     >
-      <Joy.ModalDialog>
-        <Joy.ModalClose variant="outlined" />
-        <Joy.DialogTitle>
+      <ModalDialog>
+        <ModalClose variant="outlined" />
+        <DialogTitle>
           Résolution de l&apos;Acte {currentAct?.chapter}
-        </Joy.DialogTitle>
+        </DialogTitle>
 
-        <Joy.Stack direction="column" sx={{ display: "flex" }} spacing={1}>
-          <Joy.Typography>
+        <Stack direction="column" sx={{ display: "flex" }} spacing={1}>
+          <Typography>
             <DisplayingText
               sentence={currentAct?.resolution
                 ?.replace(
@@ -222,7 +236,7 @@ const Game = () => {
                 )
                 .replace("townStatus", currentAct?.townStatus)}
             />
-          </Joy.Typography>
+          </Typography>
 
           {/* <Joy.Stack
               direction="row"
@@ -236,18 +250,14 @@ const Game = () => {
               ))}
             </Joy.Stack> */}
 
-          <Joy.Sheet
-            sx={{ flex: 1, display: "flex", justifyContent: "center" }}
-          >
+          <Sheet sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
             <Link to="/">
-              <Joy.Button onClick={() => setOpenEndModal(false)}>
-                Next
-              </Joy.Button>
+              <Button onClick={() => setOpenEndModal(false)}>Next</Button>
             </Link>
-          </Joy.Sheet>
-        </Joy.Stack>
-      </Joy.ModalDialog>
-    </Joy.Modal>
+          </Sheet>
+        </Stack>
+      </ModalDialog>
+    </Modal>
   );
 
   const storeScore = () => {
@@ -353,33 +363,33 @@ const Game = () => {
   };
 
   const modalSummary = () => (
-    <Joy.Modal open={showSummary} onClose={() => setShowSummary(false)}>
-      <Joy.ModalDialog>
-        <Joy.ModalClose variant="outlined" />
-        <Joy.DialogTitle>
-          <Joy.Typography level="h3" sx={{ textAlign: "center" }}>
+    <Modal open={showSummary} onClose={() => setShowSummary(false)}>
+      <ModalDialog>
+        <ModalClose variant="outlined" />
+        <DialogTitle>
+          <Typography level="h3" sx={{ textAlign: "center" }}>
             Sommaire
-          </Joy.Typography>
-        </Joy.DialogTitle>
+          </Typography>
+        </DialogTitle>
 
-        <Joy.List>
+        <List>
           {acts.map((act) => (
-            <Joy.ListItem key={act._id}>
-              <Joy.ListItemButton>
+            <ListItem key={act._id}>
+              <ListItemButton>
                 Acte {act.chapter} : {act.name}
-              </Joy.ListItemButton>
-            </Joy.ListItem>
+              </ListItemButton>
+            </ListItem>
           ))}
-        </Joy.List>
-      </Joy.ModalDialog>
-    </Joy.Modal>
+        </List>
+      </ModalDialog>
+    </Modal>
   );
 
   return (
     <CssVarsProvider>
-      <Joy.Stack alignItems="center" sx={{ height: "100vh" }} spacing={1}>
+      <Stack alignItems="center" sx={{ height: "100vh" }} spacing={1}>
         {/* Alert zone */}
-        <Joy.Sheet
+        <Sheet
           sx={{
             width: "50vw",
             marginLeft: "10px",
@@ -387,22 +397,22 @@ const Game = () => {
           }}
         >
           <AlertNoAnswer />
-        </Joy.Sheet>
+        </Sheet>
 
         {/* Principal content zone  */}
-        <Joy.Stack spacing={2} direction="row" sx={{ height: "90%" }}>
+        <Stack spacing={2} direction="row" sx={{ height: "90%" }}>
           {/* Drawer button  */}
-          <Drawer
+          <MenuComponent
             showDrawer={showDrawer}
             setShowDrawer={setShowDrawer}
             setShowSummary={setShowSummary}
           />
-          <Joy.IconButton variant="outlined" sx={{ height: "5%" }}>
-            <Icon.Menu onClick={() => setShowDrawer(true)} />
-          </Joy.IconButton>
+          <IconButton variant="outlined" sx={{ height: "5%" }}>
+            <Menu onClick={() => setShowDrawer(true)} />
+          </IconButton>
 
           {/* Container for act  */}
-          <Joy.Sheet
+          <Sheet
             variant="soft"
             sx={{
               width: "80vw",
@@ -412,18 +422,18 @@ const Game = () => {
               flexDirection: "column",
             }}
           >
-            <Joy.Box sx={{ width: "100%", padding: "5px" }}>
-              <Joy.Typography level="h3" sx={{ textAlign: "left" }}>
+            <Box sx={{ width: "100%", padding: "5px" }}>
+              <Typography level="h3" sx={{ textAlign: "left" }}>
                 Acte {currentAct?.chapter} : {currentAct?.name}
-              </Joy.Typography>
-            </Joy.Box>
+              </Typography>
+            </Box>
 
-            <Joy.Sheet variant="soft" sx={{ padding: "30px" }}>
+            <Sheet variant="soft" sx={{ padding: "30px" }}>
               <DisplayingText sentence={currentQuestion?.content} />
-            </Joy.Sheet>
+            </Sheet>
             {answerToDisplay()}
 
-            <Joy.Sheet
+            <Sheet
               variant="soft"
               sx={{
                 flex: 1,
@@ -432,16 +442,16 @@ const Game = () => {
                 justifyContent: "center",
               }}
             >
-              <Joy.Button size="lg" onClick={() => nextPage()}>
+              <Button size="lg" onClick={() => nextPage()}>
                 Valider
-              </Joy.Button>
-            </Joy.Sheet>
+              </Button>
+            </Sheet>
             {modalFeedback()}
             {endOfAct()}
             {modalSummary()}
-          </Joy.Sheet>
-        </Joy.Stack>
-      </Joy.Stack>
+          </Sheet>
+        </Stack>
+      </Stack>
     </CssVarsProvider>
   );
 };

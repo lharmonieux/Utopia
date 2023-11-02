@@ -1,5 +1,13 @@
 /* eslint-disable react/prop-types */
-import * as Joy from "@mui/joy";
+import {
+  Stack,
+  Button,
+  Typography,
+  Modal,
+  ModalDialog,
+  ModalClose,
+  DialogTitle,
+} from "@mui/joy";
 
 const Characters = ({
   characters,
@@ -10,7 +18,7 @@ const Characters = ({
   caracteristicToDisplay,
 }) => {
   return (
-    <Joy.Stack
+    <Stack
       direction="row"
       spacing={2}
       flexWrap="wrap"
@@ -19,8 +27,8 @@ const Characters = ({
     >
       {/* Carte de personnage  */}
       {characters.map((character) => (
-        <Joy.Stack spacing={0} key={character._id} direction="column">
-          <Joy.Button
+        <Stack spacing={0} key={character._id} direction="column">
+          <Button
             value={character._id}
             onClick={() => {
               handleSelectedCharacter(character);
@@ -31,18 +39,18 @@ const Characters = ({
               backgroundColor: character.selected ? "#0EC586" : "",
             }}
           >
-            <Joy.Typography
+            <Typography
               level="title-md"
               sx={{
                 fontWeight: "bold",
               }}
             >
               {character.name}
-            </Joy.Typography>
-          </Joy.Button>
+            </Typography>
+          </Button>
 
           {/* Button voir display Modal  */}
-          <Joy.Button
+          <Button
             variant="soft"
             sx={{ border: 1, borderRadius: 5 }}
             onClick={() => {
@@ -51,26 +59,24 @@ const Characters = ({
             }}
           >
             Découvrir
-          </Joy.Button>
+          </Button>
 
           {/* Content of Modal */}
-          <Joy.Modal
+          <Modal
             open={openCaracteristic}
             onClose={() => setOpenCaracteristic(false)}
           >
-            <Joy.ModalDialog>
-              <Joy.ModalClose variant="outlined" />
+            <ModalDialog>
+              <ModalClose variant="outlined" />
 
-              <Joy.DialogTitle>Caractéristiques du personnage</Joy.DialogTitle>
+              <DialogTitle>Caractéristiques du personnage</DialogTitle>
 
-              <Joy.Typography level="title-md">
-                {caracteristicToDisplay}
-              </Joy.Typography>
-            </Joy.ModalDialog>
-          </Joy.Modal>
-        </Joy.Stack>
+              <Typography level="title-md">{caracteristicToDisplay}</Typography>
+            </ModalDialog>
+          </Modal>
+        </Stack>
       ))}
-    </Joy.Stack>
+    </Stack>
   );
 };
 

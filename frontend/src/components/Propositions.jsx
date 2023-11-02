@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import * as Joy from "@mui/joy";
+import {Button, Stack} from "@mui/joy";
 
 const Propositions = ({ currentQuestion, handleSelectedProposition }) => {
   return (
-    <Joy.Stack
+    <Stack
       spacing={2}
       justifyContent="space-evenly"
       flexWrap="wrap"
@@ -11,7 +11,7 @@ const Propositions = ({ currentQuestion, handleSelectedProposition }) => {
       useFlexGap
     >
       {currentQuestion?.answers.map((answer) => (
-        <Joy.Button
+        <Button
           color="neutral"
           key={answer._id}
           onClick={() =>
@@ -23,9 +23,9 @@ const Propositions = ({ currentQuestion, handleSelectedProposition }) => {
           }}
         >
           {answer.content}
-        </Joy.Button>
+        </Button>
       ))}
-    </Joy.Stack>
+    </Stack>
   );
 };
 
