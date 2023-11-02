@@ -16,7 +16,7 @@ import {
   ModalClose,
   DialogTitle,
 } from "@mui/joy";
-import { Menu } from "@mui/icons-material";
+// import { Menu } from "@mui/icons-material";
 import Propositions from "../components/Propositions.jsx";
 import Characters from "../components/Characters.jsx";
 import TextArea from "../components/TextArea.jsx";
@@ -407,8 +407,8 @@ const Game = () => {
             setShowDrawer={setShowDrawer}
             setShowSummary={setShowSummary}
           />
-          <IconButton variant="outlined" sx={{ height: "5%" }}>
-            <Menu onClick={() => setShowDrawer(true)} />
+          <IconButton variant="outlined" sx={{ height: "5%" }} onClick={() => setShowDrawer(true)}>
+            
           </IconButton>
 
           {/* Container for act  */}
