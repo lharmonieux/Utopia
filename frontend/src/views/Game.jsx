@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./admin/GameContext.jsx";
-import { CssVarsProvider } from "@mui/joy/styles";
 import {
   Stack,
   Sheet,
@@ -24,6 +23,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { AlertNoAnswer } from "../components/Alert.jsx";
 import MenuComponent from "../components/Menu.jsx";
 import DisplayingText from "../components/DisplayingText.jsx";
+import ActPresentation from "../components/ActPresentation.jsx";
+import "animate.css";
 
 const Game = () => {
   // variables
@@ -46,14 +47,29 @@ const Game = () => {
   const [town, setTown] = useState("");
   const [showDrawer, setShowDrawer] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
+  const [showActPresentation, setShowActPresentation] = useState(true);
+  const [showMainContent, setShowMainContent] = useState(false);
 
   // Getting total number of questions for current act
   let nbQuestions = currentAct?.questions?.length;
 
   useEffect(() => {
-    if (currentAct && currentAct.questions) {
-      setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
+    if (orderQuestion == 1) {
+      setShowActPresentation(true);
+      if (currentAct?.questions)
+        setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
+    } else {
+      //Show the act's presentation once
+      setShowActPresentation(false);
+
+      //Get the element with animation and detect the end of animation for doing anything else
+      const stackMainContent = document.querySelector('.stack-main-content');
+      if(!showMainContent) stackMainContent.addEventListener('animationend', () => {
+        setShowMainContent(true); 
+        setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
+      })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAct, orderQuestion]);
 
   const handleSelectedCharacter = (selectedCharacter) => {
@@ -180,8 +196,8 @@ const Game = () => {
       onClose={() => {
         setContainsFeedback(false);
         setFeedback("");
-        setOrderQuestion(orderQuestion + 1);
         setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
+        setOrderQuestion(orderQuestion + 1);
         setStoreAnswer([]);
         setOpenFeedbackModal(false);
       }}
@@ -197,8 +213,8 @@ const Game = () => {
           onClick={() => {
             setContainsFeedback(false);
             setFeedback("");
+            setShowMainContent(false);
             setOrderQuestion(orderQuestion + 1);
-            setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
             setStoreAnswer([]);
             setShowAlertNoAnswer(false);
             setOpenFeedbackModal(false);
@@ -352,8 +368,8 @@ const Game = () => {
       //Display next page of act
       if (containsFeedback) setOpenFeedbackModal(true);
       else {
+        setShowMainContent(false);
         setOrderQuestion(orderQuestion + 1);
-        setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
         setStoreAnswer([]);
         setTown("");
         setIdCharacterSelected("");
@@ -386,77 +402,96 @@ const Game = () => {
   );
 
   return (
-    <CssVarsProvider>
-      <Stack alignItems="center" sx={{ height: "100vh" }} spacing={1}>
-        {/* Alert zone */}
-        <Sheet
-          sx={{
-            width: "50vw",
-            marginLeft: "10px",
-            display: showAlertNoAnswer ? "block" : "none",
-          }}
-        >
-          <AlertNoAnswer />
-        </Sheet>
-
-        {/* Principal content zone  */}
-        <Stack spacing={2} direction="row" sx={{ height: "90%" }}>
-          {/* Drawer button  */}
-          <MenuComponent
-            showDrawer={showDrawer}
-            setShowDrawer={setShowDrawer}
-            setShowSummary={setShowSummary}
-          />
-          <IconButton
-            variant="outlined"
-            sx={{ height: "5%" }}
-            onClick={() => setShowDrawer(true)}
-          >
-            <AiOutlineMenuFold size={25} />
-          </IconButton>
-
-          {/* Container for act  */}
+    <>
+      {showActPresentation ? (
+        <ActPresentation
+          act={currentAct}
+          setShowActPresentation={setShowActPresentation}
+          setShowMainContent={setShowMainContent}
+        />
+      ) : (
+        <Stack alignItems="center" sx={{ height: "100vh" }} spacing={1}>
+          {/* Alert zone */}
           <Sheet
-            variant="soft"
             sx={{
-              width: "80vw",
-              justifyContent: "center",
-              alignItems: "center",
-              display: "flex",
-              flexDirection: "column",
+              width: "50vw",
+              marginLeft: "10px",
+              display: showAlertNoAnswer ? "block" : "none",
             }}
           >
-            <Box sx={{ width: "100%", padding: "5px" }}>
-              <Typography level="h3" sx={{ textAlign: "left" }}>
-                Acte {currentAct?.chapter} : {currentAct?.name}
-              </Typography>
-            </Box>
+            <AlertNoAnswer />
+          </Sheet>
 
-            <Sheet variant="soft" sx={{ padding: "30px" }}>
-              <DisplayingText sentence={currentQuestion?.content} />
-            </Sheet>
-            {answerToDisplay()}
+          {/* Principal content zone  */}
+          <Stack
+            spacing={2}
+            direction="row"
+            sx={{ height: "90%" }}
+            className={`animate__animated animate__${
+              showMainContent ? "fadeInLeft" : "fadeOutRight"
+            } stack-main-content`}
+            
+          >
+            {/* Drawer button  */}
+            <MenuComponent
+              showDrawer={showDrawer}
+              setShowDrawer={setShowDrawer}
+              setShowSummary={setShowSummary}
+            />
+            <IconButton
+              variant="outlined"
+              sx={{ height: "5%" }}
+              onClick={() => setShowDrawer(true)}
+            >
+              <AiOutlineMenuFold size={25} />
+            </IconButton>
 
+            {/* Container for act  */}
             <Sheet
               variant="soft"
               sx={{
-                flex: 1,
+                width: "80vw",
+                justifyContent: "center",
+                alignItems: "center",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "center",
               }}
             >
-              <Button size="lg" onClick={() => nextPage()}>
-                Valider
-              </Button>
+              <Box sx={{ width: "100%", padding: "10px" }}>
+                <Typography level="h2" sx={{ textAlign: "left" }}>
+                  Acte {currentAct?.chapter}
+                </Typography>
+                <Typography sx={{ fontWeight: "bold" }}>
+                  {currentAct?.name}
+                </Typography>
+              </Box>
+
+              <Sheet variant="soft" sx={{ padding: "30px" }}>
+                <DisplayingText sentence={currentQuestion?.content} />
+              </Sheet>
+              {answerToDisplay()}
+
+              <Sheet
+                variant="soft"
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
+                <Button size="lg" onClick={() => nextPage()}>
+                  Valider
+                </Button>
+              </Sheet>
+              {modalFeedback()}
+              {endOfAct()}
+              {modalSummary()}
             </Sheet>
-            {modalFeedback()}
-            {endOfAct()}
-            {modalSummary()}
-          </Sheet>
+          </Stack>
         </Stack>
-      </Stack>
-    </CssVarsProvider>
+      )}
+    </>
   );
 };
 

@@ -43,12 +43,7 @@ const PreFetch = () => {
     axios
       .get(`${import.meta.env.VITE_REACT_URL_BACK}/characters`)
       .then((response) => {
-        //Add a bool selected to a new data structure for character
-        const formatDatas = response.data.map((e) => ({
-          ...e,
-          selected: false,
-        }));
-        setCharacters(formatDatas);
+        setCharacters(response.data);
       })
       .catch((err) => console.log(err.message));
   }, []);
