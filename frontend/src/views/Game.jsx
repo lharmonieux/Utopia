@@ -57,6 +57,9 @@ const Game = () => {
   // Getting total number of questions for current act
   let nbQuestions = currentAct?.questions?.length;
 
+  //Var for modal entrance animation
+  let animationModalIn = "animate__animated animate__zoomIn animate__fast"
+
   useEffect(() => {
     if (orderQuestion == 1) {
       setShowActPresentation(true);
@@ -212,7 +215,7 @@ const Game = () => {
           initializingState();
         })
       }
-      className={`animate__animated animate__zoomIn`}
+      className={animationModalIn}
       id={"modal-feedback-content"}
     >
       <ModalDialog>
@@ -247,7 +250,7 @@ const Game = () => {
           initializingState();
         });
       }}
-      className={`animate__animated animate__zoomIn`}
+      className={animationModalIn}
       id={"modal-end"}
     >
       <ModalDialog>
@@ -464,7 +467,7 @@ const Game = () => {
             setOpenScaleModal(false)
           )
         }
-        className={`animate__animated animate__zoomIn animate__fast`}
+        className={animationModalIn}
         id={"modal-scale"}
       >
         <ModalDialog>
