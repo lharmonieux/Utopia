@@ -1,19 +1,19 @@
 /* eslint-disable react/prop-types */
-import {Button, Stack} from "@mui/joy";
+import { Button, Stack } from "@mui/joy";
 
 const Propositions = ({ currentQuestion, handleSelectedProposition }) => {
   return (
     <Stack
-      spacing={2}
       justifyContent="space-evenly"
       flexWrap="wrap"
       direction="row"
+      spacing={2}
       useFlexGap
     >
       {currentQuestion?.answers.map((answer) => (
         <Button
-          color="neutral"
           key={answer._id}
+          color="neutral"
           onClick={() =>
             handleSelectedProposition(answer, currentQuestion?.answerType)
           }

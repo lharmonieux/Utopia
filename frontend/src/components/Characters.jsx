@@ -8,6 +8,8 @@ import {
   ModalClose,
   DialogTitle,
 } from "@mui/joy";
+import "animate.css";
+import { animateOut } from "../middlewares/Animation";
 
 const Characters = ({
   characters,
@@ -64,7 +66,13 @@ const Characters = ({
           {/* Content of Modal */}
           <Modal
             open={openCaracteristic}
-            onClose={() => setOpenCaracteristic(false)}
+            onClose={() =>
+              animateOut(openCaracteristic, "#modal-caracteristic", () =>
+                setOpenCaracteristic(false)
+              )
+            }
+            className={`animate__animated animate__zoomIn`}
+            id={"modal-caracteristic"}
           >
             <ModalDialog>
               <ModalClose variant="outlined" />

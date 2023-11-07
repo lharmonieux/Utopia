@@ -25,6 +25,8 @@ import MenuComponent from "../components/Menu.jsx";
 import DisplayingText from "../components/DisplayingText.jsx";
 import ActPresentation from "../components/ActPresentation.jsx";
 import "animate.css";
+import ScaleProposition from "../components/ScaleProposition.jsx";
+import { animateOut } from "../middlewares/Animation.js";
 
 const Game = () => {
   // variables
@@ -49,6 +51,8 @@ const Game = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [showActPresentation, setShowActPresentation] = useState(true);
   const [showMainContent, setShowMainContent] = useState(false);
+  const [scaleAnswers, setScaleAnswers] = useState(new Map());
+  const [openScaleModal, setOpenScaleModal] = useState(false);
 
   // Getting total number of questions for current act
   let nbQuestions = currentAct?.questions?.length;
@@ -63,13 +67,14 @@ const Game = () => {
       setShowActPresentation(false);
 
       //Get the element with animation and detect the end of animation for doing anything else
-      const stackMainContent = document.querySelector('.stack-main-content');
-      if(!showMainContent) stackMainContent.addEventListener('animationend', () => {
-        setShowMainContent(true); 
-        setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
-      })
+      const stackMainContent = document.querySelector(".stack-main-content");
+      if (stackMainContent && !showMainContent)
+        stackMainContent.addEventListener("animationend", () => {
+          setShowMainContent(true);
+          setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
+        });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAct, orderQuestion]);
 
   const handleSelectedCharacter = (selectedCharacter) => {
@@ -184,6 +189,14 @@ const Game = () => {
       case "texte":
         return <TextArea town={town} setTown={setTown} />;
 
+      case "notation":
+        return (
+          <ScaleProposition
+            currentQuestion={currentQuestion}
+            setScaleAnswers={setScaleAnswers}
+          />
+        );
+
       default:
         break;
     }
@@ -193,14 +206,14 @@ const Game = () => {
     // Modal for feedbacks
     <Modal
       open={openFeedbackModal}
-      onClose={() => {
-        setContainsFeedback(false);
-        setFeedback("");
-        setCurrentQuestion(currentAct?.questions[orderQuestion + 1]);
-        setOrderQuestion(orderQuestion + 1);
-        setStoreAnswer([]);
-        setOpenFeedbackModal(false);
-      }}
+      onClose={() =>
+        animateOut(openFeedbackModal, "#modal-feedback-content", () => {
+          setOpenFeedbackModal(false);
+          initializingState();
+        })
+      }
+      className={`animate__animated animate__zoomIn`}
+      id={"modal-feedback-content"}
     >
       <ModalDialog>
         <ModalClose variant="outlined" />
@@ -210,15 +223,12 @@ const Game = () => {
         </Typography>
 
         <Button
-          onClick={() => {
-            setContainsFeedback(false);
-            setFeedback("");
-            setShowMainContent(false);
-            setOrderQuestion(orderQuestion + 1);
-            setStoreAnswer([]);
-            setShowAlertNoAnswer(false);
-            setOpenFeedbackModal(false);
-          }}
+          onClick={() =>
+            animateOut(openFeedbackModal, "#modal-feedback-content", () => {
+              setOpenFeedbackModal(false);
+              initializingState();
+            })
+          }
         >
           Continuer
         </Button>
@@ -231,9 +241,14 @@ const Game = () => {
     <Modal
       open={openEndModal}
       onClose={() => {
-        setOpenEndModal(false);
-        navigate("/");
+        animateOut(openEndModal, "#modal-end", () => {
+          setOpenEndModal(false);
+          navigate("/");
+          initializingState();
+        });
       }}
+      className={`animate__animated animate__zoomIn`}
+      id={"modal-end"}
     >
       <ModalDialog>
         <ModalClose variant="outlined" />
@@ -268,7 +283,16 @@ const Game = () => {
 
           <Sheet sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
             <Link to="/">
-              <Button onClick={() => setOpenEndModal(false)}>Next</Button>
+              <Button
+                onClick={() => {
+                  animateOut(openEndModal, "#modal-end", () => {
+                    setOpenEndModal(false);
+                    initializingState();
+                  });
+                }}
+              >
+                Next
+              </Button>
             </Link>
           </Sheet>
         </Stack>
@@ -280,7 +304,7 @@ const Game = () => {
     if (storeAnswer.length > 0) {
       let copyScoresThematic = [...scoresThematic];
       for (const answer of storeAnswer) {
-        // If score is eligible to store
+        // If answer isn't eligible to store
         if (answer.score == -1) continue;
         else {
           if (copyScoresThematic.length == 0) {
@@ -355,25 +379,37 @@ const Game = () => {
     }
   };
 
+  const initializingState = () => {
+    setShowMainContent(false);
+    setContainsFeedback(false);
+    setFeedback("");
+    setOrderQuestion(orderQuestion + 1);
+    setStoreAnswer([]);
+    setTown("");
+    setIdCharacterSelected("");
+    setShowAlertNoAnswer(false);
+    scaleAnswers.clear();
+    setScaleAnswers(new Map(scaleAnswers));
+  };
+
   // Manage for the next element to display
   const nextPage = () => {
     //Control of if there are an given answer
-    if (storeAnswer.length > 0 || town) {
-      //Display end modal to summarize act
-      if (orderQuestion == nbQuestions) setOpenEndModal(true);
-
-      //Store score of the answer if proposition
-      storeScore();
-
-      //Display next page of act
-      if (containsFeedback) setOpenFeedbackModal(true);
+    if (storeAnswer.length > 0 || town || scaleAnswers.size > 0) {
+      //Scale answer control
+      if (scaleAnswers.size > 0) setOpenScaleModal(true);
       else {
-        setShowMainContent(false);
-        setOrderQuestion(orderQuestion + 1);
-        setStoreAnswer([]);
-        setTown("");
-        setIdCharacterSelected("");
-        setShowAlertNoAnswer(false);
+        //Store score of the answer if proposition
+        storeScore();
+
+        // If answer has a feedback
+        if (containsFeedback) setOpenFeedbackModal(true);
+        else {
+          //Display end modal to summarize act
+          if (orderQuestion == nbQuestions) setOpenEndModal(true);
+          //Display next page of act
+          else initializingState();
+        }
       }
     } else setShowAlertNoAnswer(true);
   };
@@ -400,6 +436,78 @@ const Game = () => {
       </ModalDialog>
     </Modal>
   );
+
+  const scaleModal = () => {
+    let choosenMotto = [];
+    if (scaleAnswers) {
+      const scales = scaleAnswers.values();
+      let maxScale = 0;
+      //Calcul max note given
+      for (let nb of scales) if (nb > maxScale) maxScale = nb;
+
+      //Get Id of answer for max note given
+      let idMaxScale = "";
+      for (let [key, value] of scaleAnswers)
+        if (value == maxScale) idMaxScale = key;
+
+      //Result : choosen motto
+      choosenMotto = currentQuestion?.answers.filter(
+        (answer) => answer._id == idMaxScale
+      );
+    }
+
+    return (
+      <Modal
+        open={openScaleModal}
+        onClose={() =>
+          animateOut(openScaleModal, "#modal-scale", () =>
+            setOpenScaleModal(false)
+          )
+        }
+        className={`animate__animated animate__zoomIn animate__fast`}
+        id={"modal-scale"}
+      >
+        <ModalDialog>
+          <ModalClose variant="outlined" />
+          <DialogTitle>
+            <Typography level="h3" sx={{ textAlign: "center" }}>
+              Votre devise
+            </Typography>
+          </DialogTitle>
+
+          <Typography>
+            En se basant sur vos notes, la devise qui vous convient le mieux est
+            :{" "}
+            <Typography sx={{ fontWeight: "bold" }}>
+              {choosenMotto && choosenMotto[0]?.content}
+            </Typography>
+          </Typography>
+
+          <Button
+            onClick={() =>
+              animateOut(openScaleModal, "#modal-scale", () =>
+                setOpenScaleModal(false)
+              )
+            }
+          >
+            Retour au choix
+          </Button>
+          <Button
+            onClick={() =>
+              animateOut(openScaleModal, "#modal-scale", () => {
+                setOpenScaleModal(false);
+                updateStoreAnswer(choosenMotto[0], currentQuestion?.answerType);
+                storeScore();
+                initializingState();
+              })
+            }
+          >
+            Continuer
+          </Button>
+        </ModalDialog>
+      </Modal>
+    );
+  };
 
   return (
     <>
@@ -428,9 +536,8 @@ const Game = () => {
             direction="row"
             sx={{ height: "90%" }}
             className={`animate__animated animate__${
-              showMainContent ? "fadeInLeft" : "fadeOutRight"
-            } stack-main-content`}
-            
+              showMainContent ? "lightSpeedInLeft" : "lightSpeedOutRight"
+            } animate__faster stack-main-content`}
           >
             {/* Drawer button  */}
             <MenuComponent
@@ -484,9 +591,10 @@ const Game = () => {
                   Valider
                 </Button>
               </Sheet>
-              {modalFeedback()}
+              {openFeedbackModal && modalFeedback()}
               {endOfAct()}
               {modalSummary()}
+              {openScaleModal && scaleModal()}
             </Sheet>
           </Stack>
         </Stack>
