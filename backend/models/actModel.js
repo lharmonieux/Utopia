@@ -20,8 +20,14 @@ const actSchema = new mongoose.Schema({
     required: true
   },
   resolution: {
-    type: String,
-    required: true
+    text: String,
+    titleImg: String,
+    rankImg: String
+  },
+  visual: {
+    backgroundImg: String,
+    etiquetteImg: String,
+    titleImg: String
   },
   questions: [
     {
@@ -34,10 +40,14 @@ const actSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
-      image: {
-        type: String,
-        required: true,
+      visual: {
+        etiquetteImg: String,
+        answerImg: String,
+        enumAnswer: Boolean,
+        directionAnswer: String,
+        shift: Number
       },
+      buttonImg: String,
       answerType: {
         type: String,
         required: true,
@@ -46,7 +56,10 @@ const actSchema = new mongoose.Schema({
         {
           content: String,
           score: Number,
-          feedback: String,
+          feedback: {
+            text: String,
+            img: String
+          },
           thematic: String,
           givenResidents: Number
         },

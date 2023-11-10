@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./views/admin/Home";
+import Home from "./views/Home";
 import Act from "./views/admin/Act";
 import Game from "./views/Game";
 

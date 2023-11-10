@@ -595,8 +595,8 @@ const Game = () => {
                 </Button>
               </Sheet>
               {openFeedbackModal && modalFeedback()}
-              {endOfAct()}
-              {modalSummary()}
+              {openEndModal && endOfAct()}
+              {showSummary && modalSummary()}
               {openScaleModal && scaleModal()}
             </Sheet>
           </Stack>

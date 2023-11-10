@@ -1,6 +1,19 @@
 import { useContext, useEffect, useState } from "react";
 // import { useLocation } from "react-router-dom";
 import { AppContext } from "./GameContext.jsx";
+import {
+  Sheet,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+} from "@mui/joy";
 
 const Act = () => {
   const { acts, dispatch } = useContext(AppContext);
@@ -93,7 +106,7 @@ const Act = () => {
       //First needed answer for the question with type proposition
       const newAnswer = [];
       if (contentAnswer && scoreAnswer && feedbackAnswer) {
-        newAnswer.push( {
+        newAnswer.push({
           content: contentAnswer,
           score: scoreAnswer,
           feedback: feedbackAnswer,
@@ -201,7 +214,10 @@ const Act = () => {
         displayQuestion: actControl.displayQuestion,
         questions: questions.map((element) =>
           element.question == questionSelected
-            ? { question: element.question, displayAnswers: !element.displayAnswers }
+            ? {
+                question: element.question,
+                displayAnswers: !element.displayAnswers,
+              }
             : { question: element.question, displayAnswers: false }
         ),
       }))
@@ -209,228 +225,303 @@ const Act = () => {
   };
 
   return (
-    <div>
-      {loading ? (
-        <p>Chargement des données...</p>
-      ) : (
-        <>
-          <div>
-            <button className="border">Ajouter un acte</button>
-          </div>
-          {actsControl?.map((element) => (
-            <div className="bg-gray-700" key={element.act._id}>
-              <button onClick={() => showQuestions(element.act)}>
-                Acte {element.act.chapter} : {element.act.name}
-              </button>
+    <Stack
+      display="flex"
+      alignItems={"center"}
+      justifyContent={"center"}
+      height={"100vh"}
+      width={"100wh"}
+    >
+      <Sheet
+        variant="outlined"
+        sx={{ height: "90%", width: "90%", borderRadius: 10 }}
+      >
+        <Typography level="h1" sx={{ textAlign: "center", padding: 2 }}>
+          ESPACE ADMIN
+        </Typography>
+        <Tabs>
+          <TabList tabFlex={"auto"}>
+            {acts &&
+              acts.map((act) => (
+                <Tab key={act._id}>
+                  Acte {act.chapter} : {act.name}
+                </Tab>
+              ))}
+          </TabList>
 
-              {/* Displaying of questions  */}
-              {element.displayQuestion ? (
-                <>
-                  {element?.questions?.map((e) => (
-                    <div className="bg-gray-400" key={e.question._id}>
-                      <div>
-                        <button
-                          onClick={() =>
-                            displayAnswers(element?.questions, e.question)
-                          }
-                        >
-                          {e.question.content}
-                        </button>
-                        <button
-                          className="border"
-                          onClick={() => {
-                            setIsDeleteQuestion(true);
-                            handleExistingAct({
-                              act: element?.act,
-                              question: e.question,
-                            });
+          {/* Content of each act */}
+          {acts &&
+            acts.map((act, index) => (
+              <TabPanel key={act._id} value={index}>
+                {/* Navigation between questions  */}
+                <Tabs>
+                  <TabList
+                    sx={{ overflow: "auto", scrollSnapType: "x mandatory" }}
+                  >
+                    {act?.questions &&
+                      act?.questions.map((question, index) => (
+                        <Tab
+                          variant="outlined"
+                          key={index}
+                          sx={{
+                            width: "50%",
+                            flex: "none",
+                            scrollSnapAlign: "start",
                           }}
                         >
-                          Supprimer la question
-                        </button>
-                      </div>
+                          {question.content}
+                        </Tab>
+                      ))}
+                  </TabList>
 
-                      {/* Displaying answers for an question  */}
-                      {e.displayAnswers ? (
-                        <>
-                          {e.question?.answers?.map((answer) => (
-                            <div className="bg-gray-200" key={answer._id}>
-                              <p>{answer.content}</p>
-                            </div>
-                          ))}
-                          <div>
-                            <button
-                              className="border"
-                              onClick={() => displayInputAnswer()}
-                            >
-                              Ajouter une réponse
-                            </button>
-                          </div>
+                  {/* Content of each question  */}
+                  {act?.questions &&
+                    act?.questions.map((question, index) => (
+                      <TabPanel key={question._id} value={index}>
+                        <List size="md">
+                          {Object.keys(question).forEach((key) => {
+                            // Select of values to show
+                            if (!["content", "answers", "_id"].includes(key)) {
+                              return (
+                                <ListItem>
+                                  <ListItemButton>
+                                    {question[key]}
+                                  </ListItemButton>
+                                </ListItem>
+                              );
+                            }
+                          })}
+                        </List>
+                      </TabPanel>
+                    ))}
+                </Tabs>
+              </TabPanel>
+            ))}
+        </Tabs>
+      </Sheet>
+    </Stack>
+    // <div>
+    //   {loading ? (
+    //     <p>Chargement des données...</p>
+    //   ) : (
+    //     <>
+    //       <div>
+    //         <button className="border">Ajouter un acte</button>
+    //       </div>
+    //       {actsControl?.map((element) => (
+    //         <div className="bg-gray-700" key={element.act._id}>
+    //           <button onClick={() => showQuestions(element.act)}>
+    //             Acte {element.act.chapter} : {element.act.name}
+    //           </button>
 
-                          {/* Adding answer  */}
-                          {showInputAnswer ? (
-                            <div>
-                              <div>
-                                <label>Contenu de la réponse</label>
-                                <input
-                                  type="text"
-                                  className="border"
-                                  onChange={(e) =>
-                                    setContentAnswer(e.target.value)
-                                  }
-                                />
-                              </div>
-                              <div>
-                                <label>Score</label>
-                                <input
-                                  type="number"
-                                  className="border"
-                                  onChange={(e) =>
-                                    setScoreAnswer(e.target.value)
-                                  }
-                                />
-                              </div>
-                              <div>
-                                <label>Feedback</label>
-                                <input
-                                  type="text"
-                                  className="border"
-                                  onChange={(e) =>
-                                    setFeedbackAnswer(e.target.value)
-                                  }
-                                />
-                              </div>
-                              <div>
-                                <button
-                                  className="border"
-                                  onClick={() => {
-                                    setIsAddAnswer(true);
-                                    handleExistingAct({
-                                      act: element?.act,
-                                      question: e.question,
-                                    });
-                                  }}
-                                >
-                                  Enregistrer
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            ""
-                          )}
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  ))}
-                  <div>
-                    <button
-                      className="border"
-                      onClick={() => displayInputQuestion()}
-                    >
-                      Ajouter une question
-                    </button>
-                  </div>
+    //           {/* Displaying of questions  */}
+    //           {element.displayQuestion ? (
+    //             <>
+    //               {element?.questions?.map((e) => (
+    //                 <div className="bg-gray-400" key={e.question._id}>
+    //                   <div>
+    //                     <button
+    //                       onClick={() =>
+    //                         displayAnswers(element?.questions, e.question)
+    //                       }
+    //                     >
+    //                       {e.question.content}
+    //                     </button>
+    //                     <button
+    //                       className="border"
+    //                       onClick={() => {
+    //                         setIsDeleteQuestion(true);
+    //                         handleExistingAct({
+    //                           act: element?.act,
+    //                           question: e.question,
+    //                         });
+    //                       }}
+    //                     >
+    //                       Supprimer la question
+    //                     </button>
+    //                   </div>
 
-                  {/* Adding questions  */}
-                  {showInputQuestion ? (
-                    <div>
-                      <div>
-                        <label>Contenu</label>
-                        <input
-                          type="text"
-                          className="border"
-                          onChange={(e) => setContentQuestion(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <label>Type de réponse</label>
-                        <input
-                          type="text"
-                          className="border"
-                          onChange={(e) =>
-                            setAnswerTypeQuestion(e.target.value)
-                          }
-                        />
-                      </div>
-                      <div>
-                        <label>Thématique</label>
-                        <input
-                          type="text"
-                          className="border"
-                          onChange={(e) => setThematicQuestion(e.target.value)}
-                        />
-                      </div>
-                      <button className="border"
-                        onClick={() => {
-                          setIsAddQuestion(true);
-                          handleExistingAct({ act: element?.act });
-                        }}
-                      >
-                        Enregistrer
-                      </button>
+    //                   {/* Displaying answers for an question  */}
+    //                   {e.displayAnswers ? (
+    //                     <>
+    //                       {e.question?.answers?.map((answer) => (
+    //                         <div className="bg-gray-200" key={answer._id}>
+    //                           <p>{answer.content}</p>
+    //                         </div>
+    //                       ))}
+    //                       <div>
+    //                         <button
+    //                           className="border"
+    //                           onClick={() => displayInputAnswer()}
+    //                         >
+    //                           Ajouter une réponse
+    //                         </button>
+    //                       </div>
 
-                      <button className="border" onClick={() => displayInputAnswer()}>
-                        Ajouter des réponses
-                      </button>
+    //                       {/* Adding answer  */}
+    //                       {showInputAnswer ? (
+    //                         <div>
+    //                           <div>
+    //                             <label>Contenu de la réponse</label>
+    //                             <input
+    //                               type="text"
+    //                               className="border"
+    //                               onChange={(e) =>
+    //                                 setContentAnswer(e.target.value)
+    //                               }
+    //                             />
+    //                           </div>
+    //                           <div>
+    //                             <label>Score</label>
+    //                             <input
+    //                               type="number"
+    //                               className="border"
+    //                               onChange={(e) =>
+    //                                 setScoreAnswer(e.target.value)
+    //                               }
+    //                             />
+    //                           </div>
+    //                           <div>
+    //                             <label>Feedback</label>
+    //                             <input
+    //                               type="text"
+    //                               className="border"
+    //                               onChange={(e) =>
+    //                                 setFeedbackAnswer(e.target.value)
+    //                               }
+    //                             />
+    //                           </div>
+    //                           <div>
+    //                             <button
+    //                               className="border"
+    //                               onClick={() => {
+    //                                 setIsAddAnswer(true);
+    //                                 handleExistingAct({
+    //                                   act: element?.act,
+    //                                   question: e.question,
+    //                                 });
+    //                               }}
+    //                             >
+    //                               Enregistrer
+    //                             </button>
+    //                           </div>
+    //                         </div>
+    //                       ) : (
+    //                         ""
+    //                       )}
+    //                     </>
+    //                   ) : (
+    //                     ""
+    //                   )}
+    //                 </div>
+    //               ))}
+    //               <div>
+    //                 <button
+    //                   className="border"
+    //                   onClick={() => displayInputQuestion()}
+    //                 >
+    //                   Ajouter une question
+    //                 </button>
+    //               </div>
 
-                      {/* Adding answers for question  */}
-                      {showInputAnswer ? (
-                        <div>
-                          <div>
-                            <label>Contenu de la réponse</label>
-                            <input
-                              type="text"
-                              className="border"
-                              onChange={(e) => setContentAnswer(e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <label>Score</label>
-                            <input
-                              type="number"
-                              className="border"
-                              onChange={(e) => setScoreAnswer(e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <label>Feedback</label>
-                            <input
-                              type="text"
-                              className="border"
-                              onChange={(e) =>
-                                setFeedbackAnswer(e.target.value)
-                              }
-                            />
-                          </div>
-                          <div>
-                            <button className="border"
-                              onClick={() => {
-                                setIsAddQuestion(true);
-                                handleExistingAct({ act: element?.act });
-                              }}
-                            >
-                              Enregistrer
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  ) : (
-                    " "
-                  )}
-                </>
-              ) : (
-                ""
-              )}
-            </div>
-          ))}
-        </>
-      )}
-    </div>
+    //               {/* Adding questions  */}
+    //               {showInputQuestion ? (
+    //                 <div>
+    //                   <div>
+    //                     <label>Contenu</label>
+    //                     <input
+    //                       type="text"
+    //                       className="border"
+    //                       onChange={(e) => setContentQuestion(e.target.value)}
+    //                     />
+    //                   </div>
+    //                   <div>
+    //                     <label>Type de réponse</label>
+    //                     <input
+    //                       type="text"
+    //                       className="border"
+    //                       onChange={(e) =>
+    //                         setAnswerTypeQuestion(e.target.value)
+    //                       }
+    //                     />
+    //                   </div>
+    //                   <div>
+    //                     <label>Thématique</label>
+    //                     <input
+    //                       type="text"
+    //                       className="border"
+    //                       onChange={(e) => setThematicQuestion(e.target.value)}
+    //                     />
+    //                   </div>
+    //                   <button className="border"
+    //                     onClick={() => {
+    //                       setIsAddQuestion(true);
+    //                       handleExistingAct({ act: element?.act });
+    //                     }}
+    //                   >
+    //                     Enregistrer
+    //                   </button>
+
+    //                   <button className="border" onClick={() => displayInputAnswer()}>
+    //                     Ajouter des réponses
+    //                   </button>
+
+    //                   {/* Adding answers for question  */}
+    //                   {showInputAnswer ? (
+    //                     <div>
+    //                       <div>
+    //                         <label>Contenu de la réponse</label>
+    //                         <input
+    //                           type="text"
+    //                           className="border"
+    //                           onChange={(e) => setContentAnswer(e.target.value)}
+    //                         />
+    //                       </div>
+    //                       <div>
+    //                         <label>Score</label>
+    //                         <input
+    //                           type="number"
+    //                           className="border"
+    //                           onChange={(e) => setScoreAnswer(e.target.value)}
+    //                         />
+    //                       </div>
+    //                       <div>
+    //                         <label>Feedback</label>
+    //                         <input
+    //                           type="text"
+    //                           className="border"
+    //                           onChange={(e) =>
+    //                             setFeedbackAnswer(e.target.value)
+    //                           }
+    //                         />
+    //                       </div>
+    //                       <div>
+    //                         <button className="border"
+    //                           onClick={() => {
+    //                             setIsAddQuestion(true);
+    //                             handleExistingAct({ act: element?.act });
+    //                           }}
+    //                         >
+    //                           Enregistrer
+    //                         </button>
+    //                       </div>
+    //                     </div>
+    //                   ) : (
+    //                     ""
+    //                   )}
+    //                 </div>
+    //               ) : (
+    //                 " "
+    //               )}
+    //             </>
+    //           ) : (
+    //             ""
+    //           )}
+    //         </div>
+    //       ))}
+    //     </>
+    //   )}
+    // </div>
   );
 };
 

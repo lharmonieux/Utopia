@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import actRoute from "./routes/actRoute.js";
 import characterRoute from "./routes/characterRoute.js";
+import cloudinaryRoute from "./routes/cloudinaryRoute.js";
 import dotenv from "dotenv";
 import cors from 'cors';
 
@@ -13,7 +14,7 @@ dotenv.config({
 const port =  process.env.PORT;
 
 // Middleware for parsing request body
-app.use(express.json());
+app.use(express.json({limit: '5mb'}));
 
 // Middleware for handling CORS POLICY
 // Option 1: Allow All Origins with Default of cors(*)
@@ -26,6 +27,7 @@ app.use(cors(corsOptions));
 // Routes admin
 app.use('/acts', actRoute);
 app.use('/characters', characterRoute);
+app.use('/cloudinary', cloudinaryRoute);
 
 //Connection Database, Then running server
 mongoose
@@ -37,6 +39,6 @@ mongoose
         })
     })
     .catch( error => {
-        console.error(error);
+        console.log (error);
     })
 
