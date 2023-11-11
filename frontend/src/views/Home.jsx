@@ -1,14 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "./admin/GameContext.jsx";
-import { Box, Sheet, Stack, Button } from "@mui/joy";
+import { Box, Sheet, Stack, Button, Typography } from "@mui/joy";
 import Cloudinary from "../utils/cloudinary.js";
-import { fill } from "@cloudinary/url-gen/actions/resize";
+import { scale } from "@cloudinary/url-gen/actions/resize";
 import "animate.css";
 import { AdvancedImage } from "@cloudinary/react";
-// import { useState, useEffect, useContext } from "react";
-// import axios from "axios";
-// import { ActContext } from "./GameContext";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -17,6 +14,7 @@ const Home = () => {
   const [imgPresentation, setImgPresentation] = useState("");
   const [widthPresentationContent, setWidthPresentationContent] = useState(0);
   const [heightPresentationContent, setHeightPresentationContent] = useState(0);
+  const [logo, setLogo] = useState("");
   const [resizeDOM, setResizeDOM] = useState(0);
   const { loading } = useContext(AppContext);
 
@@ -48,6 +46,8 @@ const Home = () => {
     );
 
     setImgPresentation(Cloudinary.image("exploria/1_p8okvj"));
+
+    setLogo(Cloudinary.image("exploria/Logo_-_couleurs_blanc_qhtptz"));
   }, [resizeDOM, containerMainContent, containerPresentationContent]);
 
   return (
@@ -76,7 +76,7 @@ const Home = () => {
                 (backgroundImg, widthMainContent, heightMainContent) &&
                 backgroundImg
                   .resize(
-                    fill().width(widthMainContent).height(heightMainContent)
+                    scale().width(widthMainContent).height(heightMainContent)
                   )
                   .toURL()
               })`,
@@ -86,30 +86,54 @@ const Home = () => {
           >
             <Box
               sx={{
-                width: "30%",
+                width: "40%",
                 height: "70%",
+                padding: 3,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
                 backgroundImage: `url(${
                   (imgPresentation,
                   widthPresentationContent,
                   heightPresentationContent) &&
                   imgPresentation
+                    .resize(
+                      scale()
+                        .width(widthPresentationContent)
+                        .height(heightPresentationContent)
+                    )
+                    .format("png")
                     .toURL()
                 })`,
               }}
               id={"presentation-content"}
             >
+              <Typography textColor={"yellow"} level="h1" textAlign={"center"}>Bienvenue cher visiteur !</Typography><br />
+              <Typography textColor={"white"} level="body-xs" textAlign={"center"}>
+                {`Vous allez être plongé dans une aventure extraordinaire, dans
+                laquelle vous incarnerez un héros en proie à des choix décisifs
+                pour le futur. Vous aurez besoin d'une heure environ pour aller
+                au bout du récit. Des pauses sont toutefois possibles… à l'issue
+                de chaque « acte » !`}<br /><br />{` À la fin, vous en saurez davantage sur vos
+                réflexes naturels…`}
+              </Typography><br />
+              <Typography textColor={"yellow"} level="h3" textAlign={"center"}>Vous êtes prêts ?</Typography>
+              
+            </Box>
+            <Box sx={{
+              height: "100%",
+              width: "40%",
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              <AdvancedImage cldImg={logo} />
               <Link to="acts">
-                <Button>
-                  Administrer les actes
-                </Button>
+                <Button>Administrer les actes</Button>
               </Link>
               <Link to="game">
-                <Button >Accéder à la démo</Button>
-              </Link>
-            </Box>
-            <Box>
-              Se connecter
-            </Box>
+                <Button>Accéder à la démo</Button>
+              </Link></Box>
           </Sheet>
         </Stack>
       )}
