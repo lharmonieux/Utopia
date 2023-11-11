@@ -1,5 +1,5 @@
 import constants from "../constants.js";
-import cloudinary from "../utils/Cloudinary.js";
+import cloudinary from "../utils/cloudinary.js";
 
 // Get images
 export const getImages = async (req, res) => {
