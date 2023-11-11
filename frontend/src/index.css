@@ -1,3 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@font-face {
+    font-family: 'typo';
+    src: url('./assets/fonts/TYPO-Audiowide-Regular.ttf');
+}

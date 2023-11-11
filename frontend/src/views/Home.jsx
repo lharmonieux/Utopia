@@ -1,11 +1,20 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "./admin/GameContext.jsx";
-import { Box, Sheet, Stack, Button, Typography } from "@mui/joy";
+import {
+  Box,
+  Sheet,
+  Stack,
+  Button,
+  Typography,
+  CssVarsProvider,
+} from "@mui/joy";
 import Cloudinary from "../utils/cloudinary.js";
 import { scale } from "@cloudinary/url-gen/actions/resize";
 import "animate.css";
 import { AdvancedImage } from "@cloudinary/react";
+import { typographyTheme } from "../utils/themeJoy.js";
+import { colors } from "../utils/colors.js";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -55,87 +64,112 @@ const Home = () => {
       {loading ? (
         <p>Chargement des données...</p>
       ) : (
-        <Stack
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          height={"100vh"}
-          width={"100vw"}
-        >
-          <Sheet
-            variant="outlined"
-            sx={{
-              height: "90%",
-              width: "80%",
-              borderRadius: 3,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              backgroundImage: `url(${
-                (backgroundImg, widthMainContent, heightMainContent) &&
-                backgroundImg
-                  .resize(
-                    scale().width(widthMainContent).height(heightMainContent)
-                  )
-                  .toURL()
-              })`,
-            }}
-            id={"main-content"}
-            className={"animate__animated animate__zoomIn"}
+        <CssVarsProvider theme={typographyTheme}>
+          <Stack
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            height={"100vh"}
+            width={"100vw"}
           >
-            <Box
+            <Sheet
+              variant="outlined"
               sx={{
-                width: "40%",
-                height: "70%",
-                padding: 3,
+                height: "90%",
+                width: "80%",
+                borderRadius: 3,
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
+                flexDirection: "row",
+                justifyContent: "space-evenly",
                 alignItems: "center",
                 backgroundImage: `url(${
-                  (imgPresentation,
-                  widthPresentationContent,
-                  heightPresentationContent) &&
-                  imgPresentation
+                  (backgroundImg, widthMainContent, heightMainContent) &&
+                  backgroundImg
                     .resize(
-                      scale()
-                        .width(widthPresentationContent)
-                        .height(heightPresentationContent)
+                      scale().width(widthMainContent).height(heightMainContent)
                     )
-                    .format("png")
                     .toURL()
                 })`,
               }}
-              id={"presentation-content"}
+              id={"main-content"}
+              className={"animate__animated animate__zoomIn"}
             >
-              <Typography textColor={"yellow"} level="h1" textAlign={"center"}>Bienvenue cher visiteur !</Typography><br />
-              <Typography textColor={"white"} level="body-xs" textAlign={"center"}>
-                {`Vous allez être plongé dans une aventure extraordinaire, dans
+              <Box
+                sx={{
+                  width: "40%",
+                  height: "70%",
+                  padding: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundImage: `url(${
+                    (imgPresentation,
+                    widthPresentationContent,
+                    heightPresentationContent) &&
+                    imgPresentation
+                      .resize(
+                        scale()
+                          .width(widthPresentationContent)
+                          .height(heightPresentationContent)
+                      )
+                      .format("png")
+                      .toURL()
+                  })`,
+                }}
+                id={"presentation-content"}
+              >
+                <Typography
+                  textColor={colors.titleBackDark}
+                  level="h1"
+                  textAlign={"center"}
+                >
+                  Bienvenue cher visiteur !
+                </Typography>
+                <br />
+                <Typography
+                  textColor={"white"}
+                  level="body-sm"
+                  textAlign={"center"}
+                >
+                  {`Vous allez être plongés dans une aventure extraordinaire, dans
                 laquelle vous incarnerez un héros en proie à des choix décisifs
                 pour le futur. Vous aurez besoin d'une heure environ pour aller
                 au bout du récit. Des pauses sont toutefois possibles… à l'issue
-                de chaque « acte » !`}<br /><br />{` À la fin, vous en saurez davantage sur vos
+                de chaque « acte » !`}
+                  <br />
+                  <br />
+                  {` À la fin, vous en saurez davantage sur vos
                 réflexes naturels…`}
-              </Typography><br />
-              <Typography textColor={"yellow"} level="h3" textAlign={"center"}>Vous êtes prêts ?</Typography>
-              
-            </Box>
-            <Box sx={{
-              height: "100%",
-              width: "40%",
-              display: 'flex',
-              flexDirection: 'column',
-            }}>
-              <AdvancedImage cldImg={logo} />
-              <Link to="acts">
-                <Button>Administrer les actes</Button>
-              </Link>
-              <Link to="game">
-                <Button>Accéder à la démo</Button>
-              </Link></Box>
-          </Sheet>
-        </Stack>
+                </Typography>
+                <br />
+                <Typography
+                  textColor={colors.titleBackDark}
+                  level="h3"
+                  textAlign={"center"}
+                >
+                  Vous êtes prêts ?
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  height: "100%",
+                  width: "40%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <AdvancedImage cldImg={logo} />
+                <Link to="acts">
+                  <Button>Administrer les actes</Button>
+                </Link>
+                <Link to="game">
+                  <Button>Accéder à la démo</Button>
+                </Link>
+              </Box>
+            </Sheet>
+          </Stack>
+        </CssVarsProvider>
       )}
     </div>
   );

@@ -3,16 +3,29 @@ import { Sheet, Stack, Typography } from "@mui/joy";
 import "animate.css";
 import { useEffect } from "react";
 
-const ActPresentation = ({ act, setShowActPresentation, setShowMainContent }) => {
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      setShowActPresentation(false);
-      setShowMainContent(true);
-    }, 5000);
+const ActPresentation = ({
+  act,
+  setShowActPresentation,
+  setShowMainContent,
+}) => {
+  const actPresentationContainer = document.querySelector(
+    "#act-presentation-content"
+  );
 
-    return () => clearTimeout(delay);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => {
+    if (actPresentationContainer) {
+      const delay = setTimeout(() => {
+        actPresentationContainer.classList.add("animate__fadeOut");
+        actPresentationContainer.addEventListener("animationend", () => {
+          setShowActPresentation(false);
+          setShowMainContent(true);
+        });
+      }, 4000);
+
+      return () => clearTimeout(delay);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actPresentationContainer]);
 
   return (
     <Stack display="flex" justifyContent="center" height="100vh" width="100vw">
@@ -27,7 +40,8 @@ const ActPresentation = ({ act, setShowActPresentation, setShowMainContent }) =>
           padding: 3,
           borderRadius: 5,
         }}
-        className={`animate__animated animate__fadeOut animate__delay-4s`}
+        className={`animate__animated animate__fadeIn`}
+        id={"act-presentation-content"}
       >
         <Typography level="h1">Acte {act?.chapter}</Typography>
         <Typography>{act?.name}</Typography>
