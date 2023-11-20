@@ -1,4 +1,8 @@
 @font-face {
-    font-family: 'typo';
-    src: url('./assets/fonts/TYPO-Audiowide-Regular.ttf');
+  font-family: "typo";
+  src: url("./assets/fonts/TYPO-Audiowide-Regular.ttf");
+}
+
+body {
+  background-color: #1f1409;
 }

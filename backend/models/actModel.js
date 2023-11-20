@@ -22,12 +22,14 @@ const actSchema = new mongoose.Schema({
   resolution: {
     text: String,
     titleImg: String,
-    rankImg: String
+    rankImg: String,
+    backgroundImg: String,
   },
   visual: {
     backgroundImg: String,
-    etiquetteImg: String,
-    titleImg: String
+    decorationImg: String,
+    titleImg: String,
+    logoAppImg : String
   },
   questions: [
     {
@@ -41,11 +43,22 @@ const actSchema = new mongoose.Schema({
         required: true,
       },
       visual: {
-        etiquetteImg: String,
+        backgroundImg: String,
         answerImg: String,
         enumAnswer: Boolean,
         directionAnswer: String,
-        shift: Number
+        margin: Number,
+        shift: Number,
+        mapView: {
+          mapImg: String,
+          buttonImg: [
+            {
+              button: String,
+              buttonGif : String,
+              labelImg: String
+            }
+          ]
+        }
       },
       buttonImg: String,
       answerType: {
@@ -58,7 +71,8 @@ const actSchema = new mongoose.Schema({
           score: Number,
           feedback: {
             text: String,
-            img: String
+            titleImg : String,
+            backgroundImg: String
           },
           thematic: String,
           givenResidents: Number

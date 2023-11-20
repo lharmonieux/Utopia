@@ -6,7 +6,7 @@ import { handleValidationErrorsAct } from "../middlewares/handleError.js";
 export const addAct = async (req, res) => {
   try {
     //Getting body informations
-    const { name, chapter, description, townStatus, resolution, questions } =
+    const { name, chapter, description, townStatus, resolution, questions, visual } =
       req.body;
 
     //Getting the errors
@@ -27,6 +27,7 @@ export const addAct = async (req, res) => {
       townStatus,
       resolution,
       questions,
+      visual
     };
 
     // Save acte
@@ -65,7 +66,7 @@ export const updateAct = async (req, res) => {
   try {
     const { id_act } = req.params;
     //Getting body informations
-    const { name, chapter, description, townStatus, resolution, questions } =
+    const { name, chapter, description, townStatus, resolution, questions, visual } =
       req.body;
 
     //Getting the errors
@@ -87,6 +88,7 @@ export const updateAct = async (req, res) => {
       resolution,
       description,
       questions,
+      visual
     });
 
     if (!act)

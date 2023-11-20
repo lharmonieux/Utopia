@@ -1,175 +1,207 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "./admin/GameContext.jsx";
-import {
-  Box,
-  Sheet,
-  Stack,
-  Button,
-  Typography,
-  CssVarsProvider,
-} from "@mui/joy";
-import Cloudinary from "../utils/cloudinary.js";
+import { Box, Stack, Button, Typography, CssVarsProvider, CircularProgress } from "@mui/joy";
+import cloudinary from "../utils/cloudinary.js";
 import { scale } from "@cloudinary/url-gen/actions/resize";
 import "animate.css";
-import { AdvancedImage } from "@cloudinary/react";
+import { AdvancedImage, responsive } from "@cloudinary/react";
 import { typographyTheme } from "../utils/themeJoy.js";
 import { colors } from "../utils/colors.js";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
+  const [containerMainContent, setContainerMainContent] = useState();
   const [widthMainContent, setWidthMainContent] = useState(0);
   const [heightMainContent, setHeightMainContent] = useState(0);
   const [imgPresentation, setImgPresentation] = useState("");
-  const [widthPresentationContent, setWidthPresentationContent] = useState(0);
-  const [heightPresentationContent, setHeightPresentationContent] = useState(0);
   const [logo, setLogo] = useState("");
-  const [resizeDOM, setResizeDOM] = useState(0);
+  const [decoration, setDecoration] = useState("");
   const { loading } = useContext(AppContext);
 
-  const containerMainContent = document.querySelector("#main-content");
-  const containerPresentationContent = document.querySelector(
-    "#presentation-content"
-  );
-  //Get automatically the new sizes
-  window.addEventListener("resize", () => {
-    containerMainContent && setResizeDOM(containerMainContent.clientWidth);
-  });
-
+  //Read Images
   useEffect(() => {
-    //Size of the main element for background image
-    if (containerMainContent && containerPresentationContent) {
-      //Main Content sizes
-      setWidthMainContent(containerMainContent.clientWidth);
-      setHeightMainContent(containerMainContent.clientHeight);
-
-      //Presentation container sizes
-      setHeightPresentationContent(containerPresentationContent.clientHeight);
-      setWidthPresentationContent(containerPresentationContent.clientWidth);
-    }
-
+    setImgPresentation(
+      cloudinary.image("exploria/1_p8okvj").quality("auto:best").format("png")
+    );
+    setLogo(cloudinary.image("exploria/Logo_-_couleurs_blanc_qhtptz"));
+    setDecoration(
+      cloudinary
+        .image("exploria/Déco_-_Charte_triangle_fbnblh")
+        .quality("auto:best")
+        .format("png")
+    );
     setBackgroundImg(
-      Cloudinary.image(
+      cloudinary.image(
         "exploria/snowy-mountain-peak-starry-galaxy-majesty-generative-ai_f7ureo"
       )
     );
 
-    setImgPresentation(Cloudinary.image("exploria/1_p8okvj"));
+    //Get main DOM element
+    setContainerMainContent(document.querySelector("#main-content"));
+  }, [loading]);
 
-    setLogo(Cloudinary.image("exploria/Logo_-_couleurs_blanc_qhtptz"));
-  }, [resizeDOM, containerMainContent, containerPresentationContent]);
+  useEffect(() => {
+    //Update sizes's states
+    if (containerMainContent) {
+      // Main content sizes
+      setWidthMainContent(containerMainContent.clientWidth);
+      setHeightMainContent(containerMainContent.clientHeight);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerMainContent]);
 
   return (
     <div>
       {loading ? (
-        <p>Chargement des données...</p>
-      ) : (
+        <CircularProgress variant="soft" color="success"/>
+      ) : backgroundImg && imgPresentation && logo && decoration ? (
         <CssVarsProvider theme={typographyTheme}>
           <Stack
             display={"flex"}
             justifyContent={"center"}
             alignItems={"center"}
-            height={"100vh"}
-            width={"100vw"}
+            height={"97vh"}
+            width={"99vw"}
           >
-            <Sheet
-              variant="outlined"
-              sx={{
-                height: "90%",
-                width: "80%",
-                borderRadius: 3,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-                backgroundImage: `url(${
-                  (backgroundImg, widthMainContent, heightMainContent) &&
-                  backgroundImg
-                    .resize(
-                      scale().width(widthMainContent).height(heightMainContent)
-                    )
-                    .toURL()
-                })`,
-              }}
-              id={"main-content"}
-              className={"animate__animated animate__zoomIn"}
-            >
-              <Box
-                sx={{
-                  width: "40%",
-                  height: "70%",
-                  padding: 3,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundImage: `url(${
-                    (imgPresentation,
-                    widthPresentationContent,
-                    heightPresentationContent) &&
-                    imgPresentation
+            {/* main content  */}
+            <Box height={"100%"} width={"70%"} id={"main-content"}>
+              {widthMainContent && heightMainContent ? (
+                <Box
+                  height={heightMainContent}
+                  width={widthMainContent}
+                  position={"relative"}
+                  sx={{
+                    borderRadius: 3,
+                    padding: 0,
+                    backgroundImage: `url(${backgroundImg
                       .resize(
                         scale()
-                          .width(widthPresentationContent)
-                          .height(heightPresentationContent)
+                          .width(widthMainContent)
+                          .height(heightMainContent)
                       )
-                      .format("png")
-                      .toURL()
-                  })`,
-                }}
-                id={"presentation-content"}
-              >
-                <Typography
-                  textColor={colors.titleBackDark}
-                  level="h1"
-                  textAlign={"center"}
+                      .toURL()})`,
+                  }}
+                  className={"animate__animated animate__zoomIn animate__slow"}
                 >
-                  Bienvenue cher visiteur !
-                </Typography>
-                <br />
-                <Typography
-                  textColor={"white"}
-                  level="body-sm"
-                  textAlign={"center"}
-                >
-                  {`Vous allez être plongés dans une aventure extraordinaire, dans
+                  <Box
+                    height={heightMainContent}
+                    width={widthMainContent}
+                    display={"flex"}
+                    flexDirection={"row"}
+                    justifyContent={"space-evenly"}
+                    alignItems={"center"}
+                  >
+                    {/* Welcome part  */}
+                    <Box
+                      width={parseInt(widthMainContent * 0.4)}
+                      height={parseInt(heightMainContent * 0.7)}
+                      sx={{
+                        backgroundImage: `url(${imgPresentation
+                          .resize(
+                            scale()
+                              .width(parseInt(widthMainContent * 0.4))
+                              .height(parseInt(heightMainContent * 0.7))
+                          )
+                          .toURL()})`,
+                      }}
+                    >
+                      <Box
+                        width={parseInt(widthMainContent * 0.4)}
+                        height={parseInt(heightMainContent * 0.7)}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        marginTop={5}
+                      >
+                        <Typography
+                          textColor={colors.titleBackDark}
+                          level="h2"
+                          textAlign={"center"}
+                        >
+                          Bienvenue cher visiteur !
+                        </Typography>
+                        <Typography
+                        padding={3}
+                          textColor={"white"}
+                          level="body-sm"
+                          textAlign={"center"}
+                        >
+                          {`Vous allez être plongés dans une aventure extraordinaire, dans
                 laquelle vous incarnerez un héros en proie à des choix décisifs
                 pour le futur. Vous aurez besoin d'une heure environ pour aller
                 au bout du récit. Des pauses sont toutefois possibles… à l'issue
                 de chaque « acte » !`}
-                  <br />
-                  <br />
-                  {` À la fin, vous en saurez davantage sur vos
+                          <br />
+                          <br />
+                          {` À la fin, vous en saurez davantage sur vos
                 réflexes naturels…`}
-                </Typography>
-                <br />
-                <Typography
-                  textColor={colors.titleBackDark}
-                  level="h3"
-                  textAlign={"center"}
-                >
-                  Vous êtes prêts ?
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  height: "100%",
-                  width: "40%",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <AdvancedImage cldImg={logo} />
-                <Link to="acts">
-                  <Button>Administrer les actes</Button>
-                </Link>
-                <Link to="game">
-                  <Button>Accéder à la démo</Button>
-                </Link>
-              </Box>
-            </Sheet>
+                        </Typography>
+                        <br />
+                        <Typography
+                          textColor={colors.titleBackDark}
+                          level="h3"
+                          textAlign={"center"}
+                        >
+                          Vous êtes prêts ?
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Login part  */}
+                    <Box
+                      sx={{
+                        height: "100%",
+                        width: "40%",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <AdvancedImage cldImg={logo} />
+                      <Link to="acts">
+                        <Button>Administrer les actes</Button>
+                      </Link>
+                      <Link to="game">
+                        <Button>Accéder à la démo</Button>
+                      </Link>
+                    </Box>
+                  </Box>
+
+                  {/* Decoration  */}
+                  <Box sx={{ position: "absolute", bottom: -4, right: 0 }}>
+                    <AdvancedImage
+                      cldImg={decoration.resize(
+                        scale()
+                          .width(parseInt(widthMainContent * 0.15))
+                          .height(parseInt(heightMainContent * 0.3))
+                      )}
+                      plugins={[responsive({ steps: 200 })]}
+                    />
+                  </Box>
+                </Box>
+              ) : (
+                <Box
+              height={"100%"}
+              width={"100%"}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <CircularProgress variant="soft" color="success" />
+            </Box>
+              )}
+            </Box>
           </Stack>
         </CssVarsProvider>
+      ) : (
+        <Box
+              height={"100%"}
+              width={"100%"}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <CircularProgress variant="soft" color="success" />
+            </Box>
       )}
     </div>
   );

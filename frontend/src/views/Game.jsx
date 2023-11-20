@@ -14,6 +14,8 @@ import {
   ModalDialog,
   ModalClose,
   DialogTitle,
+  CircularProgress,
+  CssVarsProvider,
 } from "@mui/joy";
 import { AiOutlineMenuFold } from "react-icons/ai";
 import Propositions from "../components/Propositions.jsx";
@@ -27,6 +29,9 @@ import ActPresentation from "../components/ActPresentation.jsx";
 import "animate.css";
 import ScaleProposition from "../components/ScaleProposition.jsx";
 import { animateOut } from "../middlewares/Animation.js";
+import cloudinary from "../utils/cloudinary.js";
+import { scale } from "@cloudinary/url-gen/actions/resize";
+import { typographyTheme } from "../utils/themeJoy.js";
 
 const Game = () => {
   // variables
@@ -53,32 +58,93 @@ const Game = () => {
   const [showMainContent, setShowMainContent] = useState(false);
   const [scaleAnswers, setScaleAnswers] = useState(new Map());
   const [openScaleModal, setOpenScaleModal] = useState(false);
+  const [fullContentBox, setFullContentBox] = useState();
+  const [widthMainContent, setWidthMainContent] = useState(0);
+  const [heightMainContent, setHeightMainContent] = useState(0);
+
+  //Images's state
+  const [actPresentationImg, setActPresentationImg] = useState();
+  const [decorationImg, setDecorationImg] = useState();
+  const [reversedDecorationImg, setReversedDecorationImg] = useState();
+  const [titleActImg, setTitleActImg] = useState();
+  const [logoAppImg, setLogoAppImg] = useState();
+  const [questionBackgroundImg, setQuestionBackgroundImg] = useState();
 
   // Getting total number of questions for current act
   let nbQuestions = currentAct?.questions?.length;
 
   //Var for modal entrance animation
-  let animationModalIn = "animate__animated animate__zoomIn animate__fast"
+  let animationModalIn = "animate__animated animate__zoomIn animate__fast";
 
   useEffect(() => {
-    if (orderQuestion == 1) {
-      setShowActPresentation(true);
-      if (currentAct?.questions)
-        setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
+    if (showActPresentation) {
+      //Loading images
+      setActPresentationImg(
+        cloudinary
+          .image(`exploria/${currentAct?.visual?.backgroundImg}`)
+          .quality("auto:best")
+          .format("png")
+      );
+      setDecorationImg(
+        cloudinary
+          .image(`exploria/${currentAct?.visual?.decorationImg}`)
+          .quality("auto:best")
+          .format("png")
+      );
+      setReversedDecorationImg(
+        cloudinary
+          .image(`exploria/${currentAct?.visual?.decorationImg}`)
+          .quality("auto:best")
+          .format("png")
+      );
+      setTitleActImg(
+        cloudinary
+          .image(`exploria/${currentAct?.visual?.titleImg}`)
+          .quality("auto:best")
+          .format("png")
+      );
+      setLogoAppImg(
+        cloudinary
+          .image(`exploria/${currentAct?.visual?.logoAppImg}`)
+          .quality("auto:best")
+          .format("png")
+      );
     } else {
-      //Show the act's presentation once
-      setShowActPresentation(false);
-
       //Get the element with animation and detect the end of animation for doing anything else
-      const stackMainContent = document.querySelector(".stack-main-content");
-      if (stackMainContent && !showMainContent)
-        stackMainContent.addEventListener("animationend", () => {
+      setFullContentBox(document.querySelector("#game-full-content"));
+      if (fullContentBox && !showMainContent) {
+        fullContentBox.addEventListener("animationend", () => {
           setShowMainContent(true);
-          setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
         });
+      }
+
+      if (fullContentBox) {
+        setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
+        const mainContent = document.querySelector("#game-main-content");
+        //Sizes for the game's content and images
+        if (mainContent) {
+          setWidthMainContent(mainContent.clientWidth);
+          setHeightMainContent(mainContent.clientHeight);
+        }
+
+        //Loading of question's datas
+        if (currentAct?.questions && !questionBackgroundImg) {
+          setQuestionBackgroundImg(
+            cloudinary
+              .image(
+                `exploria/${
+                  currentAct?.questions[orderQuestion - 1]?.visual
+                    ?.backgroundImg
+                }`
+              )
+              .quality("auto:best")
+              .format("png")
+          );
+        }
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAct, orderQuestion]);
+  }, [showActPresentation, orderQuestion, currentAct, fullContentBox]);
 
   const handleSelectedCharacter = (selectedCharacter) => {
     //If selected again
@@ -514,93 +580,131 @@ const Game = () => {
 
   return (
     <>
-      {showActPresentation ? (
+      {showActPresentation &&
+      actPresentationImg &&
+      decorationImg &&
+      titleActImg &&
+      logoAppImg &&
+      reversedDecorationImg &&
+      currentAct ? (
         <ActPresentation
           act={currentAct}
           setShowActPresentation={setShowActPresentation}
           setShowMainContent={setShowMainContent}
+          actPresentationImg={actPresentationImg}
+          decorationImg={decorationImg}
+          titleActImg={titleActImg}
+          logoAppImg={logoAppImg}
+          reversedDecorationImg={reversedDecorationImg}
         />
       ) : (
-        <Stack alignItems="center" sx={{ height: "100vh" }} spacing={1}>
-          {/* Alert zone */}
-          <Sheet
-            sx={{
-              width: "50vw",
-              marginLeft: "10px",
-              display: showAlertNoAnswer ? "block" : "none",
-            }}
-          >
-            <AlertNoAnswer />
-          </Sheet>
-
-          {/* Principal content zone  */}
-          <Stack
-            spacing={2}
-            direction="row"
-            sx={{ height: "90%" }}
-            className={`animate__animated animate__${
-              showMainContent ? "lightSpeedInLeft" : "lightSpeedOutRight"
-            } animate__faster stack-main-content`}
-          >
-            {/* Drawer button  */}
-            <MenuComponent
-              showDrawer={showDrawer}
-              setShowDrawer={setShowDrawer}
-              setShowSummary={setShowSummary}
-            />
-            <IconButton
-              variant="outlined"
-              sx={{ height: "5%" }}
-              onClick={() => setShowDrawer(true)}
-            >
-              <AiOutlineMenuFold size={25} />
-            </IconButton>
-
-            {/* Container for act  */}
-            <Sheet
-              variant="soft"
+        <CssVarsProvider theme={typographyTheme}>
+          <Stack alignItems="center" height={"97vh"} width={"99vw"} spacing={1}>
+            {/* Alert zone */}
+            <Box
               sx={{
-                width: "80vw",
-                justifyContent: "center",
-                alignItems: "center",
-                display: "flex",
-                flexDirection: "column",
+                width: "50vw",
+                marginLeft: "10px",
+                display: showAlertNoAnswer ? "block" : "none",
               }}
             >
-              <Box sx={{ width: "100%", padding: "10px" }}>
-                <Typography level="h2" sx={{ textAlign: "left" }}>
-                  Acte {currentAct?.chapter}
-                </Typography>
-                <Typography sx={{ fontWeight: "bold" }}>
-                  {currentAct?.name}
-                </Typography>
-              </Box>
+              <AlertNoAnswer />
+            </Box>
 
-              <Sheet variant="soft" sx={{ padding: "30px" }}>
-                <DisplayingText sentence={currentQuestion?.content} />
-              </Sheet>
-              {answerToDisplay()}
-
-              <Sheet
-                variant="soft"
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
+            {/* Principal content zone  */}
+            <Stack
+              spacing={2}
+              direction="row"
+              height={"100%"}
+              width={"100%"}
+              display={"flex"}
+              justifyContent={"center"}
+              className={`animate__animated animate__${
+                showMainContent ? "lightSpeedInLeft" : "lightSpeedOutRight"
+              } animate__faster`}
+              id={"game-full-content"}
+            >
+              {/* Drawer button  */}
+              <MenuComponent
+                showDrawer={showDrawer}
+                setShowDrawer={setShowDrawer}
+                setShowSummary={setShowSummary}
+              />
+              <IconButton
+                variant="outlined"
+                sx={{ height: "5%" }}
+                onClick={() => setShowDrawer(true)}
               >
-                <Button size="lg" onClick={() => nextPage()}>
-                  Valider
-                </Button>
-              </Sheet>
-              {openFeedbackModal && modalFeedback()}
-              {openEndModal && endOfAct()}
-              {showSummary && modalSummary()}
-              {openScaleModal && scaleModal()}
-            </Sheet>
+                <AiOutlineMenuFold size={25} />
+              </IconButton>
+
+              {/* Container for act */}
+              <Box height={"100%"} width={"85%"} id={"game-main-content"}>
+                {questionBackgroundImg &&
+                widthMainContent &&
+                heightMainContent &&
+                currentQuestion ? (
+                  <Box
+                    height={heightMainContent}
+                    width={widthMainContent}
+                    display={"flex"}
+                    flexDirection={"column"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    sx={{
+                      backgroundImage: `url(${questionBackgroundImg
+                        .resize(
+                          scale()
+                            .width(widthMainContent)
+                            .height(heightMainContent)
+                        )
+                        .toURL()})`,
+                    }}
+                  >
+                    <Box
+                      width={parseInt(widthMainContent * 0.7)}
+                      sx={{ padding: "30px" }}
+                    >
+                      <DisplayingText
+                        sentence={currentQuestion?.content}
+                        level={"h4"}
+                      />
+                    </Box>
+                    {answerToDisplay()}
+
+                    <Sheet
+                      variant="soft"
+                      sx={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button size="lg" onClick={() => nextPage()}>
+                        Valider
+                      </Button>
+                    </Sheet>
+                    {openFeedbackModal && modalFeedback()}
+                    {openEndModal && endOfAct()}
+                    {showSummary && modalSummary()}
+                    {openScaleModal && scaleModal()}
+                  </Box>
+                ) : (
+                  <Box
+                    height={"100%"}
+                    width={"100%"}
+                    display={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                  >
+                    <CircularProgress variant="soft" color="success" />
+                  </Box>
+                )}
+              </Box>
+            </Stack>
           </Stack>
-        </Stack>
+        </CssVarsProvider>
       )}
     </>
   );
