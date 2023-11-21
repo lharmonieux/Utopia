@@ -5,7 +5,7 @@ import { Box, Stack, Button, Typography, CssVarsProvider, CircularProgress } fro
 import cloudinary from "../utils/cloudinary.js";
 import { scale } from "@cloudinary/url-gen/actions/resize";
 import "animate.css";
-import { AdvancedImage, responsive } from "@cloudinary/react";
+import { AdvancedImage } from "@cloudinary/react";
 import { typographyTheme } from "../utils/themeJoy.js";
 import { colors } from "../utils/colors.js";
 
@@ -174,7 +174,6 @@ const Home = () => {
                           .width(parseInt(widthMainContent * 0.15))
                           .height(parseInt(heightMainContent * 0.3))
                       )}
-                      plugins={[responsive({ steps: 200 })]}
                     />
                   </Box>
                 </Box>

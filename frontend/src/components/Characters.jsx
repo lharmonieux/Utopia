@@ -7,84 +7,98 @@ import {
   ModalDialog,
   ModalClose,
   DialogTitle,
+  Box,
+  CssVarsProvider,
 } from "@mui/joy";
 import "animate.css";
 import { animateOut } from "../middlewares/Animation";
+import { useEffect } from "react";
+import { scale } from "@cloudinary/url-gen/actions/resize";
+import { typographyTheme } from "../utils/themeJoy";
 
 const Characters = ({
   characters,
-  handleSelectedCharacter,
+  widthMainContent,
+  heightMainContent,
+  setIdCharacterSelected,
+  idCharacterSelected,
+  setStoreAnswer,
   setOpenCaracteristic,
   setCaracteristicToDisplay,
   openCaracteristic,
   caracteristicToDisplay,
 }) => {
+  const handleSelectedCharacter = (selectedCharacter) => {
+    //If selected again
+    if (selectedCharacter._id == idCharacterSelected) {
+      setIdCharacterSelected("");
+      setStoreAnswer([]);
+    } else {
+      setIdCharacterSelected(selectedCharacter._id);
+      setStoreAnswer([selectedCharacter]);
+    }
+
+    characters.map((character) => {
+      if (character._id == selectedCharacter._id)
+        character.selected = !character.selected;
+      else character.selected = false;
+    });
+  };
+
   return (
-    <Stack
-      direction="row"
-      spacing={2}
-      flexWrap="wrap"
-      justifyContent="space-evenly"
-      useFlexGap
-    >
-      {/* Carte de personnage  */}
-      {characters.map((character) => (
-        <Stack spacing={0} key={character._id} direction="column">
-          <Button
-            value={character._id}
-            onClick={() => {
-              handleSelectedCharacter(character);
-            }}
-            variant="soft"
-            sx={{
-              padding: 5,
-              backgroundColor: character.selected ? "#0EC586" : "",
-            }}
-          >
-            <Typography
-              level="title-md"
-              sx={{
-                fontWeight: "bold",
+    <CssVarsProvider theme={typographyTheme}>
+      <Stack
+        direction="row"
+        height={heightMainContent}
+        width={widthMainContent}
+        spacing={5}
+        sx={{ overflow: "auto", scrollSnapType: "x mandatory" }}
+      >
+        {/* Carte de personnage  */}
+        {characters &&
+          characters.map((character) => (
+            <Box
+              key={character._id}
+              height={parseInt(heightMainContent * 0.55)}
+              width={parseInt(widthMainContent * 0.3)}
+              onClick={() => {
+                handleSelectedCharacter(character);
               }}
+              position="relative"
+              sx={{
+                flex: "none",
+                scrollSnapAlign: "start",
+                backgroundImage: `url(${character.img.toURL()})`,
+                border: character.selected ? 3 : 0,
+                borderColor: character.selected ? "#0EC586" : "",
+              }}
+              className={"animate__animated animate__bounceIn"}
             >
-              {character.name}
-            </Typography>
-          </Button>
-
-          {/* Button voir display Modal  */}
-          <Button
-            variant="soft"
-            sx={{ border: 1, borderRadius: 5 }}
-            onClick={() => {
-              setOpenCaracteristic(true);
-              setCaracteristicToDisplay(character.caracteristic);
-            }}
-          >
-            Découvrir
-          </Button>
-
-          {/* Content of Modal */}
-          <Modal
-            open={openCaracteristic}
-            onClose={() =>
-              animateOut(openCaracteristic, "#modal-caracteristic", () =>
-                setOpenCaracteristic(false)
-              )
-            }
-            className={`animate__animated animate__zoomIn`}
-            id={"modal-caracteristic"}
-          >
-            <ModalDialog>
-              <ModalClose variant="outlined" />
-
-              <DialogTitle>Caractéristiques du personnage</DialogTitle>
-
-              <Typography level="title-md">{caracteristicToDisplay}</Typography>
-            </ModalDialog>
-          </Modal>
-        </Stack>
-      ))}
-    </Stack>
+              {/* Character's name */}
+              <Box
+                position="absolute"
+                right={5}
+                top={"34%"}
+                width={"70%"}
+                height={"13%"}
+                display={'flex'}
+                justifyContent={'center'}
+                alignItems={'center'}
+              >
+                <Typography
+                  level="h4"
+                  textAlign='center'
+                  fontWeight={400}
+                  textColor={'white'}
+                  sx={{lineHeight: 1}}
+                >
+                  {character.name}
+                </Typography>
+              </Box>
+            </Box>
+          ))}
+      </Stack>
+    </CssVarsProvider>
   );
 };
 

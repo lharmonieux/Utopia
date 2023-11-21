@@ -3,6 +3,7 @@ import axios from "axios";
 import App from "./App";
 import { AppContext } from "./views/admin/GameContext.jsx";
 import { actReducer } from "./middlewares/ActReducer.js";
+import cloudinary from "./utils/cloudinary.js";
 
 const PreFetch = () => {
   const [acts, setActs] = useState([]);
@@ -43,7 +44,19 @@ const PreFetch = () => {
     axios
       .get(`${import.meta.env.VITE_REACT_URL_BACK}/characters`)
       .then((response) => {
-        setCharacters(response.data);
+        if (response.data) {
+          const charactersLoadImg = response.data.map((character) => {
+            return {
+              ...character,
+              img: cloudinary
+                .image(`exploria/${character.img}`)
+                .quality("auto:best")
+                .format("png"),
+            };
+          });
+          
+          setCharacters(charactersLoadImg);
+        }
       })
       .catch((err) => console.log(err.message));
   }, []);

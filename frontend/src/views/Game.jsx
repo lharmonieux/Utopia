@@ -32,6 +32,8 @@ import { animateOut } from "../middlewares/Animation.js";
 import cloudinary from "../utils/cloudinary.js";
 import { scale } from "@cloudinary/url-gen/actions/resize";
 import { typographyTheme } from "../utils/themeJoy.js";
+import { AdvancedImage } from "@cloudinary/react";
+import { byAngle } from "@cloudinary/url-gen/actions/rotate";
 
 const Game = () => {
   // variables
@@ -61,6 +63,7 @@ const Game = () => {
   const [fullContentBox, setFullContentBox] = useState();
   const [widthMainContent, setWidthMainContent] = useState(0);
   const [heightMainContent, setHeightMainContent] = useState(0);
+  const [isCharactersImg, setIsCharactersImg] = useState(false);
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -94,6 +97,7 @@ const Game = () => {
       setReversedDecorationImg(
         cloudinary
           .image(`exploria/${currentAct?.visual?.decorationImg}`)
+          .rotate(byAngle(180))
           .quality("auto:best")
           .format("png")
       );
@@ -144,24 +148,12 @@ const Game = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showActPresentation, orderQuestion, currentAct, fullContentBox]);
-
-  const handleSelectedCharacter = (selectedCharacter) => {
-    //If selected again
-    if (selectedCharacter._id == idCharacterSelected) {
-      setIdCharacterSelected("");
-      setStoreAnswer([]);
-    } else {
-      setIdCharacterSelected(selectedCharacter._id);
-      setStoreAnswer([selectedCharacter]);
-    }
-
-    characters.map((character) => {
-      if (character._id == selectedCharacter._id)
-        character.selected = !character.selected;
-      else character.selected = false;
-    });
-  };
+  }, [
+    showActPresentation,
+    orderQuestion,
+    currentAct,
+    fullContentBox
+  ]);
 
   const updateStoreAnswer = (selectedAnswer, answerType) => {
     // Remove answer if selected again
@@ -233,15 +225,31 @@ const Game = () => {
     switch (currentQuestion?.answerType) {
       //Affichage du choix des persos
       case "personnage":
+        for (const character of characters) {
+          character.img = character.img.resize(
+            scale()
+              .width(parseInt(widthMainContent * 0.3))
+              .height(parseInt(heightMainContent * 0.55))
+          );
+        }
+        console.log("here");
+        !isCharactersImg && setIsCharactersImg(true);
+
         return (
-          <Characters
-            characters={characters}
-            handleSelectedCharacter={handleSelectedCharacter}
-            setOpenCaracteristic={setOpenCaracteristic}
-            setCaracteristicToDisplay={setCaracteristicToDisplay}
-            openCaracteristic={openCaracteristic}
-            caracteristicToDisplay={caracteristicToDisplay}
-          />
+          isCharactersImg && (
+            <Characters
+              characters={characters}
+              widthMainContent={widthMainContent}
+              heightMainContent={heightMainContent}
+              setIdCharacterSelected={setIdCharacterSelected}
+              setStoreAnswer={setStoreAnswer}
+              idCharacterSelected={idCharacterSelected}
+              setOpenCaracteristic={setOpenCaracteristic}
+              setCaracteristicToDisplay={setCaracteristicToDisplay}
+              openCaracteristic={openCaracteristic}
+              caracteristicToDisplay={caracteristicToDisplay}
+            />
+          )
         );
 
       // Affichage des propositions de reponse
@@ -639,57 +647,90 @@ const Game = () => {
               </IconButton>
 
               {/* Container for act */}
-              <Box height={"100%"} width={"85%"} id={"game-main-content"}>
-                {questionBackgroundImg &&
-                widthMainContent &&
-                heightMainContent &&
-                currentQuestion ? (
-                  <Box
-                    height={heightMainContent}
-                    width={widthMainContent}
-                    display={"flex"}
-                    flexDirection={"column"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    sx={{
-                      backgroundImage: `url(${questionBackgroundImg
-                        .resize(
-                          scale()
-                            .width(widthMainContent)
-                            .height(heightMainContent)
-                        )
-                        .toURL()})`,
-                    }}
-                  >
-                    <Box
-                      width={parseInt(widthMainContent * 0.7)}
-                      sx={{ padding: "30px" }}
-                    >
-                      <DisplayingText
-                        sentence={currentQuestion?.content}
-                        level={"h4"}
-                      />
-                    </Box>
-                    {answerToDisplay()}
+              <Box
+                height={"100%"}
+                width={"85%"}
+                id={"game-main-content"}
+                position={"relative"}
+              >
+                {widthMainContent && heightMainContent ? (
+                  questionBackgroundImg.resize(
+                    scale().width(widthMainContent).height(heightMainContent)
+                  ) &&
+                  decorationImg.resize(
+                    scale()
+                      .width(parseInt(widthMainContent * 0.1))
+                      .height(parseInt(heightMainContent * 0.15))
+                  ) &&
+                  reversedDecorationImg.resize(
+                    scale()
+                      .width(parseInt(widthMainContent * 0.1))
+                      .height(parseInt(heightMainContent * 0.15))
+                  ) &&
+                  currentQuestion ? (
+                    <Box height={heightMainContent} width={widthMainContent}>
+                      {/* Main content */}
+                      <Box
+                        height={heightMainContent}
+                        width={widthMainContent}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                        sx={{
+                          backgroundImage: `url(${questionBackgroundImg.toURL()})`,
+                        }}
+                      >
+                        <Box
+                          width={parseInt(widthMainContent * 0.7)}
+                          sx={{ padding: "30px" }}
+                        >
+                          <DisplayingText
+                            sentence={currentQuestion?.content}
+                            level={"h4"}
+                          />
+                        </Box>
+                        {answerToDisplay()}
 
-                    <Sheet
-                      variant="soft"
-                      sx={{
-                        flex: 1,
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                      }}
+                        <Sheet
+                          variant="soft"
+                          sx={{
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Button size="lg" onClick={() => nextPage()}>
+                            Valider
+                          </Button>
+                        </Sheet>
+                        {openFeedbackModal && modalFeedback()}
+                        {openEndModal && endOfAct()}
+                        {showSummary && modalSummary()}
+                        {openScaleModal && scaleModal()}
+                      </Box>
+
+                      {/* Decoration */}
+                      <Box position={"absolute"} top={0} left={0}>
+                        <AdvancedImage cldImg={reversedDecorationImg} />
+                      </Box>
+
+                      <Box position={"absolute"} bottom={-4} right={0}>
+                        <AdvancedImage cldImg={decorationImg} />
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Box
+                      height={"100%"}
+                      width={"100%"}
+                      display={"flex"}
+                      alignItems={"center"}
+                      justifyContent={"center"}
                     >
-                      <Button size="lg" onClick={() => nextPage()}>
-                        Valider
-                      </Button>
-                    </Sheet>
-                    {openFeedbackModal && modalFeedback()}
-                    {openEndModal && endOfAct()}
-                    {showSummary && modalSummary()}
-                    {openScaleModal && scaleModal()}
-                  </Box>
+                      <CircularProgress variant="soft" color="success" />
+                    </Box>
+                  )
                 ) : (
                   <Box
                     height={"100%"}
