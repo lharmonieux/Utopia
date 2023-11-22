@@ -116,13 +116,18 @@ const Game = () => {
       //Get the element with animation and detect the end of animation for doing anything else
       setFullContentBox(document.querySelector("#game-full-content"));
       if (fullContentBox && !showMainContent) {
-        fullContentBox.addEventListener("animationend", () => {
+        if (orderQuestion > 1)
+          fullContentBox.addEventListener("animationend", () => {
+            setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
+            setShowMainContent(true);
+          });
+        else {
+          setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
           setShowMainContent(true);
-        });
+        }
       }
 
       if (fullContentBox) {
-        setCurrentQuestion(currentAct?.questions[orderQuestion - 1]);
         const mainContent = document.querySelector("#game-main-content");
         //Sizes for the game's content and images
         if (mainContent) {
@@ -147,7 +152,13 @@ const Game = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showActPresentation, orderQuestion, currentAct, fullContentBox]);
+  }, [
+    showActPresentation,
+    orderQuestion,
+    currentAct,
+    fullContentBox,
+    showMainContent,
+  ]);
 
   const updateStoreAnswer = (selectedAnswer, answerType) => {
     // Remove answer if selected again
@@ -287,8 +298,8 @@ const Game = () => {
       <ModalDialog>
         <ModalClose variant="outlined" />
 
-        <Typography level="title-md">
-          <DisplayingText sentence={feedback} />
+        <Typography>
+          <DisplayingText sentence={feedback.text} level="title-md" textColor={'black'}/>
         </Typography>
 
         <Button
@@ -624,125 +635,145 @@ const Game = () => {
               } animate__faster`}
               id={"game-full-content"}
             >
-              {/* Drawer button  */}
-              <MenuComponent
-                showDrawer={showDrawer}
-                setShowDrawer={setShowDrawer}
-                setShowSummary={setShowSummary}
-              />
-              <IconButton
-                variant="outlined"
-                sx={{ height: "5%" }}
-                onClick={() => setShowDrawer(true)}
-              >
-                <AiOutlineMenuFold size={25} />
-              </IconButton>
+              {showMainContent ? (
+                <>
+                  <MenuComponent
+                    showDrawer={showDrawer}
+                    setShowDrawer={setShowDrawer}
+                    setShowSummary={setShowSummary}
+                  />
+                  <IconButton
+                    variant="outlined"
+                    sx={{ height: "5%" }}
+                    onClick={() => setShowDrawer(true)}
+                  >
+                    <AiOutlineMenuFold size={25} color="white" />
+                  </IconButton>
 
-              {/* Container for act */}
-              <Box
-                height={"100%"}
-                width={"85%"}
-                id={"game-main-content"}
-                position={"relative"}
-              >
-                {widthMainContent && heightMainContent ? (
-                  questionBackgroundImg.resize(
-                    scale().width(widthMainContent).height(heightMainContent)
-                  ) &&
-                  decorationImg.resize(
-                    scale()
-                      .width(parseInt(widthMainContent * 0.1))
-                      .height(parseInt(heightMainContent * 0.15))
-                  ) &&
-                  reversedDecorationImg.resize(
-                    scale()
-                      .width(parseInt(widthMainContent * 0.1))
-                      .height(parseInt(heightMainContent * 0.15))
-                  ) &&
-                  currentQuestion ? (
-                    <Box height={heightMainContent} width={widthMainContent}>
-                      {/* Main content */}
-                      <Box
-                        height={heightMainContent}
-                        width={widthMainContent}
-                        display={"flex"}
-                        flexDirection={"column"}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                        sx={{
-                          backgroundImage: `url(${questionBackgroundImg.toURL()})`,
-                        }}
-                      >
-                        <Box
-                          width={parseInt(widthMainContent * 0.7)}
-                          sx={{ padding: "30px" }}
-                        >
-                          <DisplayingText
-                            sentence={currentQuestion?.content}
-                            level={"h4"}
-                          />
-                        </Box>
-                        {answerToDisplay()}
-
-                        <Box
-                          sx={{
-                            flex: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Button
-                            sx={{
-                              backgroundColor: colors.buttonLight,
-                              "&:hover": {
-                                backgroundColor: colors.buttonLightHover,
-                              },
-                            }}
-                            size="lg"
-                            onClick={() => nextPage()}
-                          >
-                            Valider
-                          </Button>
-                        </Box>
-                        {openFeedbackModal && modalFeedback()}
-                        {openEndModal && endOfAct()}
-                        {showSummary && modalSummary()}
-                        {openScaleModal && scaleModal()}
-                      </Box>
-
-                      {/* Decoration */}
-                      <Box position={"absolute"} top={0} left={0}>
-                        <AdvancedImage cldImg={reversedDecorationImg} />
-                      </Box>
-
-                      <Box position={"absolute"} bottom={-4} right={0}>
-                        <AdvancedImage cldImg={decorationImg} />
-                      </Box>
-                    </Box>
-                  ) : (
-                    <Box
-                      height={"100%"}
-                      width={"100%"}
-                      display={"flex"}
-                      alignItems={"center"}
-                      justifyContent={"center"}
-                    >
-                      <CircularProgress variant="soft" color="success" />
-                    </Box>
-                  )
-                ) : (
+                  {/* Container for act */}
                   <Box
                     height={"100%"}
-                    width={"100%"}
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
+                    width={"85%"}
+                    id={"game-main-content"}
+                    position={"relative"}
                   >
-                    <CircularProgress variant="soft" color="success" />
+                    {widthMainContent && heightMainContent ? (
+                      questionBackgroundImg.resize(
+                        scale()
+                          .width(widthMainContent)
+                          .height(heightMainContent)
+                      ) &&
+                      decorationImg.resize(
+                        scale()
+                          .width(parseInt(widthMainContent * 0.1))
+                          .height(parseInt(heightMainContent * 0.15))
+                      ) &&
+                      reversedDecorationImg.resize(
+                        scale()
+                          .width(parseInt(widthMainContent * 0.1))
+                          .height(parseInt(heightMainContent * 0.15))
+                      ) &&
+                      currentQuestion ? (
+                        <Box
+                          height={heightMainContent}
+                          width={widthMainContent}
+                        >
+                          {/* Main content */}
+                          <Box
+                            height={heightMainContent}
+                            width={widthMainContent}
+                            display={"flex"}
+                            flexDirection={"column"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            sx={{
+                              backgroundImage: `url(${questionBackgroundImg.toURL()})`,
+                            }}
+                          >
+                            <Box
+                              width={parseInt(widthMainContent * 0.7)}
+                              sx={{ padding: "30px" }}
+                            >
+                              <DisplayingText
+                                sentence={currentQuestion?.content}
+                                level={"h4"}
+                                textColor={'white'}
+                              />
+                            </Box>
+                            {answerToDisplay()}
+
+                            <Box
+                              sx={{
+                                flex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Button
+                                sx={{
+                                  backgroundColor: colors.buttonLight,
+                                  "&:hover": {
+                                    backgroundColor: colors.buttonLightHover,
+                                  },
+                                }}
+                                size="lg"
+                                onClick={() => nextPage()}
+                              >
+                                Valider
+                              </Button>
+                            </Box>
+                            {openFeedbackModal && modalFeedback()}
+                            {openEndModal && endOfAct()}
+                            {showSummary && modalSummary()}
+                            {openScaleModal && scaleModal()}
+                          </Box>
+
+                          {/* Decoration */}
+                          <Box position={"absolute"} top={0} left={0}>
+                            <AdvancedImage cldImg={reversedDecorationImg} />
+                          </Box>
+
+                          <Box position={"absolute"} bottom={-4} right={0}>
+                            <AdvancedImage cldImg={decorationImg} />
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Box
+                          height={"100%"}
+                          width={"100%"}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyContent={"center"}
+                        >
+                          <CircularProgress variant="soft" color="success" />
+                        </Box>
+                      )
+                    ) : (
+                      <Box
+                        height={"100%"}
+                        width={"100%"}
+                        display={"flex"}
+                        alignItems={"center"}
+                        justifyContent={"center"}
+                      >
+                        <CircularProgress variant="soft" color="success" />
+                      </Box>
+                    )}
                   </Box>
-                )}
-              </Box>
+                </>
+              ) : (
+                <Box
+                  height={"100%"}
+                  width={"100%"}
+                  display={"flex"}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <CircularProgress variant="soft" color="success" />
+                </Box>
+              )}
+              {/* Drawer button  */}
             </Stack>
           </Stack>
         </CssVarsProvider>

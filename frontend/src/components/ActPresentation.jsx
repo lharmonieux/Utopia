@@ -35,7 +35,7 @@ const ActPresentation = ({
         );
         actPresentationBox.addEventListener("animationend", () => {
           setShowActPresentation(false);
-          setShowMainContent(true);
+          setShowMainContent(false);
         });
       }, 4000);
 

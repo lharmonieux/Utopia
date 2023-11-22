@@ -2,9 +2,9 @@
 import React from "react";
 import {Typography} from "@mui/joy";
 
-const DisplayingText = ({ sentence, level }) => {
+const DisplayingText = ({ sentence, level, textColor }) => {
   return (
-    <Typography level={level} textColor={"white"} fontWeight={400} sx={{ textAlign: "center" }}>
+    <Typography level={level} textColor={textColor} fontWeight={400} sx={{ textAlign: "center" }}>
       {sentence?.split("\n").map((chaine, index) => (
         <React.Fragment key={index}>
           {chaine} <br />
