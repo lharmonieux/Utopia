@@ -34,6 +34,7 @@ import { scale } from "@cloudinary/url-gen/actions/resize";
 import { typographyTheme } from "../utils/themeJoy.js";
 import { AdvancedImage } from "@cloudinary/react";
 import { byAngle } from "@cloudinary/url-gen/actions/rotate";
+import { colors } from "../utils/colors.js";
 
 const Game = () => {
   // variables
@@ -43,8 +44,6 @@ const Game = () => {
   // State
   const [currentQuestion, setCurrentQuestion] = useState({});
   const [idCharacterSelected, setIdCharacterSelected] = useState("");
-  const [openCaracteristic, setOpenCaracteristic] = useState(false);
-  const [caracteristicToDisplay, setCaracteristicToDisplay] = useState("");
   const [containsFeedback, setContainsFeedback] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
@@ -148,12 +147,7 @@ const Game = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    showActPresentation,
-    orderQuestion,
-    currentAct,
-    fullContentBox
-  ]);
+  }, [showActPresentation, orderQuestion, currentAct, fullContentBox]);
 
   const updateStoreAnswer = (selectedAnswer, answerType) => {
     // Remove answer if selected again
@@ -225,14 +219,16 @@ const Game = () => {
     switch (currentQuestion?.answerType) {
       //Affichage du choix des persos
       case "personnage":
-        for (const character of characters) {
-          character.img = character.img.resize(
-            scale()
-              .width(parseInt(widthMainContent * 0.3))
-              .height(parseInt(heightMainContent * 0.55))
-          );
-        }
-        console.log("here");
+        //Define size's images
+        if (!isCharactersImg)
+          for (const character of characters) {
+            character.img = character.img.resize(
+              scale()
+                .width(parseInt(widthMainContent * 0.3))
+                .height(parseInt(heightMainContent * 0.65))
+            );
+          }
+
         !isCharactersImg && setIsCharactersImg(true);
 
         return (
@@ -244,10 +240,6 @@ const Game = () => {
               setIdCharacterSelected={setIdCharacterSelected}
               setStoreAnswer={setStoreAnswer}
               idCharacterSelected={idCharacterSelected}
-              setOpenCaracteristic={setOpenCaracteristic}
-              setCaracteristicToDisplay={setCaracteristicToDisplay}
-              openCaracteristic={openCaracteristic}
-              caracteristicToDisplay={caracteristicToDisplay}
             />
           )
         );
@@ -692,8 +684,7 @@ const Game = () => {
                         </Box>
                         {answerToDisplay()}
 
-                        <Sheet
-                          variant="soft"
+                        <Box
                           sx={{
                             flex: 1,
                             display: "flex",
@@ -701,10 +692,19 @@ const Game = () => {
                             justifyContent: "center",
                           }}
                         >
-                          <Button size="lg" onClick={() => nextPage()}>
+                          <Button
+                            sx={{
+                              backgroundColor: colors.buttonLight,
+                              "&:hover": {
+                                backgroundColor: colors.buttonLightHover,
+                              },
+                            }}
+                            size="lg"
+                            onClick={() => nextPage()}
+                          >
                             Valider
                           </Button>
-                        </Sheet>
+                        </Box>
                         {openFeedbackModal && modalFeedback()}
                         {openEndModal && endOfAct()}
                         {showSummary && modalSummary()}

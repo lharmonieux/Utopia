@@ -34,9 +34,8 @@ const actSchema = new mongoose.Schema({
   questions: [
     {
       content: {
-        type: String,
-        required: true,
-        unique: true,
+        content: String,
+        backgroundImg: String
       },
       order: {
         type: Number,
