@@ -55,6 +55,7 @@ const Characters = ({
               border: character.selected ? 3 : 0,
               borderColor: character.selected ? "#0EC586" : "",
               borderRadius: character.selected ? 5 : 0,
+              cursor: "pointer"
             }}
             className={"animate__animated animate__bounceIn"}
           >

@@ -11,9 +11,12 @@ const PreFetch = () => {
   const [currentAct, setCurrentAct] = useState({});
   const [refresh, setRefresh] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [towns, setTowns] = useState([]);
   const [newActs, dispatch] = useReducer(actReducer, acts);
 
-  //Getting actes from api
+  //Getting datas from api
+
+  // Acts 
   useEffect(() => {
     setLoading(true);
     axios
@@ -40,6 +43,7 @@ const PreFetch = () => {
       });
   }, [refresh]);
 
+  //Characters
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_REACT_URL_BACK}/characters`)
@@ -54,11 +58,25 @@ const PreFetch = () => {
                 .format("png"),
             };
           });
-          
+
           setCharacters(charactersLoadImg);
         }
       })
       .catch((err) => console.log(err.message));
+  }, []);
+
+  // Towns 
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_REACT_URL_BACK}/towns`)
+      .then((response) => {
+        if (response.data) {
+          setTowns(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   }, []);
 
   //CRUD
@@ -93,7 +111,7 @@ const PreFetch = () => {
 
   return (
     <AppContext.Provider
-      value={{ acts, loading, dispatch, currentAct, characters }}
+      value={{ acts, loading, dispatch, currentAct, characters, towns }}
     >
       <App />
     </AppContext.Provider>

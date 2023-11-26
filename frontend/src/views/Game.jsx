@@ -35,14 +35,15 @@ import { typographyTheme } from "../utils/themeJoy.js";
 import { AdvancedImage } from "@cloudinary/react";
 import { byAngle } from "@cloudinary/url-gen/actions/rotate";
 import { colors } from "../utils/colors.js";
+import Towns from "../components/Towns.jsx";
 
 const Game = () => {
   // variables
-  const { currentAct, characters, acts } = useContext(AppContext);
+  const { currentAct, characters, acts, towns } = useContext(AppContext);
   const navigate = useNavigate();
 
   // State
-  const [currentQuestion, setCurrentQuestion] = useState({});
+  const [currentQuestion, setCurrentQuestion] = useState();
   const [idCharacterSelected, setIdCharacterSelected] = useState("");
   const [containsFeedback, setContainsFeedback] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -52,7 +53,7 @@ const Game = () => {
   const [openEndModal, setOpenEndModal] = useState(false);
   const [scoresThematic, setScoresThematic] = useState([]);
   const [showAlertNoAnswer, setShowAlertNoAnswer] = useState(false);
-  const [town, setTown] = useState("");
+  const [townName, setTownName] = useState("");
   const [showDrawer, setShowDrawer] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [showActPresentation, setShowActPresentation] = useState(true);
@@ -71,6 +72,8 @@ const Game = () => {
   const [titleActImg, setTitleActImg] = useState();
   const [logoAppImg, setLogoAppImg] = useState();
   const [questionBackgroundImg, setQuestionBackgroundImg] = useState();
+  const [questionContentImg, setQuestionContentImg] = useState();
+  const [feedbackImg, setFeedbackImg] = useState();
 
   // Getting total number of questions for current act
   let nbQuestions = currentAct?.questions?.length;
@@ -136,18 +139,33 @@ const Game = () => {
         }
 
         //Loading of question's datas
-        if (currentAct?.questions && !questionBackgroundImg) {
+        if (currentQuestion) {
           setQuestionBackgroundImg(
             cloudinary
-              .image(
-                `exploria/${
-                  currentAct?.questions[orderQuestion - 1]?.visual
-                    ?.backgroundImg
-                }`
-              )
+              .image(`exploria/${currentQuestion?.visual?.backgroundImg}`)
               .quality("auto:best")
               .format("png")
           );
+
+          //If question's content has a background image
+          if (currentQuestion?.content?.backgroundImg)
+            setQuestionContentImg(
+              cloudinary
+                .image(`exploria/${currentQuestion?.content?.backgroundImg}`)
+                .quality("auto:best")
+                .format("png")
+            );
+          else setQuestionContentImg(undefined);
+
+          // If question contains feedbacks for some answers
+          if (currentQuestion?.visual?.feedbackImg)
+            setFeedbackImg(
+              cloudinary
+                .image(`exploria/${currentQuestion?.visual?.feedbackImg}`)
+                .quality("auto:best")
+                .format("png")
+            );
+          else setFeedbackImg(undefined);
         }
       }
     }
@@ -158,6 +176,7 @@ const Game = () => {
     currentAct,
     fullContentBox,
     showMainContent,
+    currentQuestion,
   ]);
 
   const updateStoreAnswer = (selectedAnswer, answerType) => {
@@ -174,17 +193,21 @@ const Game = () => {
     else setStoreAnswer([selectedAnswer]);
   };
 
-  const handleSelectedProposition = (selectedAnswer, answerType) => {
-    if (selectedAnswer.feedback.length != 0) {
+  const handleSelectedProposition = (
+    selectedAnswer,
+    answerType,
+    modalTitle
+  ) => {
+    if (selectedAnswer?.feedback) {
       // If answer selected again
       if (feedback == selectedAnswer.feedback) {
-        setFeedback("");
+        setFeedback(undefined);
         setContainsFeedback(false);
       } else {
-        setFeedback(selectedAnswer.feedback);
+        setFeedback({ content: selectedAnswer.feedback, title: modalTitle });
         setContainsFeedback(true);
       }
-    } else setContainsFeedback(false);
+    }
 
     setCurrentQuestion(() => {
       let newCurrentQuestion = {};
@@ -202,6 +225,9 @@ const Game = () => {
 
         return newCurrentQuestion;
       }
+      //For select town
+      else if (answerType == "town")
+        updateStoreAnswer(selectedAnswer, answerType);
       // For multiples answers
       else {
         // 3 answers max for update question State
@@ -262,18 +288,40 @@ const Game = () => {
           <Propositions
             currentQuestion={currentQuestion}
             handleSelectedProposition={handleSelectedProposition}
+            heightMainContent={heightMainContent}
+            widthMainContent={widthMainContent}
           />
         );
 
       // Affichage d'une zone de texte
       case "texte":
-        return <TextArea town={town} setTown={setTown} />;
+        return (
+          <TextArea
+            town={townName}
+            setTownName={setTownName}
+            widthMainContent={widthMainContent}
+            heightMainContent={heightMainContent}
+          />
+        );
 
       case "notation":
         return (
           <ScaleProposition
             currentQuestion={currentQuestion}
             setScaleAnswers={setScaleAnswers}
+            heightMainContent={heightMainContent}
+            widthMainContent={widthMainContent}
+          />
+        );
+
+      case "town":
+        return (
+          <Towns
+            currentQuestion={currentQuestion}
+            heightMainContent={heightMainContent}
+            widthMainContent={widthMainContent}
+            towns={towns}
+            handleSelectedProposition={handleSelectedProposition}
           />
         );
 
@@ -282,39 +330,81 @@ const Game = () => {
     }
   };
 
-  const modalFeedback = () => (
+  const modalFeedback = () =>
     // Modal for feedbacks
-    <Modal
-      open={openFeedbackModal}
-      onClose={() =>
-        animateOut(openFeedbackModal, "#modal-feedback-content", () => {
-          setOpenFeedbackModal(false);
-          initializingState();
-        })
-      }
-      className={animationModalIn}
-      id={"modal-feedback-content"}
-    >
-      <ModalDialog>
-        <ModalClose variant="outlined" />
-
-        <Typography>
-          <DisplayingText sentence={feedback.text} level="title-md" textColor={'black'}/>
-        </Typography>
-
-        <Button
-          onClick={() =>
-            animateOut(openFeedbackModal, "#modal-feedback-content", () => {
-              setOpenFeedbackModal(false);
-              initializingState();
-            })
-          }
+    feedbackImg?.resize(
+      scale()
+        .width(parseInt(widthMainContent * 0.5))
+        .height(parseInt(heightMainContent * 0.85))
+    ) && (
+      <Modal
+        open={openFeedbackModal}
+        onClose={() =>
+          animateOut(openFeedbackModal, "#modal-feedback-content", () => {
+            setOpenFeedbackModal(false);
+            initializingState();
+          })
+        }
+        className={animationModalIn}
+        id={"modal-feedback-content"}
+      >
+        <ModalDialog
+          sx={{
+            width: parseInt(widthMainContent * 0.5),
+            height: parseInt(heightMainContent * 0.85),
+            backgroundImage: `url(${feedbackImg.toURL()})`,
+            position: "relative",
+          }}
         >
-          Continuer
-        </Button>
-      </ModalDialog>
-    </Modal>
-  );
+          <ModalClose variant="outlined" />
+          <Box
+            position={"absolute"}
+            width={"85%"}
+            height={"10%"}
+            left={"14%"}
+            top={"12%"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            <Typography
+              level="h3"
+              textColor={colors.titleBackLight}
+              fontWeight={400}
+            >
+              {feedback.title}
+            </Typography>
+          </Box>
+          <Box
+            width={"100%"}
+            height={"100%"}
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+            justifyContent={"space-evenly"}
+          >
+            <Typography padding={2} marginTop={5}>
+              <DisplayingText
+                sentence={feedback.content}
+                level="title-md"
+                textColor={"black"}
+              />
+            </Typography>
+
+            <Button
+              onClick={() =>
+                animateOut(openFeedbackModal, "#modal-feedback-content", () => {
+                  setOpenFeedbackModal(false);
+                  initializingState();
+                })
+              }
+            >
+              Continuer
+            </Button>
+          </Box>
+        </ModalDialog>
+      </Modal>
+    );
 
   // Modal for end of act / Summary
   const endOfAct = () => (
@@ -333,13 +423,13 @@ const Game = () => {
       <ModalDialog>
         <ModalClose variant="outlined" />
         <DialogTitle>
-          Résolution de l&apos;Acte {currentAct?.chapter}
+          Résolution de l&apos;ACTE {currentAct?.chapter}
         </DialogTitle>
 
         <Stack direction="column" sx={{ display: "flex" }} spacing={1}>
           <Typography>
             <DisplayingText
-              sentence={currentAct?.resolution
+              sentence={currentAct?.resolution?.text
                 ?.replace(
                   "totalResidents",
                   scoresThematic.filter((e) => e.thematic == "Residents")[0]
@@ -465,7 +555,7 @@ const Game = () => {
     setFeedback("");
     setOrderQuestion(orderQuestion + 1);
     setStoreAnswer([]);
-    setTown("");
+    setTownName("");
     setIdCharacterSelected("");
     setShowAlertNoAnswer(false);
     scaleAnswers.clear();
@@ -475,7 +565,7 @@ const Game = () => {
   // Manage for the next element to display
   const nextPage = () => {
     //Control of if there are an given answer
-    if (storeAnswer.length > 0 || town || scaleAnswers.size > 0) {
+    if (storeAnswer.length > 0 || townName || scaleAnswers.size > 0) {
       //Scale answer control
       if (scaleAnswers.size > 0) setOpenScaleModal(true);
       else {
@@ -658,22 +748,41 @@ const Game = () => {
                     position={"relative"}
                   >
                     {widthMainContent && heightMainContent ? (
-                      questionBackgroundImg.resize(
+                      questionBackgroundImg?.resize(
                         scale()
                           .width(widthMainContent)
                           .height(heightMainContent)
                       ) &&
-                      decorationImg.resize(
+                      decorationImg?.resize(
                         scale()
                           .width(parseInt(widthMainContent * 0.1))
                           .height(parseInt(heightMainContent * 0.15))
                       ) &&
-                      reversedDecorationImg.resize(
+                      reversedDecorationImg?.resize(
                         scale()
                           .width(parseInt(widthMainContent * 0.1))
                           .height(parseInt(heightMainContent * 0.15))
                       ) &&
-                      currentQuestion ? (
+                      currentQuestion &&
+                      (currentQuestion?.content?.backgroundImg
+                        ? questionContentImg?.resize(
+                            scale()
+                              .width(
+                                currentQuestion?.visual?.directionAnswer ==
+                                  "row"
+                                  ? parseInt(widthMainContent * 0.8)
+                                  : parseInt(widthMainContent * 0.4)
+                              )
+                              .height(
+                                parseInt(
+                                  currentQuestion?.visual?.directionAnswer ==
+                                    "row"
+                                    ? heightMainContent * 0.1
+                                    : heightMainContent * 0.5
+                                )
+                              )
+                          )
+                        : !questionContentImg) ? (
                         <Box
                           height={heightMainContent}
                           width={widthMainContent}
@@ -690,28 +799,72 @@ const Game = () => {
                               backgroundImage: `url(${questionBackgroundImg.toURL()})`,
                             }}
                           >
+                            {" "}
                             <Box
-                              width={parseInt(widthMainContent * 0.7)}
-                              sx={{ padding: "30px" }}
+                              height={parseInt(heightMainContent * 0.95)}
+                              width={widthMainContent}
+                              display={"flex"}
+                              flexDirection={
+                                currentQuestion?.visual?.directionAnswer ==
+                                "column"
+                                  ? "row"
+                                  : "column"
+                              }
+                              justifyContent={
+                                currentQuestion?.content?.justifyContent
+                              }
+                              alignItems={"center"}
                             >
-                              <DisplayingText
-                                sentence={currentQuestion?.content}
-                                level={"h4"}
-                                textColor={'white'}
-                              />
+                              {/* Question's content  */}
+                              <Box
+                                width={
+                                  currentQuestion?.content?.backgroundImg
+                                    ? currentQuestion?.visual
+                                        ?.directionAnswer == "row"
+                                      ? parseInt(widthMainContent * 0.8)
+                                      : parseInt(widthMainContent * 0.4)
+                                    : parseInt(widthMainContent * 0.8)
+                                }
+                                height={
+                                  currentQuestion?.content?.backgroundImg
+                                    ? currentQuestion?.visual
+                                        ?.directionAnswer == "row"
+                                      ? parseInt(heightMainContent * 0.1)
+                                      : parseInt(heightMainContent * 0.5)
+                                    : parseInt(heightMainContent * 0.25)
+                                }
+                                display={"flex"}
+                                justifyContent={"center"}
+                                alignItems={"center"}
+                                sx={{
+                                  marginBottom: 1,
+                                  backgroundImage:
+                                    currentQuestion?.content?.backgroundImg &&
+                                    `url(${questionContentImg.toURL()})`,
+                                }}
+                              >
+                                <DisplayingText
+                                  sentence={currentQuestion?.content.content}
+                                  level={"h4"}
+                                  textColor={"white"}
+                                  padding={1}
+                                />
+                              </Box>
+                              {answerToDisplay()}
                             </Box>
-                            {answerToDisplay()}
-
+                            {/* Validate button */}
                             <Box
+                              width={widthMainContent}
                               sx={{
                                 flex: 1,
                                 display: "flex",
                                 flexDirection: "column",
-                                justifyContent: "center",
+                                alignItems: "center",
                               }}
                             >
                               <Button
                                 sx={{
+                                  width: "15%",
                                   backgroundColor: colors.buttonLight,
                                   "&:hover": {
                                     backgroundColor: colors.buttonLightHover,

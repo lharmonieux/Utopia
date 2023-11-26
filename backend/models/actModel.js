@@ -13,11 +13,11 @@ const actSchema = new mongoose.Schema({
     unique: true,
   },
   description: {
-    type: String
+    type: String,
   },
   townStatus: {
     type: String,
-    required: true
+    required: true,
   },
   resolution: {
     text: String,
@@ -29,13 +29,14 @@ const actSchema = new mongoose.Schema({
     backgroundImg: String,
     decorationImg: String,
     titleImg: String,
-    logoAppImg : String
+    logoAppImg: String,
   },
   questions: [
     {
       content: {
         content: String,
-        backgroundImg: String
+        backgroundImg: String,
+        justifyContent: String,
       },
       order: {
         type: Number,
@@ -46,20 +47,16 @@ const actSchema = new mongoose.Schema({
         answerImg: String,
         enumAnswer: Boolean,
         directionAnswer: String,
-        margin: Number,
-        shift: Number,
         mapView: {
           mapImg: String,
-          buttonImg: [
-            {
-              button: String,
-              buttonGif : String,
-              labelImg: String
-            }
-          ]
-        }
+          buttonImg: {
+            button: String,
+            buttonGif: String,
+          },
+          descriptionImg: String
+        },
+        feedbackImg: String
       },
-      buttonImg: String,
       answerType: {
         type: String,
         required: true,
@@ -70,11 +67,10 @@ const actSchema = new mongoose.Schema({
           score: Number,
           feedback: {
             text: String,
-            titleImg : String,
-            backgroundImg: String
+            backgroundImg: String,
           },
           thematic: String,
-          givenResidents: Number
+          givenResidents: Number,
         },
       ],
     },

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import actRoute from "./routes/actRoute.js";
 import characterRoute from "./routes/characterRoute.js";
 import cloudinaryRoute from "./routes/cloudinaryRoute.js";
+import townRoute from "./routes/townRoute.js";
 import dotenv from "dotenv";
 import cors from 'cors';
 
@@ -28,6 +29,7 @@ app.use(cors(corsOptions));
 app.use('/acts', actRoute);
 app.use('/characters', characterRoute);
 app.use('/cloudinary', cloudinaryRoute);
+app.use('/towns', townRoute);
 
 //Connection Database, Then running server
 mongoose

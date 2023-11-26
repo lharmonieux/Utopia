@@ -13,6 +13,9 @@ export const typographyTheme = extendTheme({
         },
         h4: {
             fontFamily: 'typo'
+        },
+        "title-lg": {
+            fontFamily: 'typo'
         }
     }
 })
