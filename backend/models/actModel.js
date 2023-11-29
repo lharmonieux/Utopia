@@ -34,9 +34,10 @@ const actSchema = new mongoose.Schema({
   questions: [
     {
       content: {
-        content: String,
+        text: String,
         backgroundImg: String,
         justifyContent: String,
+        textColor: String
       },
       order: {
         type: Number,
@@ -63,7 +64,10 @@ const actSchema = new mongoose.Schema({
       },
       answers: [
         {
-          content: String,
+          content: {
+            text: String,
+            textColor: String
+          },
           score: Number,
           feedback: {
             text: String,

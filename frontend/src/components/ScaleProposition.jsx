@@ -30,7 +30,8 @@ const ScaleProposition = ({
 
   return heightMainContent && widthMainContent ? (
     currentQuestion &&
-    answerImg?.resize(
+    answerImg &&
+    answerImg.resize(
       scale()
         .width(parseInt(widthMainContent * 0.2))
         .height(parseInt(heightMainContent * 0.3))
@@ -46,19 +47,23 @@ const ScaleProposition = ({
         {currentQuestion?.answers.map((answer) => {
           return (
             <Box
-            width={parseInt(widthMainContent * 0.2)}
-            height={parseInt(heightMainContent * 0.3)}
+              width={parseInt(widthMainContent * 0.2)}
+              height={parseInt(heightMainContent * 0.3)}
               key={answer._id}
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: 'center',
+                alignItems: "center",
                 borderRadius: 10,
-                backgroundImage: `url(${answerImg.toURL()})`
+                backgroundImage: `url(${answerImg.toURL()})`,
               }}
             >
-              <Typography fontWeight={400} textColor={"white"} marginTop={"40%"}>
-                {answer.content}
+              <Typography
+                fontWeight={400}
+                textColor={answer.content.textColor}
+                marginTop={"40%"}
+              >
+                {answer.content.text}
               </Typography>
               <Slider
                 defaultValue={1}

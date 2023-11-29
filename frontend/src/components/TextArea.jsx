@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
 import { Box, CircularProgress, Input } from "@mui/joy";
+import { textArea } from "../utils/cssReact.js";
 
 const TextArea = ({
   townName,
   setTownName,
   widthMainContent,
-  heightMainContent,
+  heightMainContent
 }) => {
+
   //Accept just letters
   const handleKeyDown = (e) => {
     const allowedCharacters = /[A-Za-zÀ-ÿ-' ]/;
@@ -25,6 +27,7 @@ const TextArea = ({
         value={townName}
         onChange={(e) => setTownName(e.target.value)}
         onKeyDown={(e) => handleKeyDown(e)}
+        sx={[{ height: "100%" }, textArea]}
       />
     </Box>
   ) : (

@@ -117,22 +117,26 @@ const Towns = ({
   return heightMainContent && widthMainContent ? (
     <Stack display={"flex"} direction={"column"} alignItems={"center"}>
       {currentQuestion &&
-      mapImg?.resize(
+      mapImg &&
+      mapImg.resize(
         scale()
           .width(parseInt(widthMainContent * 0.85))
           .height(parseInt(heightMainContent * 0.8))
       ) &&
-      buttonTownImg?.resize(
+      buttonTownImg &&
+      buttonTownImg.resize(
         scale()
           .width(parseInt(widthMainContent * 0.015))
           .height(parseInt(heightMainContent * 0.025))
       ) &&
-      buttonTownImgGif?.resize(
+      buttonTownImgGif &&
+      buttonTownImgGif.resize(
         scale()
           .width(parseInt(widthMainContent * 0.06))
           .height(parseInt(heightMainContent * 0.08))
       ) &&
-      descriptionImg?.resize(
+      descriptionImg &&
+      descriptionImg.resize(
         scale()
           .width(parseInt(widthMainContent * 0.2))
           .height(parseInt(heightMainContent * 0.35))

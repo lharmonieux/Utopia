@@ -21,11 +21,12 @@ const Propositions = ({
         .format("png")
     );
   }, [currentQuestion]);
-  
+
   return heightMainContent && widthMainContent ? (
     // Waiting of datas
     currentQuestion &&
-    answerImg?.resize(
+    answerImg &&
+    answerImg.resize(
       scale()
         .width(
           currentQuestion?.visual?.directionAnswer == "column"
@@ -71,8 +72,13 @@ const Propositions = ({
               borderColor: answer?.selected && colors.borderDescMap,
             }}
           >
-            <Typography textColor={"white"} fontWeight={600} padding={2} textAlign={"center"}>
-              {answer.content}
+            <Typography
+              textColor={answer.content.textColor}
+              fontWeight={400}
+              padding={2}
+              textAlign={"center"}
+            >
+              {answer.content.text}
             </Typography>
           </Box>
         ))}

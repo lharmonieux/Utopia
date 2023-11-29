@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./admin/GameContext.jsx";
 import {
   Stack,
-  Sheet,
   IconButton,
   Box,
   List,
@@ -74,6 +73,9 @@ const Game = () => {
   const [questionBackgroundImg, setQuestionBackgroundImg] = useState();
   const [questionContentImg, setQuestionContentImg] = useState();
   const [feedbackImg, setFeedbackImg] = useState();
+  const [titleEndActImg, setTitleEndActImg] = useState();
+  const [rankEndActImg, setRankEndActImg] = useState();
+  const [bgEndActImg, setBgEndActImg] = useState();
 
   // Getting total number of questions for current act
   let nbQuestions = currentAct?.questions?.length;
@@ -158,7 +160,7 @@ const Game = () => {
           else setQuestionContentImg(undefined);
 
           // If question contains feedbacks for some answers
-          if (currentQuestion?.visual?.feedbackImg)
+          if (openFeedbackModal || openScaleModal)
             setFeedbackImg(
               cloudinary
                 .image(`exploria/${currentQuestion?.visual?.feedbackImg}`)
@@ -166,6 +168,32 @@ const Game = () => {
                 .format("png")
             );
           else setFeedbackImg(undefined);
+
+          if (orderQuestion == nbQuestions) {
+            currentAct?.resolution?.titleImg &&
+              setTitleEndActImg(
+                cloudinary
+                  .image(`exploria/${currentAct.resolution.titleImg}`)
+                  .quality("auto:best")
+                  .format("png")
+              );
+
+            currentAct?.resolution?.rankImg &&
+              setRankEndActImg(
+                cloudinary
+                  .image(`exploria/${currentAct.resolution.rankImg}`)
+                  .quality("auto:best")
+                  .format("png")
+              );
+
+            currentAct?.resolution?.backgroundImg &&
+              setBgEndActImg(
+                cloudinary
+                  .image(`exploria/${currentAct.resolution.backgroundImg}`)
+                  .quality("auto:best")
+                  .format("png")
+              );
+          }
         }
       }
     }
@@ -177,6 +205,8 @@ const Game = () => {
     fullContentBox,
     showMainContent,
     currentQuestion,
+    openFeedbackModal,
+    openScaleModal,
   ]);
 
   const updateStoreAnswer = (selectedAnswer, answerType) => {
@@ -301,6 +331,7 @@ const Game = () => {
             setTownName={setTownName}
             widthMainContent={widthMainContent}
             heightMainContent={heightMainContent}
+            currentQuestion={currentQuestion}
           />
         );
 
@@ -332,7 +363,8 @@ const Game = () => {
 
   const modalFeedback = () =>
     // Modal for feedbacks
-    feedbackImg?.resize(
+    feedbackImg &&
+    feedbackImg.resize(
       scale()
         .width(parseInt(widthMainContent * 0.5))
         .height(parseInt(heightMainContent * 0.85))
@@ -407,68 +439,156 @@ const Game = () => {
     );
 
   // Modal for end of act / Summary
-  const endOfAct = () => (
-    <Modal
-      open={openEndModal}
-      onClose={() => {
-        animateOut(openEndModal, "#modal-end", () => {
-          setOpenEndModal(false);
-          navigate("/");
-          initializingState();
-        });
-      }}
-      className={animationModalIn}
-      id={"modal-end"}
-    >
-      <ModalDialog>
-        <ModalClose variant="outlined" />
-        <DialogTitle>
-          Résolution de l&apos;ACTE {currentAct?.chapter}
-        </DialogTitle>
+  const endOfAct = () => {
+    return heightMainContent && widthMainContent ? (
+      titleEndActImg &&
+      titleEndActImg.resize(
+        scale()
+          .width(parseInt(widthMainContent * 0.7 * 0.5))
+          .height(parseInt(heightMainContent * 0.8 * 0.9))
+      ) &&
+      rankEndActImg &&
+      // rankEndActImg.resize() &&
+      bgEndActImg &&
+      bgEndActImg.resize(
+        scale()
+          .width(parseInt(widthMainContent * 0.7))
+          .height(parseInt(heightMainContent * 0.8))
+      ) ? (
+        <Modal
+          open={openEndModal}
+          onClose={() => {
+            animateOut(openEndModal, "#modal-end", () => {
+              setOpenEndModal(false);
+              navigate("/");
+              initializingState();
+            });
+          }}
+          className={animationModalIn}
+          id={"modal-end"}
+        >
+          <ModalDialog
+            sx={{
+              height: parseInt(heightMainContent * 0.8),
+              width: parseInt(widthMainContent * 0.7),
+              backgroundImage: `url(${bgEndActImg.toURL()})`,
+              padding: 0,
+            }}
+          >
+            <ModalClose variant="outlined" />
 
-        <Stack direction="column" sx={{ display: "flex" }} spacing={1}>
-          <Typography>
-            <DisplayingText
-              sentence={currentAct?.resolution?.text
-                ?.replace(
-                  "totalResidents",
-                  scoresThematic.filter((e) => e.thematic == "Residents")[0]
-                    ?.totalScore
-                )
-                .replace("townStatus", currentAct?.townStatus)}
-            />
-          </Typography>
-
-          {/* <Joy.Stack
-              direction="row"
-              spacing={2}
-              justifyContent="space-evenly"
+            <Stack
+              width={"100%"}
+              height={"100%"}
+              direction="column"
+              display={"flex"}
+              spacing={1}
             >
-              {scoresThematic.map((e) => (
-                <Joy.Typography key={e.thematic}>
-                  {e.thematic} : {e.totalScore}
-                </Joy.Typography>
-              ))}
-            </Joy.Stack> */}
-
-          <Sheet sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
-            <Link to="/">
-              <Button
-                onClick={() => {
-                  animateOut(openEndModal, "#modal-end", () => {
-                    setOpenEndModal(false);
-                    initializingState();
-                  });
-                }}
+              <Stack
+                direction={"row"}
+                width={"100%"}
+                height={"90%"}
+                display={"flex"}
+                alignItems={"center"}
+                spacing={2}
               >
-                Next
-              </Button>
-            </Link>
-          </Sheet>
-        </Stack>
-      </ModalDialog>
-    </Modal>
-  );
+                {/* Left side  */}
+                <Box
+                  width={"50%"}
+                  height={"100%"}
+                  display={"flex"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                  sx={{
+                    backgroundImage: `url(${titleEndActImg.toURL()})`,
+                    borderTopLeftRadius: 5,
+                  }}
+                >
+                  <Typography
+                    padding={5}
+                    level="h3"
+                    textColor={"white"}
+                    fontWeight={400}
+                  >{`Résolution de l'ACTE ${currentAct?.chapter}`}</Typography>
+                </Box>
+
+                {/* Right side  */}
+                <Box
+                  width={"50%"}
+                  height={"90%"}
+                  display={"flex"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                >
+                  <Typography level="title-lg" textColor={"white"}>
+                    {currentAct?.chapter == 1 ? (
+                      <DisplayingText
+                        sentence={currentAct?.resolution?.text
+                          ?.replace(
+                            "totalResidents",
+                            scoresThematic.filter(
+                              (e) => e.thematic == "Residents"
+                            )[0]?.totalScore
+                          )
+                          .replace("townStatus", currentAct?.townStatus)}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </Typography>
+                </Box>
+              </Stack>
+
+              {/* <Stack direction="row" spacing={2} justifyContent="space-evenly">
+                {scoresThematic.map((e) => (
+                  <Typography key={e.thematic}>
+                    {e.thematic} : {e.totalScore}
+                  </Typography>
+                ))}
+              </Stack> */}
+
+              <Box
+                sx={{ flex: 1, display: "flex", justifyContent: "center" }}
+              >
+                <Link to="/">
+                  <Button
+                    onClick={() => {
+                      animateOut(openEndModal, "#modal-end", () => {
+                        setOpenEndModal(false);
+                        initializingState();
+                      });
+                    }}
+                  >
+                    Next
+                  </Button>
+                </Link>
+              </Box>
+            </Stack>
+          </ModalDialog>
+        </Modal>
+      ) : (
+        <Box
+          height={"100%"}
+          width={"100%"}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <CircularProgress variant="soft" color="success" />
+        </Box>
+      )
+    ) : (
+      <Box
+        height={"100%"}
+        width={"100%"}
+        display={"flex"}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        <CircularProgress variant="soft" color="success" />
+      </Box>
+    );
+  };
 
   const storeScore = () => {
     if (storeAnswer.length > 0) {
@@ -626,56 +746,91 @@ const Game = () => {
       );
     }
 
-    return (
-      <Modal
-        open={openScaleModal}
-        onClose={() =>
-          animateOut(openScaleModal, "#modal-scale", () =>
-            setOpenScaleModal(false)
-          )
-        }
-        className={animationModalIn}
-        id={"modal-scale"}
-      >
-        <ModalDialog>
-          <ModalClose variant="outlined" />
-          <DialogTitle>
-            <Typography level="h3" sx={{ textAlign: "center" }}>
+    return heightMainContent && widthMainContent ? (
+      feedbackImg &&
+      feedbackImg.resize(
+        scale()
+          .width(parseInt(widthMainContent * 0.7))
+          .height(parseInt(heightMainContent * 0.6))
+      ) ? (
+        <Modal
+          open={openScaleModal}
+          onClose={() =>
+            animateOut(openScaleModal, "#modal-scale", () =>
+              setOpenScaleModal(false)
+            )
+          }
+          className={animationModalIn}
+          id={"modal-scale"}
+        >
+          <ModalDialog
+            sx={{
+              width: parseInt(widthMainContent * 0.7),
+              height: parseInt(heightMainContent * 0.6),
+              position: "relative",
+              backgroundImage: `url(${feedbackImg.toURL()})`,
+            }}
+          >
+            <ModalClose variant="outlined" />
+            <DialogTitle sx={{ position: "absolute", top: "14%", left: "50%" }}>
               Votre devise
-            </Typography>
-          </DialogTitle>
+            </DialogTitle>
 
-          <Typography>
-            En se basant sur vos notes, la devise qui vous convient le mieux est
-            :{" "}
-            <Typography sx={{ fontWeight: "bold" }}>
-              {choosenMotto && choosenMotto[0]?.content}
+            <Typography sx={{ marginTop: "13%" }}>
+              En se basant sur vos notes, la devise qui vous convient le mieux
+              est :{" "}
+              <Typography sx={{ fontWeight: "bold" }}>
+                {choosenMotto && choosenMotto[0]?.content.text}
+              </Typography>
             </Typography>
-          </Typography>
 
-          <Button
-            onClick={() =>
-              animateOut(openScaleModal, "#modal-scale", () =>
-                setOpenScaleModal(false)
-              )
-            }
-          >
-            Retour au choix
-          </Button>
-          <Button
-            onClick={() =>
-              animateOut(openScaleModal, "#modal-scale", () => {
-                setOpenScaleModal(false);
-                updateStoreAnswer(choosenMotto[0], currentQuestion?.answerType);
-                storeScore();
-                initializingState();
-              })
-            }
-          >
-            Continuer
-          </Button>
-        </ModalDialog>
-      </Modal>
+            <Button
+              onClick={() =>
+                animateOut(openScaleModal, "#modal-scale", () =>
+                  setOpenScaleModal(false)
+                )
+              }
+            >
+              Retour au choix
+            </Button>
+            <Button
+              onClick={() =>
+                animateOut(openScaleModal, "#modal-scale", () => {
+                  setOpenScaleModal(false);
+                  updateStoreAnswer(
+                    choosenMotto[0],
+                    currentQuestion?.answerType
+                  );
+                  storeScore();
+                  initializingState();
+                })
+              }
+            >
+              Continuer
+            </Button>
+          </ModalDialog>
+        </Modal>
+      ) : (
+        <Box
+          height={"100%"}
+          width={"100%"}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <CircularProgress variant="soft" color="success" />
+        </Box>
+      )
+    ) : (
+      <Box
+        height={"100%"}
+        width={"100%"}
+        display={"flex"}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        <CircularProgress variant="soft" color="success" />
+      </Box>
     );
   };
 
@@ -748,24 +903,28 @@ const Game = () => {
                     position={"relative"}
                   >
                     {widthMainContent && heightMainContent ? (
-                      questionBackgroundImg?.resize(
+                      questionBackgroundImg &&
+                      questionBackgroundImg.resize(
                         scale()
                           .width(widthMainContent)
                           .height(heightMainContent)
                       ) &&
-                      decorationImg?.resize(
+                      decorationImg &&
+                      decorationImg.resize(
                         scale()
                           .width(parseInt(widthMainContent * 0.1))
                           .height(parseInt(heightMainContent * 0.15))
                       ) &&
-                      reversedDecorationImg?.resize(
+                      reversedDecorationImg &&
+                      reversedDecorationImg.resize(
                         scale()
                           .width(parseInt(widthMainContent * 0.1))
                           .height(parseInt(heightMainContent * 0.15))
                       ) &&
                       currentQuestion &&
                       (currentQuestion?.content?.backgroundImg
-                        ? questionContentImg?.resize(
+                        ? questionContentImg &&
+                          questionContentImg.resize(
                             scale()
                               .width(
                                 currentQuestion?.visual?.directionAnswer ==
@@ -844,9 +1003,9 @@ const Game = () => {
                                 }}
                               >
                                 <DisplayingText
-                                  sentence={currentQuestion?.content.content}
+                                  sentence={currentQuestion?.content.text}
                                   level={"h4"}
-                                  textColor={"white"}
+                                  textColor={currentQuestion?.content.textColor}
                                   padding={1}
                                 />
                               </Box>

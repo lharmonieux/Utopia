@@ -74,15 +74,18 @@ const Home = () => {
             {/* main content  */}
             <Box height={"100%"} width={"70%"} id={"main-content"}>
               {widthMainContent && heightMainContent ? (
+                backgroundImg &&
                 backgroundImg.resize(
                   scale().width(widthMainContent).height(heightMainContent)
                 ) &&
+                imgPresentation &&
                 imgPresentation.resize(
                   scale()
                     .width(parseInt(widthMainContent * 0.4))
                     .height(parseInt(heightMainContent * 0.7))
                 ) &&
                 logo &&
+                decoration &&
                 decoration.resize(
                   scale()
                     .width(parseInt(widthMainContent * 0.15))

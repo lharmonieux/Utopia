@@ -57,7 +57,7 @@ const Characters = ({
               borderRadius: character.selected ? 5 : 0,
               cursor: "pointer"
             }}
-            className={"animate__animated animate__bounceIn"}
+            className={`animate__animated animate__bounceIn`}
           >
             {/* Character's name */}
             <Box
