@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import {
   Box,
   Stack,
@@ -36,8 +36,6 @@ const Home = () => {
   const authState = useSelector((state) => state.auth);
   const stateUser = useSelector((state) => state.user);
   const navigate = useNavigate();
-
-  console.log(stateUser);
 
   //Read Images
   useEffect(() => {
