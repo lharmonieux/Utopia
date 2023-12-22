@@ -1,32 +1,29 @@
 /* eslint-disable react/prop-types */
-import { Box, CircularProgress, CssVarsProvider, Typography } from "@mui/joy";
+import { Box, CircularProgress, Typography } from "@mui/joy";
 import "animate.css";
 import { useEffect, useState } from "react";
-import { scale } from "@cloudinary/url-gen/actions/resize";
-import { AdvancedImage } from "@cloudinary/react";
-import { typographyTheme } from "../utils/themeJoy";
 import { colors } from "../utils/colors";
+import { useSelector } from "react-redux";
+import { backgroundSize } from "../utils/backgroundSizeProvider";
 
 const ActPresentation = ({
-  act,
   setShowActPresentation,
   setShowMainContent,
   actPresentationImg,
   decorationImg,
   titleActImg,
   logoAppImg,
-  reversedDecorationImg,
 }) => {
-  const [widthMainContent, setWidthMainContent] = useState(0);
-  const [heightMainContent, setHeightMainContent] = useState(0);
+  const stateActs = useSelector((state) => state.act);
+  const domConfig = useSelector((state) => state.dom);
   const [actPresentationBox, setActPresentationBox] = useState();
 
   useEffect(() => {
     setActPresentationBox(document.querySelector("#act-presentation-box"));
     if (actPresentationBox) {
       //Size DOM Container
-      setWidthMainContent(actPresentationBox.clientWidth);
-      setHeightMainContent(actPresentationBox.clientHeight);
+      // setWidthMainContent(actPresentationBox.clientWidth);
+      // setHeightMainContent(actPresentationBox.clientHeight);
 
       const delay = setTimeout(() => {
         actPresentationBox.classList.add(
@@ -45,130 +42,101 @@ const ActPresentation = ({
   }, [actPresentationBox]);
 
   return (
-    <CssVarsProvider theme={typographyTheme}>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems={"center"}
-        height="97vh"
-        width="99vw"
-      >
-        <Box height={"100%"} width={"70%"} id={"act-presentation-box"}>
-          {heightMainContent && widthMainContent ? (
-            actPresentationImg.resize(
-              scale().height(heightMainContent).width(widthMainContent)
-            ) &&
-            logoAppImg.resize(
-              scale()
-                .height(parseInt(heightMainContent * 0.3))
-                .width(parseInt(widthMainContent * 0.45))
-            ) &&
-            titleActImg.resize(
-              scale()
-                .height(parseInt(heightMainContent * 0.1))
-                .width(parseInt(widthMainContent * 0.25))
-            ) &&
-            reversedDecorationImg.resize(
-              scale()
-                .width(parseInt(widthMainContent * 0.35))
-                .height(parseInt(heightMainContent * 0.48))
-            ) &&
-            decorationImg.resize(
-              scale()
-                .width(parseInt(widthMainContent * 0.15))
-                .height(parseInt(heightMainContent * 0.3))
-            ) ? (
-              <Box
-                height={heightMainContent}
-                width={widthMainContent}
-                position={"relative"}
-                sx={{
-                  borderRadius: 5,
-                  backgroundImage: `url(${actPresentationImg.toURL()})`,
-                }}
-                className={`animate__animated animate__fadeIn`}
-              >
-                {/* Main content flex*/}
-                <Box
-                  height={heightMainContent}
-                  width={widthMainContent}
-                  display={"flex"}
-                  flexDirection={"column"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                >
-                  {/* logo */}
-                  <Box
-                    marginTop={7}
-                    height={parseInt(heightMainContent * 0.3)}
-                    width={parseInt(widthMainContent * 0.45)}
-                  >
-                    <AdvancedImage cldImg={logoAppImg} />
-                  </Box>
-
-                  {/* title */}
-                  <Box
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    height={parseInt(heightMainContent * 0.1)}
-                    width={parseInt(widthMainContent * 0.25)}
-                    sx={{
-                      backgroundImage: `url(${titleActImg.toURL()})`,
-                    }}
-                  >
-                    <Typography
-                      level="h2"
-                      textColor={colors.titleBackLight}
-                      fontWeight={400}
-                    >
-                      ACTE {act?.chapter}
-                    </Typography>
-                  </Box>
-
-                  <Typography level="h1" textColor={"white"} fontWeight={400}>
-                    {act?.name}
-                  </Typography>
-                </Box>
-
-                {/* Decoration  */}
-                <Box position={"absolute"} top={0} left={0}>
-                  <AdvancedImage
-                    cldImg={reversedDecorationImg}
-                  />
-                </Box>
-
-                <Box position={"absolute"} bottom={-4} right={0}>
-                  <AdvancedImage
-                    cldImg={decorationImg}
-                  />
-                </Box>
-              </Box>
-            ) : (
-              <Box
-                height={"100%"}
-                width={"100%"}
-                display={"flex"}
-                alignItems={"center"}
-                justifyContent={"center"}
-              >
-                <CircularProgress variant="soft" color="success" />
-              </Box>
-            )
-          ) : (
+    <Box height={"100%"} width={"100%"} id={"act-presentation-box"}>
+      {actPresentationImg && logoAppImg && titleActImg && decorationImg ? (
+        <Box
+          height={domConfig.height}
+          width={domConfig.width}
+          position={"relative"}
+          sx={{
+            borderRadius: 5,
+            backgroundImage: `url(${actPresentationImg})`,
+            backgroundSize: backgroundSize(domConfig.width, domConfig.height),
+          }}
+          className={`animate__animated animate__fadeIn`}
+        >
+          {/* Main content flex*/}
+          <Box
+            height={domConfig.height}
+            width={domConfig.width}
+            display={"flex"}
+            flexDirection={"column"}
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            {/* logo */}
             <Box
-              height={"100%"}
-              width={"100%"}
+              marginTop={7}
+              height={parseInt(domConfig.height * 0.3)}
+              width={parseInt(domConfig.width * 0.45)}
+            >
+              <img
+                src={logoAppImg}
+                width={domConfig.width * 0.45}
+                height={domConfig.height * 0.3}
+              />
+            </Box>
+
+            {/* title */}
+            <Box
               display={"flex"}
               alignItems={"center"}
               justifyContent={"center"}
+              height={parseInt(domConfig.height * 0.1)}
+              width={parseInt(domConfig.width * 0.25)}
+              sx={{
+                backgroundImage: `url(${titleActImg})`,
+                backgroundSize: backgroundSize(
+                  domConfig.width * 0.25,
+                  domConfig.height * 0.1
+                ),
+                backgroundRepeat: 'no-repeat'
+              }}
             >
-              <CircularProgress variant="soft" color="success" />
+              <Typography
+                level="h2"
+                textColor={colors.titleBackLight}
+                fontWeight={400}
+              >
+                ACTE {stateActs.currentAct?.chapter}
+              </Typography>
             </Box>
-          )}
+
+            <Typography level="h1" textColor={"white"} fontWeight={400}>
+              {stateActs.currentAct?.name}
+            </Typography>
+          </Box>
+
+          {/* Decoration  */}
+          <Box position={"absolute"} top={0} left={0}>
+            <img
+              src={decorationImg}
+              height={domConfig.height * 0.48}
+              width={domConfig.width * 0.35}
+              style={{transform: 'rotate(180deg)'}}
+            />
+          </Box>
+
+          <Box position={"absolute"} bottom={-4} right={0}>
+            <img
+              src={decorationImg}
+              height={domConfig.height * 0.3}
+              width={domConfig.width * 0.15}
+            />
+          </Box>
         </Box>
-      </Box>
-    </CssVarsProvider>
+      ) : (
+        <Box
+          height={"100%"}
+          width={"100%"}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <CircularProgress variant="soft" color="success" />
+        </Box>
+      )}
+    </Box>
   );
 };
 

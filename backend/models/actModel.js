@@ -33,30 +33,51 @@ const actSchema = new mongoose.Schema({
   },
   questions: [
     {
-      content: {
-        text: String,
-        backgroundImg: String,
-        justifyContent: String,
-        textColor: String
-      },
+      content: [
+        {
+          text: String,
+          backgroundImg: String,
+          justifyContent: String,
+          textColor: String,
+        },
+      ],
       order: {
         type: Number,
         required: true,
       },
+      additionalContent: {
+        text: String,
+        img: String,
+        scale: {
+          width: String,
+          height: String,
+        },
+        position: {
+          top: String,
+          left: String,
+        },
+      },
       visual: {
-        backgroundImg: String,
-        answerImg: String,
-        enumAnswer: Boolean,
+        bgImgMainContent: String,
+        boxAnswersImg: {
+          img: String,
+          width: String,
+          height: String,
+          left: String,
+          top: String
+        },
         directionAnswer: String,
         mapView: {
+          backgroundImg: String,
           mapImg: String,
           buttonImg: {
             button: String,
             buttonGif: String,
           },
-          descriptionImg: String
+          descriptionImg: String,
+          hasAnswers: Boolean,
         },
-        feedbackImg: String
+        feedbackImg: String,
       },
       answerType: {
         type: String,
@@ -65,14 +86,28 @@ const actSchema = new mongoose.Schema({
       answers: [
         {
           content: {
-            text: String,
-            textColor: String
+            text: {
+              text: String,
+              position: {
+                top: String,
+                left: String,
+                width: String,
+                height: String
+              },
+            },
+            textColor: String,
+            position: {
+              top: String,
+              left: String,
+            },
+          },
+          img: String,
+          choiceImg: {
+            align: String,
+            img: String,
           },
           score: Number,
-          feedback: {
-            text: String,
-            backgroundImg: String,
-          },
+          feedback: String,
           thematic: String,
           givenResidents: Number,
         },

@@ -1,0 +1,1 @@
+export const PICTURES_DIR = import.meta.env.BASE_URL + "pictures";

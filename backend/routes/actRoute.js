@@ -5,9 +5,11 @@ import {
     getAct,
     updateAct,
 } from "../controllers/actController.js"
+import { verifiJWT } from "../middlewares/verfyJWT.js";
 
 const router = express.Router();
 
+router.use(verifiJWT);
 router.post("/", addAct);
 router.get("/", getAct);
 router.put("/:id_act", updateAct);

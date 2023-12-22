@@ -11,13 +11,12 @@ const Menu = ({ showDrawer, setShowDrawer, setShowSummary }) => {
       <Box role="presentation" variant="soft">
         <List>
           <ListItem>
-            <ListItemButton>Se connecter/se déconnecter</ListItemButton>
-          </ListItem>
-
-          <ListItem>
             <ListItemButton onClick={() => setShowSummary(true)}>
               Sommaire
             </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton>Se déconnecter</ListItemButton>
           </ListItem>
         </List>
       </Box>

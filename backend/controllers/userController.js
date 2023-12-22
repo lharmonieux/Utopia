@@ -1,30 +1,123 @@
 import constants from "../constants.js";
 import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
+import Account from "../models/accountModel.js";
 
-//Registration for an user
-export const register = async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        //Form not completed
-        if (!username || !password) {
-            return res.status(constants.VALIDATION_ERROR)
-                .json({ message: "Veuillez renseigner tous les champs" });
-        }
-
-        //Hash password
-        const hashed_pwd = await bcrypt.hash(password, 5);
-
-        const role = "JOUEUR";
-        const user = await User.create({
-            username,
-            hashed_pwd,
-            role
-        });
-
-        return res.status(constants.SUCCESS).send({message: "Utilisateur créé"});
-
-    } catch (error) {
-        return res.status(constants.SERVER_ERROR).send({message: error.message});
+// Registration for an user
+// @access Private
+export const createUser = async (req, res) => {
+  try {
+    const { firstname, lastname, email, password } = req.body;
+    //Form not completed
+    if (!firstname || !lastname || !email || !password) {
+      return res
+        .status(constants.VALIDATION_ERROR)
+        .json({ message: "Veuillez renseigner tous les champs" });
     }
-}
+
+    // Check for duplicate username
+    const duplicate = await User.findOne({ firstname, lastname }).exec();
+    if (duplicate) {
+      return res.status(constants.CONFLICT).json({
+        message: `Un utilisateur avec les mêmes nom et prénom existe déjà.`,
+      });
+    }
+
+    //Hash password
+    const hashedPwd = await bcrypt.hash(password, 10);
+
+    const role = "JOUEUR";
+
+    //Create and store new user
+    const user = await User.create({
+      firstname,
+      lastname,
+      role,
+    });
+
+    let account;
+    if (user) {
+      // Create and store new account
+      account = await Account.create({
+        email,
+        password: hashedPwd,
+        user: user._id,
+      });
+    }
+
+    if (user && account)
+      return res.status(constants.SUCCESS).send({
+        message: `Nouveau compte créé : ${user.firstname} ${user.lastname}`,
+      });
+    else
+      return res.status(constants.VALIDATION_ERROR).json({
+        message:
+          "Erreur dans la création de l'utilisateur. Veuillez recharger la page et rééssayer.",
+      });
+  } catch (error) {
+    return res.status(constants.SERVER_ERROR).json({ message: error.message });
+  }
+};
+
+export const getUser = async (req, res) => {
+  try {
+    let user;
+    if (req.email)
+      user = await Account.findOne({ email: req.email })
+        .select("-password")
+        .populate("user")
+        .exec();
+    if (user) return res.status(constants.SUCCESS).json(user);
+    return res
+      .status(constants.NOT_FOUND)
+      .json({ message: "Cet utilisateur n'existe pas" });
+  } catch (error) {
+    console.log(error);
+    return res.status(constants.SERVER_ERROR).json({ message: error.message });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    // Get datas from request 
+    const {
+      idUser,
+      firstname,
+      lastname,
+      role,
+      character,
+      secondCharacter,
+      motto,
+      town,
+      townName,
+      townStatus,
+      saves,
+    } = req.body;
+
+    // element to save 
+    const userToSave = {
+      firstname,
+      lastname,
+      role,
+      character,
+      secondCharacter,
+      motto,
+      town,
+      townName,
+      townStatus,
+      saves,
+    };
+
+    const newUser = await User.findByIdAndUpdate(idUser, userToSave);
+    if (newUser)
+      return res
+        .status(constants.CREATED)
+        .json({ message: "Données sauvegardées." });
+    return res
+      .status(constants.NOT_FOUND)
+      .json({ message: "Ce utilisateur n'existe pas" });
+  } catch (error) {
+    console.log(error);
+    return res.status(constants.SERVER_ERROR).json({ message: error.message });
+  }
+};

@@ -8,80 +8,18 @@ import {
   Typography,
 } from "@mui/joy";
 import { typographyTheme } from "../utils/themeJoy";
-import { useEffect, useState } from "react";
-import cloudinary from "../utils/cloudinary";
-import { scale } from "@cloudinary/url-gen/actions/resize";
-import { AdvancedImage } from "@cloudinary/react";
 import { colors } from "../utils/colors";
 import "animate.css";
+import { useDispatch, useSelector } from "react-redux";
+import { updateTownSelected } from "../utils/redux/townSlice";
+import { backgroundSize } from "../utils/backgroundSizeProvider";
+import { PICTURES_DIR } from "../utils/constants";
 
-const Towns = ({
-  currentQuestion,
-  heightMainContent,
-  widthMainContent,
-  towns,
-  handleSelectedProposition,
-}) => {
-  const [mapImg, setMapImg] = useState();
-  const [buttonTownImg, setButtonTownImg] = useState();
-  const [buttonTownImgGif, setButtonTownImgGif] = useState();
-  const [descriptionImg, setDescriptionImg] = useState();
-  const [newTowns, setNewTowns] = useState();
-
-  useEffect(() => {
-    setMapImg(
-      cloudinary
-        .image(`exploria/${currentQuestion?.visual?.mapView?.mapImg}`)
-        .quality("auto:best")
-        .format("png")
-    );
-
-    setButtonTownImg(
-      cloudinary
-        .image(
-          `exploria/${currentQuestion?.visual?.mapView?.buttonImg?.button}`
-        )
-        .quality("auto:best")
-        .format("png")
-    );
-
-    setButtonTownImgGif(
-      cloudinary
-        .image(
-          `exploria/${currentQuestion?.visual?.mapView?.buttonImg?.buttonGif}`
-        )
-        .quality("auto:best")
-        .format("png")
-    );
-
-    setDescriptionImg(
-      cloudinary
-        .image(`exploria/${currentQuestion?.visual?.mapView?.descriptionImg}`)
-        .quality("auto:best")
-        .format("png")
-    );
-
-    setNewTowns(
-      towns?.map((town) => ({
-        name: town?.name,
-        description: town?.description,
-        labelImg: town?.labelImg
-          ? cloudinary
-              .image(`exploria/${town?.labelImg}`)
-              .quality("auto:best")
-              .format("png")
-          : "",
-        top: town?.top,
-        left: town?.left,
-        feedback: town?.feedback,
-        selected: town?.selected ? town?.selected : false,
-      }))
-    );
-
-    // for (const town of towns) {
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestion]);
+const Towns = ({ handleSelectedProposition }) => {
+  const stateActs = useSelector((state) => state.act);
+  const domConfig = useSelector((state) => state.dom);
+  const stateTowns = useSelector((state) => state.town);
+  const dispatch = useDispatch();
 
   const displayDescription = (idElement) => {
     const descriptionBox = document.querySelector(`#${idElement}`);
@@ -98,81 +36,67 @@ const Towns = ({
   const setSelectedTown = (selectedTown) => {
     handleSelectedProposition(
       selectedTown,
-      currentQuestion?.answerType,
+      stateActs.currentQuestion?.answerType,
       selectedTown?.name
     );
-    setNewTowns(
-      newTowns?.map((town) => ({
-        name: town?.name,
-        description: town?.description,
-        labelImg: town?.labelImg,
-        top: town?.top,
-        left: town?.left,
-        feedback: town?.feedback,
-        selected: selectedTown == town ? !town?.selected : false,
-      }))
-    );
+    dispatch(updateTownSelected({ towns: stateTowns.towns, selectedTown }));
   };
 
-  return heightMainContent && widthMainContent ? (
+  return (
     <Stack display={"flex"} direction={"column"} alignItems={"center"}>
-      {currentQuestion &&
-      mapImg &&
-      mapImg.resize(
-        scale()
-          .width(parseInt(widthMainContent * 0.85))
-          .height(parseInt(heightMainContent * 0.8))
-      ) &&
-      buttonTownImg &&
-      buttonTownImg.resize(
-        scale()
-          .width(parseInt(widthMainContent * 0.015))
-          .height(parseInt(heightMainContent * 0.025))
-      ) &&
-      buttonTownImgGif &&
-      buttonTownImgGif.resize(
-        scale()
-          .width(parseInt(widthMainContent * 0.06))
-          .height(parseInt(heightMainContent * 0.08))
-      ) &&
-      descriptionImg &&
-      descriptionImg.resize(
-        scale()
-          .width(parseInt(widthMainContent * 0.2))
-          .height(parseInt(heightMainContent * 0.35))
-      ) &&
-      newTowns ? (
+      {stateActs.currentQuestion ? (
         <CssVarsProvider theme={typographyTheme}>
           <Box
-            width={parseInt(widthMainContent * 0.85)}
-            height={parseInt(heightMainContent * 0.8)}
+            width={parseInt(domConfig.width * 0.85)}
+            height={parseInt(domConfig.height * 0.8)}
             position={"relative"}
-            sx={{ backgroundImage: `url(${mapImg.toURL()})` }}
+            sx={{
+              backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.backgroundImg})`,
+              backgroundSize: backgroundSize(
+                domConfig.width * 0.85,
+                domConfig.height * 0.8
+              ),
+            }}
           >
-            {newTowns.map((town) => (
+            {/* Map image  */}
+            <Box
+              height={"100%"}
+              width={"100%"}
+              sx={{ position: "absolute", top: "-32%", left: "-6%" }}
+            >
+              <img
+                src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.mapImg}`}
+                height={"140%"}
+                width={"112%"}
+              />
+            </Box>
+
+            {stateTowns.towns?.map((town) => (
               <Box key={town._id}>
                 <Box
-                  width={parseInt(widthMainContent * 0.12)}
-                  height={parseInt(heightMainContent * 0.05)}
+                  width={parseInt(domConfig.width * 0.12)}
+                  height={parseInt(domConfig.height * 0.05)}
                   position={"absolute"}
-                  top={town.top}
-                  left={town.left}
+                  top={`${town.top}%`}
+                  left={`${town.left}%`}
                   display={"flex"}
                   flexDirection={"row"}
                   alignItems={"center"}
                   justifyContent={"space-between"}
                 >
-                  <AdvancedImage
-                    cldImg={buttonTownImg}
-                    alt={"Bouton de ville"}
+                  {/* Button's img  */}
+                  <img
+                    src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.buttonImg?.button}`}
+                    width={domConfig.width * 0.015}
+                    height={domConfig.height * 0.025}
                   />
+
+                  {/* Button label  */}
                   {town?.labelImg && (
-                    <AdvancedImage
-                      cldImg={town?.labelImg?.resize(
-                        scale()
-                          .width(parseInt(widthMainContent * 0.1))
-                          .height(parseInt(heightMainContent * 0.05))
-                      )}
+                    <img
+                      src={`${PICTURES_DIR}/${town?.labelImg}`}
+                      width={domConfig.width * 0.1}
+                      height={domConfig.height * 0.05}
                     />
                   )}
                 </Box>
@@ -181,8 +105,8 @@ const Towns = ({
                     {/* GIF */}
                     <Box
                       position={"absolute"}
-                      top={`${parseFloat(town.top) - 1.7}%`}
-                      left={`${parseFloat(town.left) - 2.6}%`}
+                      top={`${parseFloat(town.top) - 3}%`}
+                      left={`${parseFloat(town.left) - 2}%`}
                       sx={{ cursor: "pointer" }}
                       onClick={() =>
                         displayDescription(
@@ -190,22 +114,27 @@ const Towns = ({
                         )
                       }
                     >
-                      <AdvancedImage
-                        cldImg={buttonTownImgGif}
-                        alt={"Bouton de ville GIF"}
+                      <img
+                        src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.buttonImg?.buttonGif}`}
+                        width={domConfig.width * 0.05}
+                        height={domConfig.height * 0.1}
                       />
                     </Box>
 
                     {/* town's description */}
                     <Box
-                      width={parseInt(widthMainContent * 0.2)}
-                      height={parseInt(heightMainContent * 0.35)}
+                      width={parseInt(domConfig.width * 0.2)}
+                      height={parseInt(domConfig.height * 0.35)}
                       position={"absolute"}
                       display={"none"}
                       top={`${parseFloat(town.top) - 12}%`}
                       left={`${parseFloat(town.left) - 25}%`}
                       sx={{
-                        backgroundImage: `url(${descriptionImg.toURL()})`,
+                        backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.descriptionImg})`,
+                        backgroundSize: backgroundSize(
+                          domConfig.width * 0.2,
+                          domConfig.height * 0.35
+                        ),
                         border: town?.selected && 2,
                         borderColor: town?.selected && colors.borderDescMap,
                       }}
@@ -240,8 +169,8 @@ const Towns = ({
 
                       {/* Button "chosir" */}
                       <Box
-                        width={parseInt(widthMainContent * 0.15)}
-                        height={parseInt(heightMainContent * 0.05)}
+                        width={parseInt(domConfig.width * 0.15)}
+                        height={parseInt(domConfig.height * 0.05)}
                         // position={"absolute"}
                         // top={`${parseFloat(town?.top) + 15.5}%`}
                         // left={`${parseFloat(town?.left) - 24}%`}
@@ -278,16 +207,6 @@ const Towns = ({
         </Box>
       )}
     </Stack>
-  ) : (
-    <Box
-      height={"100%"}
-      width={"100%"}
-      display={"flex"}
-      alignItems={"center"}
-      justifyContent={"center"}
-    >
-      <CircularProgress variant="soft" color="success" />
-    </Box>
   );
 };
 
