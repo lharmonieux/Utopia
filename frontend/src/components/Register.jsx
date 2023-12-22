@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import {
+  Alert,
   Button,
   DialogTitle,
   Input,
@@ -11,7 +12,6 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../api/userAPi";
-import { AlertUser } from "./Alert";
 import { createUserSuccess } from "../utils/redux/userSlice";
 
 const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
@@ -84,11 +84,11 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
 
         {/* feedback server  */}
         {creationState.error && (
-          <AlertUser color={"danger"} text={creationState.error.message} />
+          <Alert color={"danger"}>{creationState.error} </Alert>
         )}
 
         {creationState.successLogin && (
-          <AlertUser color={"success"} text={creationState.successLogin.message} />
+          <Alert color={"success"}>{creationState.successLogin} </Alert>
         )}
       </ModalDialog>
     </Modal>

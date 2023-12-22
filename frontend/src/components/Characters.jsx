@@ -33,7 +33,7 @@ const Characters = ({ setObjectCharacterSelected, objectSelectedCharacter }) => 
       if (selectedCharacter._id == objectSelectedCharacter) {
         setObjectCharacterSelected("");
       } else {
-        setObjectCharacterSelected(selectedCharacter._id);
+        setObjectCharacterSelected(selectedCharacter);
       }
 
       dispatch(
@@ -55,7 +55,7 @@ const Characters = ({ setObjectCharacterSelected, objectSelectedCharacter }) => 
     >
       {/* Carte de personnage  */}
       {stateCharacters.characters?.map((character) => {
-        if (stateUser.character != character)
+        if (stateUser.character?._id != character?._id)
           return (
             <Box
               key={character._id}

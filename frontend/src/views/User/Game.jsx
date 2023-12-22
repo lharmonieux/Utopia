@@ -52,7 +52,7 @@ const Game = () => {
 
   // State
   // const [currentQuestion, setCurrentQuestion] = useState();
-  const [objectCharacterSelected, setObjectCharacterSelected] = useState("");
+  const [objectCharacterSelected, setObjectCharacterSelected] = useState(null);
   const [containsFeedback, setContainsFeedback] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
@@ -257,8 +257,8 @@ const Game = () => {
       case "personnage":
         return (
           <Characters
-            setIdCharacterSelected={setObjectCharacterSelected}
-            idCharacterSelected={objectCharacterSelected}
+            setObjectCharacterSelected={setObjectCharacterSelected}
+            objectSelectedCharacter={objectCharacterSelected}
           />
         );
 
@@ -285,9 +285,12 @@ const Game = () => {
   };
 
   const modalFeedback = () => {
-    const secondCharacterName = stateUser.secondCharacter.name;
+    const secondCharacterName = stateUser?.secondCharacter?.name;
     let feedbackText = feedback.content;
-    feedbackText = feedbackText.replace("secondCharacterName", secondCharacterName);
+    feedbackText = feedbackText.replace(
+      "secondCharacterName",
+      secondCharacterName
+    );
     // Modal for feedbacks
     return (
       feedbackImg && (
@@ -412,7 +415,8 @@ const Game = () => {
         onClose={() => {
           animateOut(openEndModal, "#modal-end", () => {
             setOpenEndModal(false);
-            navigate("/user/home");
+            // navigate("/user/home");
+            window.location.href = "/user/home";
             initializingState();
           });
         }}
@@ -499,18 +503,17 @@ const Game = () => {
               </Stack> */}
 
             <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
-              <Link to="/user/home">
-                <Button
-                  onClick={() => {
-                    animateOut(openEndModal, "#modal-end", () => {
-                      setOpenEndModal(false);
-                      initializingState();
-                    });
-                  }}
-                >
-                  Next
-                </Button>
-              </Link>
+              <Button
+                onClick={() => {
+                  animateOut(openEndModal, "#modal-end", () => {
+                    setOpenEndModal(false);
+                    window.location.href = "/user/home";
+                    initializingState();
+                  });
+                }}
+              >
+                Next
+              </Button>
             </Box>
           </Stack>
         </ModalDialog>

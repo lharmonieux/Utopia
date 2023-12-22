@@ -55,8 +55,8 @@ const PreFetch = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [acts, setActs] = useState([]);
-  // console.log(stateUser);
 
+  console.log(stateUser.currentAct);
   //Getting datas from api
 
   // Refresh token
@@ -155,14 +155,14 @@ const PreFetch = () => {
               }
               if (currentAct) {
                 //for user
-                dispatch(setCurrentAct(currentAct._id));
+                dispatch(setCurrentAct(currentAct?._id));
 
                 // Current act for act's store
                 dispatch(storeCurrentAct(currentAct));
                 // Store town status
-                dispatch(setTownStatus(currentAct.townStatus));
+                dispatch(setTownStatus(currentAct?.townStatus));
                 // Store currentAct for user's save
-                dispatch(setActSave(currentAct._id));
+                dispatch(setActSave(currentAct?._id));
               }
 
               // all saves
@@ -179,6 +179,14 @@ const PreFetch = () => {
                 // Store currentAct for user's save
                 dispatch(setActSave(acts[0]._id));
               }
+            }
+          }
+          // change only currentAct
+          else {
+            console.log("here");
+            for (let i = 0; i < acts.length; i++) {
+              if (acts[i]?._id == stateUser.currentAct)
+                dispatch(setCurrentAct(acts[i + 1]?._id));
             }
           }
         } else {

@@ -13,7 +13,14 @@ const Menu = ({ showDrawer, setShowDrawer, setShowSummary }) => {
       <Box role="presentation" variant="soft">
         <List>
           <ListItem>
-            <ListItemButton onClick={()=> navigate('/user/home')}>Accueil</ListItemButton>
+            <ListItemButton
+              onClick={() => {
+                navigate("/user/home");
+                setShowDrawer(false);
+              }}
+            >
+              Accueil
+            </ListItemButton>
           </ListItem>
           <ListItem>
             <ListItemButton onClick={() => setShowSummary(true)}>
