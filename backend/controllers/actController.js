@@ -6,18 +6,25 @@ import { handleValidationErrorsAct } from "../middlewares/handleError.js";
 export const addAct = async (req, res) => {
   try {
     //Getting body informations
-    const { name, chapter, description, townStatus, resolution, questions, visual } =
-      req.body;
+    const {
+      name,
+      chapter,
+      description,
+      townStatus,
+      resolution,
+      questions,
+      visual,
+    } = req.body;
 
     //Getting the errors
-    const error = handleValidationErrorsAct(
-      {name,
+    const error = handleValidationErrorsAct({
+      name,
       chapter,
       questions,
       townStatus,
       resolution,
-      constants}
-    );
+      constants,
+    });
     if (error) return res.status(error.status).json({ message: error.message });
 
     const newAct = {
@@ -27,7 +34,7 @@ export const addAct = async (req, res) => {
       townStatus,
       resolution,
       questions,
-      visual
+      visual,
     };
 
     // Save acte
@@ -46,7 +53,9 @@ export const addAct = async (req, res) => {
 export const getAct = async (req, res) => {
   try {
     //Getting acts from DB
-    const acts = await Act.find({});
+    const acts = await Act.find({})
+      .populate("questions.answerType")
+      .populate("questions.answers.thematic");
     if (acts) return res.status(constants.SUCCESS).send(acts);
 
     //No act in DB
@@ -66,8 +75,15 @@ export const updateAct = async (req, res) => {
   try {
     const { id_act } = req.params;
     //Getting body informations
-    const { name, chapter, description, townStatus, resolution, questions, visual } =
-      req.body;
+    const {
+      name,
+      chapter,
+      description,
+      townStatus,
+      resolution,
+      questions,
+      visual,
+    } = req.body;
 
     //Getting the errors
     const error = handleValidationErrorsAct({
@@ -76,8 +92,8 @@ export const updateAct = async (req, res) => {
       townStatus,
       resolution,
       questions,
-      constants}
-    );
+      constants,
+    });
     if (error) return res.status(error.status).json({ message: error.message });
 
     //Updating information
@@ -88,12 +104,12 @@ export const updateAct = async (req, res) => {
       resolution,
       description,
       questions,
-      visual
+      visual,
     });
 
     if (!act)
       return res.status(constants.NOT_FOUND).json({
-        message: `L'acte ${name} n'existe pas.`,
+        message: `L'acte d'ID ${id_act} n'existe pas.`,
       });
 
     return res.status(constants.CREATED).json({

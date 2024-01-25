@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Stack,
@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../api/authAPI.js";
 import GlobalContainer from "../components/GlobalContainer.jsx";
 import { backgroundSize } from "../utils/backgroundSizeProvider.js";
+import { createUserError } from "../utils/redux/userSlice.js";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -52,7 +53,10 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (authState.token) navigate("/user/home");
+    if (authState.token) {
+      dispatch(createUserError(null));
+      navigate("/user/home");
+    }
 
     //Update sizes's states
     if (containerMainContent) {

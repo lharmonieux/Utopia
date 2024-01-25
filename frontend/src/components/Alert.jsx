@@ -18,3 +18,13 @@ export const AlertUser = ({ color, text }) => {
     </Alert>
   );
 };
+
+export const AlertBAdAnswerNumber = () => {
+  return (
+    <Stack>
+      <Alert color="danger" variant="soft">
+        Mauvais nombre de réponses soumises
+      </Alert>
+    </Stack>
+  );
+};

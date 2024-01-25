@@ -16,10 +16,10 @@ export const createUser = async (req, res) => {
     }
 
     // Check for duplicate username
-    const duplicate = await User.findOne({ firstname, lastname }).exec();
+    const duplicate = await Account.findOne({ email }).exec();
     if (duplicate) {
       return res.status(constants.CONFLICT).json({
-        message: `Un utilisateur avec les mêmes nom et prénom existe déjà.`,
+        message: `Cette adresse mail existe déjà.`,
       });
     }
 
@@ -77,9 +77,22 @@ export const getUser = async (req, res) => {
   }
 };
 
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await Account.find({}).populate("user").exec();
+    if (users) return res.status(constants.SUCCESS).json(users);
+    return res
+      .status(constants.NOT_FOUND)
+      .json({ message: "Aucun utilisateur trouvé" });
+  } catch (error) {
+    console.log(error);
+    return res.status(constants.SERVER_ERROR).json({ message: error.message });
+  }
+};
+
 export const updateUser = async (req, res) => {
   try {
-    // Get datas from request 
+    // Get datas from request
     const {
       idUser,
       firstname,
@@ -94,7 +107,7 @@ export const updateUser = async (req, res) => {
       saves,
     } = req.body;
 
-    // element to save 
+    // element to save
     const userToSave = {
       firstname,
       lastname,

@@ -11,11 +11,12 @@ const actSlice = createSlice({
   reducers: {
     storeActs: (state, action) => {
       const { acts } = action.payload;
-      state = { ...state, acts };
+      state.acts = acts;
       return state;
     },
-    storeCurrentAct: (state, action) =>{
-      state.currentAct = action.payload;
+    storeCurrentAct: (state, action) => {
+      const currentAct = action.payload;
+      state.currentAct = { ...currentAct, status: "IN PROGRESS" };
       return state;
     },
     setQuestion: (state, action) => {
@@ -51,13 +52,45 @@ const actSlice = createSlice({
       state.questionOrder = action.payload;
       return state;
     },
-    updateCurrentAct: (state, action)=> {
+    updateCurrentAct: (state, action) => {
       state.currentAct = action.payload;
       return state;
-    }
+    },
+    updateStatusActs: (state, action) => {
+      let { acts, nbOfSaves } = action.payload;
+      let isNextCurrAct = false;
+      const newActs = acts.map((act) => {
+        let newAct = { ...act };
+        if (act.chapter < nbOfSaves) newAct.status = "DONE";
+        if (act.chapter == nbOfSaves) {
+          newAct.status = "DONE";
+          isNextCurrAct = true;
+        }
+        if (act.chapter > nbOfSaves) {
+          if (isNextCurrAct || nbOfSaves == 0) {
+            newAct.status = "IN PROGRESS";
+            isNextCurrAct = false;
+            nbOfSaves++;
+          } else newAct.status = "NOT DONE";
+        }
+
+        return newAct;
+      });
+
+      state.acts = newActs;
+      return state;
+    },
   },
 });
 
-export const { storeActs, setQuestion, updateQuestion, setQuestionOrder, updateCurrentAct, storeCurrentAct } = actSlice.actions;
+export const {
+  storeActs,
+  setQuestion,
+  updateQuestion,
+  setQuestionOrder,
+  updateCurrentAct,
+  storeCurrentAct,
+  updateStatusActs,
+} = actSlice.actions;
 
 export default actSlice.reducer;

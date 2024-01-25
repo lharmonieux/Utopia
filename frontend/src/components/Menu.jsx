@@ -1,9 +1,7 @@
 import { Drawer, Box, List, ListItem, ListItemButton } from "@mui/joy";
-import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const Menu = ({ showDrawer, setShowDrawer, setShowSummary }) => {
-  const navigate = useNavigate();
   return (
     <Drawer
       anchor="left"
@@ -15,7 +13,7 @@ const Menu = ({ showDrawer, setShowDrawer, setShowSummary }) => {
           <ListItem>
             <ListItemButton
               onClick={() => {
-                navigate("/user/home");
+                window.location.href = "/user/home";
                 setShowDrawer(false);
               }}
             >
@@ -23,7 +21,12 @@ const Menu = ({ showDrawer, setShowDrawer, setShowSummary }) => {
             </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemButton onClick={() => setShowSummary(true)}>
+            <ListItemButton
+              onClick={() => {
+                window.location.href = "/user/summary";
+                setShowDrawer(false);
+              }}
+            >
               Sommaire
             </ListItemButton>
           </ListItem>

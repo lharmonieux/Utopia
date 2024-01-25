@@ -22,13 +22,16 @@ import { typographyTheme } from "./utils/themeJoy.js";
 import MenuDrawer from "./components/Menu.jsx";
 import { AiOutlineMenuFold } from "react-icons/ai";
 import { setToken } from "./utils/redux/authSlice.js";
-import { storeActs, storeCurrentAct } from "./utils/redux/actSlice.js";
+import {
+  storeActs,
+  storeCurrentAct,
+  updateStatusActs,
+} from "./utils/redux/actSlice.js";
 import apiRequest from "./api/requestAPI.js";
 import { storeCharacters } from "./utils/redux/characterSlice.js";
 import { storeTowns } from "./utils/redux/townSlice.js";
 import {
   createUserError,
-  setActSave,
   setCurrentAct,
   setIdUser,
   setMotto,
@@ -55,8 +58,6 @@ const PreFetch = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [acts, setActs] = useState([]);
-
-  console.log(stateUser.currentAct);
   //Getting datas from api
 
   // Refresh token
@@ -136,54 +137,36 @@ const PreFetch = () => {
               dispatch(setUserSecondCharacter(account.user.secondCharacter));
             account.user.town && dispatch(setTown(account.user.town));
 
-            // Store saves
-            if (account.user.saves.length > 0) {
-              // Last save
-              const lastSave = account.user.saves.length - 1;
-              dispatch(
-                setThematicScore({
-                  scoresThematic: account.user.saves[lastSave].logScores,
-                  givenResidents: account.user.saves[lastSave].totalResidents,
-                })
-              );
-              //Current act
-              let currentAct;
-              for (let i = 0; i < acts?.length; i++) {
-                if (acts[i]._id == account.user.saves[lastSave].act) {
-                  currentAct = acts[i + 1];
-                }
-              }
-              if (currentAct) {
-                //for user
-                dispatch(setCurrentAct(currentAct?._id));
+            // Last save
+            const indexLastSave = account.user.saves.length - 1;
+            dispatch(
+              setThematicScore({
+                scoresThematic: account.user.saves[indexLastSave]?.logScores || {},
+                givenResidents:
+                  account.user.saves[indexLastSave]?.totalResidents || 0,
+              })
+            );
 
-                // Current act for act's store
-                dispatch(storeCurrentAct(currentAct));
-                // Store town status
-                dispatch(setTownStatus(currentAct?.townStatus));
-                // Store currentAct for user's save
-                dispatch(setActSave(currentAct?._id));
-              }
+            //Current act
+            let currentAct = acts[indexLastSave + 1];
+            if (currentAct) {
+              //for user
+              dispatch(setCurrentAct(currentAct?._id));
 
-              // all saves
-              dispatch(storeSaves(account.user.saves));
-            } else {
-              if (acts.length > 0) {
-                //for user
-                dispatch(setCurrentAct(acts[0]._id));
-
-                // Current act for act's store
-                dispatch(storeCurrentAct(acts[0]));
-                // Store town status
-                dispatch(setTownStatus(acts[0].townStatus));
-                // Store currentAct for user's save
-                dispatch(setActSave(acts[0]._id));
-              }
+              // Current act for act's store
+              dispatch(storeCurrentAct(currentAct));
+              // Store town status
+              dispatch(setTownStatus(currentAct?.townStatus));
             }
+
+            // all saves
+            dispatch(storeSaves(account.user.saves)); 
+            
+            // update acts's status of user
+            dispatch(updateStatusActs({ acts, nbOfSaves: indexLastSave + 1 }));
           }
           // change only currentAct
           else {
-            console.log("here");
             for (let i = 0; i < acts.length; i++) {
               if (acts[i]?._id == stateUser.currentAct)
                 dispatch(setCurrentAct(acts[i + 1]?._id));

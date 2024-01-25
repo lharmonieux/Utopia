@@ -5,6 +5,7 @@ import Act from "./views/admin/Act";
 import Game from "./views/User/Game";
 import PreFetch from "./PreFetch";
 import HomeUser from "./views/User/Home";
+import Summary from "./views/User/Summary";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
       <Route path="/user" element={<PreFetch />}>
         <Route path="home" element={<HomeUser />} />
         <Route path="game" element={<Game />} />
+        <Route path="summary" element={<Summary />} />
       </Route>
     </Routes>
   );

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from "react";
 import { Typography } from "@mui/joy";
+import { useSelector } from "react-redux";
 
 const DisplayingText = ({
   sentence,
@@ -9,12 +10,18 @@ const DisplayingText = ({
   padding,
   textAlign,
   marginLeft,
+  fontWeight,
 }) => {
+  const stateUser = useSelector((state) => state.user);
+  sentence = sentence
+    .replace("stateUser.townName", stateUser?.townName)
+    .replace("stateUser.secondCharacter.name", stateUser.secondCharacter?.name)
+    .replace("stateUser.townStatus", stateUser?.townStatus);
   return (
     <Typography
       level={level}
       textColor={textColor}
-      fontWeight={400}
+      fontWeight={fontWeight}
       padding={padding}
       textAlign={textAlign}
       marginLeft={marginLeft}

@@ -19,8 +19,7 @@ const userSlice = createSlice({
     save: {
       logScores: {},
       logAnswers: [],
-      totalResidents: 0,
-      act: null,
+      totalResidents: 0
     },
   },
   reducers: {
@@ -80,10 +79,6 @@ const userSlice = createSlice({
     setIdUser: (state, action) => {
       state.idUser = action.payload;
       return state;
-    },
-    setActSave: (state, action) => {
-      state.save.act = action.payload;
-      return state;
     }
   },
 });
@@ -101,8 +96,7 @@ export const {
   setUserInfos,
   storeSaves,
   setIdUser,
-  setCurrentAct,
-  setActSave
+  setCurrentAct
 } = userSlice.actions;
 
 export default userSlice.reducer;

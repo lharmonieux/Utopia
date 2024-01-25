@@ -6,6 +6,8 @@ import cloudinaryRoute from "./routes/cloudinaryRoute.js";
 import townRoute from "./routes/townRoute.js";
 import userRoute from "./routes/userRoute.js";
 import authRoute from './routes/authRoute.js';
+import thematicRoute from "./routes/thematicRoute.js";
+import answerTypeRoute from "./routes/answerTypeRoute.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -37,6 +39,8 @@ app.use("/cloudinary", cloudinaryRoute);
 app.use("/towns", townRoute);
 app.use("/users", userRoute);
 app.use("/auth", authRoute);
+app.use("/thematic", thematicRoute);
+app.use("/answer_type", answerTypeRoute);
 
 //Connection Database, Then running server
 mongoose

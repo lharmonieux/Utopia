@@ -9,6 +9,8 @@ const characterSlice = createSlice({
       state.characters = newState.map((character) => ({
         ...character,
         selected: false,
+        width: 0.3,
+        height: 0.7
       }));
       return state;
     },

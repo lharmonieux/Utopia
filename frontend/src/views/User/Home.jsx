@@ -3,11 +3,13 @@ import { Box, Button, CircularProgress, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../../utils/constants";
-import { Link } from "react-router-dom";
-import 'animate.css';
+import { useNavigate } from "react-router-dom";
+import "animate.css";
 
 const Home = () => {
   const domConfig = useSelector((state) => state.dom);
+  const stateActs = useSelector((state) => state.act);
+  const navigate = useNavigate();
   const [backgroundImg, setBackgroundImg] = useState("");
   useEffect(() => {
     setBackgroundImg(
@@ -15,7 +17,6 @@ const Home = () => {
         "/home/snowy-mountain-peak-starry-galaxy-majesty-generative-ai.jpg"
     );
   }, []);
-
   return domConfig.width && domConfig.height ? (
     <Box
       width={"100%"}
@@ -32,19 +33,40 @@ const Home = () => {
     >
       {/* home's text  */}
       <Box padding={10}>
-        <Typography textColor={"white"} level="title-lg" fontWeight={400} textAlign={"center"}>
-          {"2027 ne fut décidemment pas une année comme les autres. Un premier terrien sur Mars, une base sur la Lune… et une nouvelle exoplanète découverte parfaitement habitable !"}<br/> 
-          {"Ce nouvel astre fut nommé Exploria, et il fallut plus de 300 ans à l'humanité pour s'y installer… En 2357, une poignée d'humains fondèrent la première colonie. Ce fut le point de départ d'une importante immigration, et 50 ans plus tard, près de 10 000 000 habitants la peuplaient."}<br/> 
-          {"De la capitale Méridian essaimèrent une dizaine de villes moyennes, administrant chacune un nouveau territoire."}<br/> 
-          {"Né dans l'une de ces villes beaucoup trop moyennes pour vous, vous n'avez qu'un rêve : fonder votre propre Cité !"}
+        <Typography
+          textColor={"white"}
+          level="title-lg"
+          fontWeight={400}
+          textAlign={"center"}
+        >
+          {
+            "2027 ne fut décidemment pas une année comme les autres. Un premier terrien sur Mars, une base sur la Lune… et une nouvelle exoplanète découverte parfaitement habitable !"
+          }
+          <br />
+          {
+            "Ce nouvel astre fut nommé Exploria, et il fallut plus de 300 ans à l'humanité pour s'y installer… En 2357, une poignée d'humains fondèrent la première colonie. Ce fut le point de départ d'une importante immigration, et 50 ans plus tard, près de 10 000 000 habitants la peuplaient."
+          }
+          <br />
+          {
+            "De la capitale Méridian essaimèrent une dizaine de villes moyennes, administrant chacune un nouveau territoire."
+          }
+          <br />
+          {
+            "Né dans l'une de ces villes beaucoup trop moyennes pour vous, vous n'avez qu'un rêve : fonder votre propre Cité !"
+          }
         </Typography>
       </Box>
 
       {/* navigation */}
       <Box>
-        <Link to="/user/game">
-          <Button>Jouer</Button>
-        </Link>
+        <Button
+          disabled={stateActs.currentAct ? false : true}
+          onClick={() => navigate("user/game")}
+        >
+          {stateActs.currentAct?.chapter > 1
+            ? "Continuer l'aventure"
+            : "Commencer à jouer"}
+        </Button>
       </Box>
     </Box>
   ) : (

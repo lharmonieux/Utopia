@@ -9,12 +9,15 @@ import {
   ModalClose,
   DialogTitle,
   CircularProgress,
+  Alert,
 } from "@mui/joy";
 import Propositions from "../../components/Propositions.jsx";
 import Characters from "../../components/Characters.jsx";
 import TextArea from "../../components/TextArea.jsx";
-import { Link, useNavigate } from "react-router-dom";
-import { AlertNoAnswer } from "../../components/Alert.jsx";
+import {
+  AlertBAdAnswerNumber,
+  AlertNoAnswer,
+} from "../../components/Alert.jsx";
 import DisplayingText from "../../components/DisplayingText.jsx";
 import ActPresentation from "../../components/ActPresentation.jsx";
 import "animate.css";
@@ -32,7 +35,6 @@ import {
 import { backgroundSize } from "../../utils/backgroundSizeProvider.js";
 import {
   setMotto,
-  setThematicScore,
   setTown,
   setUserCharacter,
   setUserSecondCharacter,
@@ -47,7 +49,6 @@ const Game = () => {
   const domConfig = useSelector((state) => state.dom);
   const stateUser = useSelector((state) => state.user);
   const authState = useSelector((state) => state.auth);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // State
@@ -61,7 +62,12 @@ const Game = () => {
   const [openEndModal, setOpenEndModal] = useState(false);
   const [scoresThematic, setScoresThematic] = useState(new Map());
   const [showAlertNoAnswer, setShowAlertNoAnswer] = useState(false);
+  const [showAlertBadAnswerNumber, setShowAlertBadAnswerNumber] =
+    useState(false);
   const [townName, setTownName] = useState("");
+  const [textareaValue, setTextareaValue] = useState(new Map());
+  const [rankUserText, setRankUserText] = useState("");
+
   // const [showDrawer, setShowDrawer] = useState(false);
   // const [showSummary, setShowSummary] = useState(false);
   const [showActPresentation, setShowActPresentation] = useState(true);
@@ -69,6 +75,9 @@ const Game = () => {
   const [scaleAnswers, setScaleAnswers] = useState(new Map());
   const [openScaleModal, setOpenScaleModal] = useState(false);
   const [fullContentBox, setFullContentBox] = useState();
+  const [orderedAnswers, setOrderedAnswers] = useState([]);
+  const [percentAnswers, setPercentAnswers] = useState(new Map());
+  const [answerModal, setAnswerModal] = useState("");
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -82,7 +91,6 @@ const Game = () => {
   const [bgEndActImg, setBgEndActImg] = useState();
   // Getting total number of questions for current act
   let actQuestionsLength = stateActs.currentAct?.questions?.length;
-
   //Var for modal entrance animation
   let animationModalIn = "animate__animated animate__zoomIn animate__fast";
 
@@ -107,13 +115,6 @@ const Game = () => {
                 stateActs.currentAct?.questions[stateActs.questionOrder]
               )
             );
-            // Map save for user's datas
-            const logScores = Object.entries(stateUser.save.logScores);
-            let newScoresThematic = new Map();
-            for (let [key, value] of logScores) {
-              newScoresThematic.set(key, value);
-            }
-            setScoresThematic(newScoresThematic);
             setShowMainContent(true);
           });
         else {
@@ -122,20 +123,30 @@ const Game = () => {
               stateActs.currentAct?.questions[stateActs.questionOrder]
             )
           );
-          // Map save for user's datas
+          // Map last saves for user
           const logScores = Object.entries(stateUser.save.logScores);
           let newScoresThematic = new Map();
           for (let [key, value] of logScores) {
             newScoresThematic.set(key, value);
           }
+          newScoresThematic.set("residents", stateUser.save.totalResidents);
           setScoresThematic(newScoresThematic);
           setShowMainContent(true);
         }
       }
 
       if (fullContentBox) {
-        //Loading of question's datas
         if (stateActs.currentQuestion) {
+          // For manage multi-form
+          if (stateActs.currentQuestion?.answerType?.name == "texte") {
+            const allTextareas = new Map();
+            for (let questionContent of stateActs.currentQuestion.content) {
+              allTextareas.set(questionContent._id, "");
+            }
+            setTextareaValue(allTextareas);
+          } else setTextareaValue(new Map());
+
+          //Loading of question's datas
           setQuestionBackgroundImg(
             `${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.bgImgMainContent}`
           );
@@ -179,11 +190,13 @@ const Game = () => {
       setStoreAnswer(() =>
         storeAnswer.filter((e) => e._id != selectedAnswer._id)
       );
+      return;
     }
 
     // Add Answer selected
-    else if (answerType == "proposition_multiple")
+    if (answerType == "proposition_multiple" || answerType == "classement")
       setStoreAnswer([...storeAnswer, selectedAnswer]);
+    else if (answerType == "reponse_double") return;
     else setStoreAnswer([selectedAnswer]);
   };
 
@@ -194,14 +207,22 @@ const Game = () => {
   ) => {
     if (selectedAnswer?.feedback) {
       // If answer selected again
-      if (feedback == selectedAnswer.feedback) {
-        setFeedback(undefined);
+      if (feedback?.content == selectedAnswer.feedback) {
+        setFeedback({
+          content: undefined,
+          title: undefined,
+          hasQuestion: undefined,
+        });
         setContainsFeedback(false);
       } else {
-        setFeedback({ content: selectedAnswer.feedback, title: modalTitle });
+        setFeedback({
+          content: selectedAnswer.feedback,
+          title: modalTitle,
+          hasQuestion: selectedAnswer?.feedbackHasQuestion,
+        });
         setContainsFeedback(true);
       }
-    }
+    } else setContainsFeedback(false);
 
     // Adapt state of the question
     // For unique answer
@@ -217,27 +238,72 @@ const Game = () => {
         })
       );
     }
-    //For select town
-    else if (answerType == "town") {
+    //For answer with classement
+    else if (answerType == "classement") {
+      if (orderedAnswers.length > 0) {
+        if (orderedAnswers.includes(selectedAnswer._id)) {
+          let newOrderedAnswers = [...orderedAnswers];
+          newOrderedAnswers = newOrderedAnswers.filter(
+            (id) => id != selectedAnswer._id
+          );
+          setOrderedAnswers(newOrderedAnswers);
+        } else {
+          const newOrderedAnswers = [...orderedAnswers];
+          newOrderedAnswers.push(selectedAnswer._id);
+          setOrderedAnswers(newOrderedAnswers);
+        }
+      } else {
+        const newOrderedAnswers = [];
+        newOrderedAnswers.push(selectedAnswer._id);
+        setOrderedAnswers(newOrderedAnswers);
+      }
+
       updateStoreAnswer(selectedAnswer, answerType);
+      storeScore(selectedAnswer);
       dispatch(
-        setTown({
-          region: selectedAnswer?.name,
-          description: selectedAnswer?.description,
+        updateQuestion({
+          currentQuestion: stateActs.currentQuestion,
+          selectedAnswer,
+          typeAnswer: "multiple",
         })
       );
     }
-
-    //For scale
-    else if (answerType == "notation") {
+    //For answer with percentage
+    else if (answerType == "pourcentage") {
       updateStoreAnswer(selectedAnswer, answerType);
       storeScore(selectedAnswer);
+    }
+    //For select town
+    else if (answerType == "town") {
+      if (stateActs?.currentQuestion?.visual?.mapView?.hasAnswer) {
+        updateStoreAnswer(selectedAnswer, answerType);
+        storeScore(selectedAnswer);
+        dispatch(
+          updateQuestion({
+            currentQuestion: stateActs.currentQuestion,
+            selectedAnswer,
+            typeAnswer: "single",
+          })
+        );
+      } else {
+        updateStoreAnswer(selectedAnswer, answerType);
+        dispatch(
+          setTown({
+            region: selectedAnswer?.name,
+            description: selectedAnswer?.description,
+          })
+        );
+      }
     }
 
     // For multiples answers
     else {
       // 3 answers max for update question State
-      if (storeAnswer.length < 3 || selectedAnswer.selected) {
+      if (
+        storeAnswer.length <
+          (stateActs.currentQuestion?.visual?.nbOfAnswersRequired || 3) ||
+        selectedAnswer.selected
+      ) {
         updateStoreAnswer(selectedAnswer, answerType);
         storeScore(selectedAnswer);
         dispatch(
@@ -251,30 +317,54 @@ const Game = () => {
     }
   };
 
-  const answerToDisplay = () => {
-    switch (stateActs?.currentQuestion?.answerType) {
+  const answerToDisplay = (questionContent) => {
+    switch (stateActs?.currentQuestion?.answerType?.name) {
       //Affichage du choix des persos
       case "personnage":
         return (
           <Characters
             setObjectCharacterSelected={setObjectCharacterSelected}
             objectSelectedCharacter={objectCharacterSelected}
+            questionContent={questionContent}
           />
         );
 
       // Affichage des propositions de reponse
       case "proposition":
       case "proposition_multiple":
+      case "classement":
+      case "pourcentage":
+      case "reponse_double":
         return (
-          <Propositions handleSelectedProposition={handleSelectedProposition} />
+          <Propositions
+            handleSelectedProposition={handleSelectedProposition}
+            orderedAnswer={orderedAnswers}
+            percentAnswers={percentAnswers}
+            setPercentAnswers={setPercentAnswers}
+            questionContent={questionContent}
+          />
         );
 
       // Affichage d'une zone de texte
       case "texte":
-        return <TextArea town={townName} setTownName={setTownName} />;
+      case "texte_ville":
+        return (
+          <TextArea
+            town={townName}
+            setTownName={setTownName}
+            textareaValue={textareaValue}
+            setTextareaValue={setTextareaValue}
+            questionContent={questionContent}
+          />
+        );
 
       case "notation":
-        return <ScaleProposition setScaleAnswers={setScaleAnswers} />;
+        return (
+          <ScaleProposition
+            setScaleAnswers={setScaleAnswers}
+            scaleAnswers={scaleAnswers}
+          />
+        );
 
       case "town":
         return <Towns handleSelectedProposition={handleSelectedProposition} />;
@@ -352,6 +442,16 @@ const Game = () => {
                 />
               </Typography>
 
+              {/* Text area for some answers */}
+              {feedback.hasQuestion && (
+                <textarea
+                  value={answerModal}
+                  onChange={(e) => setAnswerModal(e.target.value)}
+                  rows={6}
+                  cols={45}
+                />
+              )}
+
               <Button
                 onClick={() =>
                   animateOut(
@@ -359,7 +459,10 @@ const Game = () => {
                     "#modal-feedback-content",
                     () => {
                       setOpenFeedbackModal(false);
-                      initializingState();
+                      //Display end modal to summarize act
+                      if (stateActs.questionOrder == actQuestionsLength - 1)
+                        setOpenEndModal(true);
+                      else initializingState();
                     }
                   )
                 }
@@ -375,15 +478,21 @@ const Game = () => {
 
   // Modal for end of act / Summary
   const endOfAct = () => {
-    const totalResidents = stateUser.save.totalResidents;
-    const townStatus = stateUser.townStatus;
+    const copyScoresThematic = new Map(scoresThematic);
+    const totalResidents = copyScoresThematic.get("residents");
+    copyScoresThematic.delete("residents");
+    const logScores = Object.fromEntries(copyScoresThematic);
     let resolutionText = stateActs.currentAct.resolution.text;
-    resolutionText = resolutionText
-      .replace("totalResidents", totalResidents)
-      .replace("townStatus", townStatus);
+
+    resolutionText = resolutionText.replace("totalResidents", totalResidents);
 
     let saves = [...stateUser.saves];
-    saves.push(stateUser.save);
+    saves.push({
+      logScores,
+      logAnswers: [],
+      totalResidents,
+      act: stateActs.currentAct?._id,
+    });
 
     const userToSave = {
       firstname: stateUser.firstname,
@@ -409,6 +518,44 @@ const Game = () => {
     //   console.log(error);
     // });
 
+    const resultAllUsers = apiRequest("users/all", "get", authState.token);
+    resultAllUsers
+      .then((response) => {
+        const allUsers = response.response.data?.filter(
+          (account) => account.user._id != stateUser.idUser
+        );
+        // Calcul of max resident that one user won
+        let maxResidents = 0;
+        for (let account of allUsers) {
+          const userSave =
+            account.user.saves[stateActs.currentAct?.chapter - 1];
+          const userResidents = userSave?.totalResidents;
+          if (userResidents > maxResidents) maxResidents = userResidents;
+        }
+
+        //Calcul of percentage ranking of user
+        const percentRank = 100 - (totalResidents / maxResidents) * 100;
+        if (percentRank < 100 && percentRank >= 80)
+          setRankUserText(
+            `\nVous faites partie des 80% les meilleurs. Il va falloir accélérer, tout reste à conquérir !`
+          );
+        else if (percentRank < 80 && percentRank >= 50)
+          setRankUserText(
+            `\nVous faites partie des 50% les meilleurs. Encore un effort, vous êtes sur la bonne voie !`
+          );
+        else if (percentRank < 50 && percentRank >= 0)
+          setRankUserText(
+            `\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
+          );
+        else
+          setRankUserText(
+            `\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
+          );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     return titleEndActImg && rankEndActImg && bgEndActImg ? (
       <Modal
         open={openEndModal}
@@ -416,7 +563,7 @@ const Game = () => {
           animateOut(openEndModal, "#modal-end", () => {
             setOpenEndModal(false);
             // navigate("/user/home");
-            window.location.href = "/user/home";
+            window.location.href = "/user/summary";
             initializingState();
           });
         }}
@@ -425,12 +572,12 @@ const Game = () => {
       >
         <ModalDialog
           sx={{
-            height: parseInt(domConfig.height * 0.8),
-            width: parseInt(domConfig.width * 0.7),
+            height: parseInt(domConfig.height * 0.9),
+            width: parseInt(domConfig.width * 0.9),
             backgroundImage: `url(${bgEndActImg})`,
             backgroundSize: backgroundSize(
-              domConfig.width * 0.7,
-              domConfig.height * 0.8
+              domConfig.width * 0.9,
+              domConfig.height * 0.9
             ),
             padding: 0,
           }}
@@ -454,7 +601,7 @@ const Game = () => {
             >
               {/* Left side  */}
               <Box
-                width={"50%"}
+                width={"40%"}
                 height={"100%"}
                 display={"flex"}
                 justifyContent={"center"}
@@ -462,8 +609,8 @@ const Game = () => {
                 sx={{
                   backgroundImage: `url(${titleEndActImg})`,
                   backgroundSize: backgroundSize(
-                    domConfig.width * 0.7 * 0.5,
-                    domConfig.height * 0.8 * 0.9
+                    domConfig.width * 0.9 * 0.4,
+                    domConfig.height * 0.9 * 0.9
                   ),
                   borderTopLeftRadius: 5,
                 }}
@@ -478,19 +625,29 @@ const Game = () => {
 
               {/* Right side  */}
               <Box
-                width={"50%"}
+                width={"58%"}
                 height={"90%"}
                 display={"flex"}
+                flexDirection={"column"}
                 justifyContent={"center"}
                 alignItems={"center"}
               >
-                <Typography
-                  level="title-lg"
-                  textColor={"white"}
-                  fontWeight={400}
-                >
-                  <DisplayingText sentence={resolutionText} />
-                </Typography>
+                <DisplayingText
+                  level={stateActs.currentAct?.resolution?.textStyle?.size}
+                  textColor={stateActs.currentAct?.resolution?.textStyle?.color}
+                  fontWeight={
+                    stateActs.currentAct?.resolution?.textStyle?.weight
+                  }
+                  sentence={resolutionText}
+                />
+                <DisplayingText
+                  level={stateActs.currentAct?.resolution?.textStyle?.size}
+                  textColor={stateActs.currentAct?.resolution?.textStyle?.color}
+                  fontWeight={
+                    stateActs.currentAct?.resolution?.textStyle?.weight
+                  }
+                  sentence={rankUserText}
+                />
               </Box>
             </Stack>
 
@@ -507,7 +664,7 @@ const Game = () => {
                 onClick={() => {
                   animateOut(openEndModal, "#modal-end", () => {
                     setOpenEndModal(false);
-                    window.location.href = "/user/home";
+                    window.location.href = "/user/summary";
                     initializingState();
                   });
                 }}
@@ -531,59 +688,104 @@ const Game = () => {
     );
   };
 
-  const storeScore = (selectedAnswer) => {
-    // update store if answer is selected again
-    if (selectedAnswer.selected) {
-      let newScoresThematic = new Map(scoresThematic);
-      const oldScore = newScoresThematic.get(selectedAnswer.thematic);
-      const oldGivenResidents = newScoresThematic.get("residents");
+  const storeScore = (selectedAnswer = null, answers = []) => {
+    switch (stateActs.currentQuestion?.answerType?.name) {
+      case "proposition":
+      case "proposition_multiple":
+      case "personnage":
+      case "notation":
+      case "classement":
+      case "pourcentage":
+      case "town":
+        // update store if answer is selected again
+        if (selectedAnswer.selected) {
+          let newScoresThematic = new Map(scoresThematic);
+          const oldScore = newScoresThematic.get(selectedAnswer.thematic.name);
+          const oldGivenResidents = newScoresThematic.get("residents");
 
-      if (oldScore)
-        newScoresThematic.set(
-          selectedAnswer.thematic,
-          oldScore - selectedAnswer.score
-        );
-      if (oldGivenResidents) {
-        newScoresThematic.set(
-          "residents",
-          oldGivenResidents - selectedAnswer.givenResidents
-        );
-      }
-      setScoresThematic(newScoresThematic);
-    } else {
-      //update score for thematic
-      const oldScore = scoresThematic.get(selectedAnswer.thematic);
-      const oldGivenResidents = scoresThematic.get("residents");
-      let newScoresThematic = new Map(scoresThematic);
-      newScoresThematic.set(
-        "residents",
-        oldGivenResidents
-          ? oldGivenResidents + selectedAnswer.givenResidents
-          : selectedAnswer.givenResidents
-      );
+          if (oldScore)
+            newScoresThematic.set(
+              selectedAnswer.thematic.name,
+              oldScore - selectedAnswer.score
+            );
+          if (oldGivenResidents) {
+            newScoresThematic.set(
+              "residents",
+              oldGivenResidents - selectedAnswer.givenResidents
+            );
+          }
+          setScoresThematic(newScoresThematic);
+        } else {
+          //update score for thematic
+          const oldScore = scoresThematic.get(selectedAnswer.thematic.name);
+          const oldGivenResidents = scoresThematic.get("residents");
+          let newScoresThematic = new Map(scoresThematic);
+          newScoresThematic.set(
+            "residents",
+            oldGivenResidents
+              ? oldGivenResidents + selectedAnswer.givenResidents
+              : selectedAnswer.givenResidents
+          );
 
-      if (oldScore) {
-        newScoresThematic.set(
-          selectedAnswer.thematic,
-          oldScore + selectedAnswer.score
-        );
-      } else
-        newScoresThematic.set(selectedAnswer.thematic, selectedAnswer.score);
-      setScoresThematic(newScoresThematic);
+          newScoresThematic.set(
+            selectedAnswer.thematic.name,
+            oldScore ? oldScore + selectedAnswer.score : selectedAnswer.score
+          );
+          setScoresThematic(newScoresThematic);
+        }
+
+        break;
+
+      case "reponse_double":
+        if (answers) {
+          let newScoresThematic = new Map(scoresThematic);
+          for (let answer of answers) {
+            const oldScore = newScoresThematic.get(answer.thematic.name);
+            const oldGivenResidents = newScoresThematic.get("residents");
+
+            // Check the pair of good answer
+            if (answer.selected == answer.boolForScore) {
+              newScoresThematic.set(
+                "residents",
+                oldGivenResidents
+                  ? oldGivenResidents + answer.givenResidents
+                  : answer.givenResidents
+              );
+
+              newScoresThematic.set(
+                answer.thematic.name,
+                oldScore ? oldScore + answer.score : answer.score
+              );
+            }
+          }
+          setScoresThematic(newScoresThematic);
+        }
+        break;
+
+      default:
+        break;
     }
   };
 
   const initializingState = () => {
     setShowMainContent(false);
     setContainsFeedback(false);
-    setFeedback("");
+    setFeedback({
+      content: undefined,
+      title: undefined,
+      hasQuestion: undefined,
+    });
     dispatch(setQuestionOrder(stateActs.questionOrder + 1));
     setStoreAnswer([]);
     setTownName("");
     setObjectCharacterSelected(null);
     setShowAlertNoAnswer(false);
+    setShowAlertBadAnswerNumber(false);
     scaleAnswers.clear();
     setScaleAnswers(new Map(scaleAnswers));
+    setOrderedAnswers([]);
+    textareaValue.clear();
+    setTextareaValue(new Map(textareaValue));
   };
 
   // Manage for the next element to display
@@ -593,21 +795,23 @@ const Game = () => {
       storeAnswer.length > 0 ||
       townName ||
       scaleAnswers.size > 0 ||
-      objectCharacterSelected
+      objectCharacterSelected ||
+      textareaValue.size > 0 ||
+      stateActs?.currentQuestion?.answerType?.name == "reponse_double"
     ) {
-      //Store score
-      const givenResidents = scoresThematic.get("residents");
-      if (givenResidents >= 0) {
-        let newScoresThematic = new Map(scoresThematic);
-        newScoresThematic.delete("residents");
-        dispatch(
-          setThematicScore({
-            scoresThematic: Object.fromEntries(newScoresThematic),
-            givenResidents,
-          })
-        );
+      //Textarea control
+      let tmpValue;
+      if (textareaValue.size > 0) {
+        //Check if all values of map textareaValue aren't empty
+        const valuesIterator = textareaValue.values();
+        for (let i = 0; i < textareaValue.size; i++) {
+          tmpValue = valuesIterator.next().value;
+          if (!tmpValue) {
+            setShowAlertNoAnswer(true);
+            return;
+          }
+        }
       }
-
       //Store character
       if (objectCharacterSelected) {
         stateUser.character
@@ -616,20 +820,50 @@ const Game = () => {
       }
 
       // Store town name
-      if (townName) dispatch(storeTownName(townName));
-
+      if (townName) {
+        dispatch(storeTownName(townName));
+      }
       //Scale answer control
-      if (scaleAnswers.size > 0) setOpenScaleModal(true);
+      if (scaleAnswers.size > 0) {
+        setOpenScaleModal(true);
+        return;
+      }
+      //Multiple answers control
+      if (
+        stateActs?.currentQuestion?.answerType?.name ==
+          "proposition_multiple" &&
+        storeAnswer.length <
+          (stateActs.currentQuestion?.visual?.nbOfAnswersRequired || 3)
+      ) {
+        setShowAlertBadAnswerNumber(true);
+        return;
+      }
+      // Ranking answer control
+      if (
+        stateActs?.currentQuestion?.answerType?.name == "classement" &&
+        storeAnswer.length < stateActs?.currentQuestion?.answers?.length
+      ) {
+        setShowAlertBadAnswerNumber(true);
+        return;
+      }
+      // Store score for double answer
+      if (stateActs?.currentQuestion?.answerType?.name == "reponse_double") {
+        storeScore(null, stateActs.currentQuestion?.answers);
+      }
+      // If answer has a feedback
+      if (containsFeedback) {
+        setOpenFeedbackModal(true);
+        return;
+      }
+
+      //Display end modal to summarize act
+      if (stateActs.questionOrder == actQuestionsLength - 1) {
+        setOpenEndModal(true);
+        return;
+      }
+      //Display next page of act
       else {
-        // If answer has a feedback
-        if (containsFeedback) setOpenFeedbackModal(true);
-        else {
-          //Display end modal to summarize act
-          if (stateActs.questionOrder == actQuestionsLength - 1)
-            setOpenEndModal(true);
-          //Display next page of act
-          else initializingState();
-        }
+        initializingState();
       }
     } else setShowAlertNoAnswer(true);
   };
@@ -638,9 +872,14 @@ const Game = () => {
     let choosenMotto;
     if (scaleAnswers) {
       const scales = scaleAnswers.values();
-      let maxScale = 0;
+      let maxScale = 1;
       //Calcul max note given
       for (let nb of scales) if (nb > maxScale) maxScale = nb;
+
+      if (maxScale == 1) {
+        setOpenScaleModal(false);
+        setShowAlertNoAnswer(true);
+      }
 
       //Get Id of answer for max note given
       let idMaxScale = "";
@@ -648,31 +887,10 @@ const Game = () => {
         if (value == maxScale) idMaxScale = key;
 
       //Result : choosen motto
-      choosenMotto = stateActs.currentQuestion?.answers.filter(
+      choosenMotto = stateActs.currentQuestion?.answers?.filter(
         (answer) => answer._id == idMaxScale
       );
-      choosenMotto = {
-        ...choosenMotto[0],
-        selected: true,
-      };
     }
-
-    const storeScaleAnswer = (choosenMotto) => {
-      let newScoresThematic = new Map(scoresThematic);
-      const oldScore = newScoresThematic.get(choosenMotto.thematic);
-      if (oldScore)
-        newScoresThematic.set(
-          choosenMotto.thematic,
-          oldScore + choosenMotto.score
-        );
-      else newScoresThematic.set(choosenMotto.thematic, choosenMotto.score);
-      dispatch(
-        setThematicScore({
-          scoresThematic: Object.fromEntries(newScoresThematic),
-          givenResidents: choosenMotto.givenResidents,
-        })
-      );
-    };
 
     return domConfig.height && domConfig.width ? (
       feedbackImg ? (
@@ -707,15 +925,16 @@ const Game = () => {
               En se basant sur vos notes, la devise qui vous convient le mieux
               est :{" "}
               <Typography sx={{ fontWeight: "bold" }}>
-                {choosenMotto && choosenMotto?.content?.text?.text}
+                {choosenMotto && choosenMotto[0]?.content?.text?.text}
               </Typography>
             </Typography>
 
             <Button
               onClick={() =>
-                animateOut(openScaleModal, "#modal-scale", () =>
-                  setOpenScaleModal(false)
-                )
+                animateOut(openScaleModal, "#modal-scale", () => {
+                  setShowAlertNoAnswer(false);
+                  setOpenScaleModal(false);
+                })
               }
             >
               Retour au choix
@@ -724,8 +943,8 @@ const Game = () => {
               onClick={() =>
                 animateOut(openScaleModal, "#modal-scale", () => {
                   setOpenScaleModal(false);
-                  dispatch(setMotto(choosenMotto.content.text.text));
-                  storeScaleAnswer(choosenMotto);
+                  dispatch(setMotto(choosenMotto[0]?.content?.text?.text));
+                  storeScore(choosenMotto[0]);
                   initializingState();
                 })
               }
@@ -793,6 +1012,19 @@ const Game = () => {
             <AlertNoAnswer />
           </Box>
 
+          <Box
+            sx={{
+              width: "50vw",
+              marginLeft: "10px",
+              marginBottom: "0.5%",
+              display: showAlertBadAnswerNumber ? "block" : "none",
+            }}
+          >
+            <AlertBAdAnswerNumber />
+          </Box>
+
+          {/* Other alert error zone */}
+          {stateUser.error && <Alert color="danger">{stateUser.error}</Alert>}
           {/* Principal content zone  */}
           <Stack
             spacing={2}
@@ -836,55 +1068,33 @@ const Game = () => {
                             ),
                           }}
                         >
-                          {/* Question's content  */}
                           {stateActs.currentQuestion?.content?.map(
                             (questionContent, index) => (
                               <Box
                                 key={index}
                                 height={parseInt(domConfig.height * 0.95)}
-                                width={
-                                  !stateActs.currentQuestion.visual
-                                    .boxAnswersImg
-                                    ? domConfig.width
-                                    : parseInt(
-                                        (domConfig.width *
-                                          parseInt(
-                                            stateActs.currentQuestion.visual
-                                              .boxAnswersImg.width
-                                          )) /
-                                          100
-                                      )
-                                }
-                                display={
-                                  !stateActs.currentQuestion.visual
-                                    .boxAnswersImg && "flex"
-                                }
+                                width={parseInt(domConfig.width)}
+                                display={"flex"}
                                 flexDirection={
                                   stateActs.currentQuestion?.visual
                                     ?.directionAnswer == "column"
                                     ? "row"
                                     : "column"
                                 }
+                                position={"relative"}
                                 justifyContent={questionContent?.justifyContent}
                                 alignItems={"center"}
                               >
+                                {/* Question's content  */}
                                 <Box
-                                  width={
-                                    questionContent?.backgroundImg
-                                      ? stateActs.currentQuestion?.visual
-                                          ?.directionAnswer == "row"
-                                        ? parseInt(domConfig.width)
-                                        : parseInt(domConfig.width * 0.4)
-                                      : parseInt(domConfig.width * 0.8)
-                                  }
-                                  height={
-                                    questionContent?.backgroundImg
-                                      ? stateActs.currentQuestion?.visual
-                                          ?.directionAnswer == "row"
-                                        ? parseInt(domConfig.height * 0.15)
-                                        : parseInt(domConfig.height * 0.5)
-                                      : parseInt(domConfig.height * 0.25)
-                                  }
+                                  width={parseInt(
+                                    domConfig.width *
+                                      questionContent?.backgroundImg?.width
+                                  )}
+                                  height={parseInt(
+                                    domConfig.height *
+                                      questionContent?.backgroundImg?.height
+                                  )}
                                   display={"flex"}
                                   justifyContent={"center"}
                                   alignItems={
@@ -893,38 +1103,47 @@ const Game = () => {
                                       ? "center"
                                       : "flex-start"
                                   }
+                                  position={
+                                    stateActs?.currentQuestion
+                                      ?.additionalContent.length > 0
+                                      ? "absolute"
+                                      : "static"
+                                  }
+                                  left={
+                                    stateActs?.currentQuestion
+                                      ?.additionalContent.length > 0
+                                      ? `${questionContent?.backgroundImg?.left}%`
+                                      : 0
+                                  }
+                                  top={
+                                    stateActs?.currentQuestion
+                                      ?.additionalContent.length > 0
+                                      ? `${questionContent?.backgroundImg?.top}%`
+                                      : 0
+                                  }
+                                  zIndex={1}
                                   sx={{
+                                    // bgcolor: "red",
                                     marginBottom: 1,
-                                    backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg})`,
-                                    backgroundSize:
-                                      stateActs.currentQuestion?.visual
-                                        ?.directionAnswer == "row"
-                                        ? backgroundSize(
-                                            domConfig.width,
-                                            domConfig.height * 0.15
-                                          )
-                                        : backgroundSize(
-                                            domConfig.width * 0.4,
-                                            domConfig.height * 0.5
-                                          ),
+                                    backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg.img})`,
+                                    backgroundSize: backgroundSize(
+                                      domConfig.width *
+                                        questionContent?.backgroundImg?.width,
+                                      domConfig.height *
+                                        questionContent?.backgroundImg?.height
+                                    ),
                                   }}
                                 >
                                   <DisplayingText
                                     sentence={questionContent.text}
                                     level={"title-lg"}
                                     textColor={questionContent.textColor}
-                                    padding={1}
+                                    padding={2}
                                     textAlign={"center"}
-                                    marginLeft={
-                                      questionContent.backgroundImg &&
-                                      stateActs.currentQuestion?.visual
-                                        ?.directionAnswer == "row"
-                                        ? "20%"
-                                        : 0
-                                    }
+                                    marginLeft={`${questionContent.marginLeft}%`}
                                   />
                                 </Box>
-                                {answerToDisplay()}
+                                {answerToDisplay(questionContent)}
                               </Box>
                             )
                           )}

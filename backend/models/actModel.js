@@ -21,6 +21,11 @@ const actSchema = new mongoose.Schema({
   },
   resolution: {
     text: String,
+    textStyle: {
+      color: String,
+      size: String,
+      weight: String,
+    },
     titleImg: String,
     rankImg: String,
     backgroundImg: String,
@@ -36,7 +41,14 @@ const actSchema = new mongoose.Schema({
       content: [
         {
           text: String,
-          backgroundImg: String,
+          marginLeft: Number,
+          backgroundImg: {
+            img: String,
+            width: Number,
+            height: Number,
+            left: Number,
+            top: Number,
+          },
           justifyContent: String,
           textColor: String,
         },
@@ -45,29 +57,34 @@ const actSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
-      additionalContent: {
-        text: String,
-        img: String,
-        scale: {
-          width: String,
-          height: String,
+      additionalContent: [
+        {
+          text: String,
+          textLevel: String,
+          textColor: String,
+          img: String,
+          scale: {
+            width: Number,
+            height: Number,
+          },
+          position: {
+            top: Number,
+            left: Number,
+          },
         },
-        position: {
-          top: String,
-          left: String,
-        },
-      },
+      ],
       visual: {
         bgImgMainContent: String,
         boxAnswersImg: {
           img: String,
-          width: String,
-          height: String,
-          left: String,
-          top: String
+          width: Number,
+          height: Number,
+          left: Number,
+          top: Number,
         },
         directionAnswer: String,
         mapView: {
+          marginTop: Number,
           backgroundImg: String,
           mapImg: String,
           buttonImg: {
@@ -78,37 +95,56 @@ const actSchema = new mongoose.Schema({
           hasAnswers: Boolean,
         },
         feedbackImg: String,
+        textAnswerLevel: String,
+        spaceAnswer: String,
+        nbOfAnswersRequired: Number
       },
       answerType: {
-        type: String,
-        required: true,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "AnswerType",
       },
       answers: [
         {
           content: {
             text: {
               text: String,
+              secondText: String,
+              hiddenText: Boolean,
+              textLevel: String,
               position: {
-                top: String,
-                left: String,
-                width: String,
-                height: String
+                top: Number,
+                left: Number,
+                width: Number,
+                height: Number,
               },
             },
             textColor: String,
-            position: {
-              top: String,
-              left: String,
+            img: {
+              name: String,
+              top: Number,
+              left: Number,
+              width: Number,
+              height: Number,
             },
           },
-          img: String,
           choiceImg: {
             align: String,
-            img: String,
+            img: {
+              name: String,
+              top: Number,
+              left: Number,
+              width: Number,
+              height: Number,
+            },
           },
           score: Number,
+          boolForScore: Boolean,
           feedback: String,
-          thematic: String,
+          feedbackHasQuestion: Boolean,
+          thematic: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "Thematic",
+          },
           givenResidents: Number,
         },
       ],

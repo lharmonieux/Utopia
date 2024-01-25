@@ -7,9 +7,9 @@ export const login = (credentials, dispatch) => {
       withCredentials: true,
     })
     .then((response) => {
-      dispatch(setToken({ token: response.data.accessToken, error: null }));
+      dispatch(setToken({ token: response?.data?.accessToken, error: null }));
     })
     .catch((error) => {
-      dispatch(loginFail({ error: error.response.data.message, token: null }));
+      dispatch(loginFail({ error: error?.response?.data?.message, token: null }));
     });
 };
