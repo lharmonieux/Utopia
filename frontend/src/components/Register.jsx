@@ -29,6 +29,10 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
       setLastname("");
       setEmail("");
       setPassword("");
+
+      setTimeout(()=>{
+        window.location.href = "/";
+      }, 1500)
     }
   }, [creationState.successLogin]);
 

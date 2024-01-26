@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Box,
   Stack,
@@ -36,7 +35,6 @@ const Home = () => {
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
   const stateUser = useSelector((state) => state.user);
-  const navigate = useNavigate();
 
   //Read Images
   useEffect(() => {
@@ -55,7 +53,7 @@ const Home = () => {
   useEffect(() => {
     if (authState.token) {
       dispatch(createUserError(null));
-      navigate("/user/home");
+      window.location.href = "/user/home";
     }
 
     //Update sizes's states
