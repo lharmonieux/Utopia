@@ -4,15 +4,8 @@ import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../utils/constants.js";
 import { backgroundSize } from "../utils/backgroundSizeProvider.js";
 
-const TextArea = ({
-  townName,
-  setTownName,
-  textareaValue,
-  setTextareaValue,
-  questionContent,
-}) => {
+const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
   const domConfig = useSelector((state) => state.dom);
-  const stateActs = useSelector((state) => state.act);
   const newTextareaValue = new Map(textareaValue);
   //Accept just letters
   const handleKeyDown = (e) => {
@@ -22,47 +15,30 @@ const TextArea = ({
   };
 
   const handleFormValue = (e) => {
-    if (stateActs?.currentQuestion?.answerType?.name == "texte_ville")
-      setTownName(e.target.value);
-    else {
-      newTextareaValue.set(questionContent._id, e.target.value);
-      setTextareaValue(newTextareaValue);
-    }
+    newTextareaValue.set(questionContent._id, e.target.value);
+    setTextareaValue(newTextareaValue);
   };
 
   return (
     <Box
-      marginBottom={5}
-      width={parseInt(
-        domConfig.width *
-          stateActs.currentQuestion?.visual?.boxAnswersImg?.width
-      )}
-      height={parseInt(
-        domConfig.height *
-          stateActs.currentQuestion?.visual?.boxAnswersImg?.height
-      )}
+      width={parseInt(domConfig.width * questionContent?.textArea?.width)}
+      height={parseInt(domConfig.height * questionContent?.textArea?.height)}
       sx={{
-        backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.boxAnswersImg?.img})`,
+        backgroundImage: `url(${PICTURES_DIR}/${questionContent?.textArea?.img})`,
         backgroundSize: backgroundSize(
-          domConfig.width *
-            stateActs.currentQuestion?.visual?.boxAnswersImg?.width,
-          domConfig.height *
-            stateActs.currentQuestion?.visual?.boxAnswersImg?.height
+          domConfig.width * questionContent?.textArea?.width,
+          domConfig.height * questionContent?.textArea?.height
         ),
       }}
     >
       <textarea
-        value={
-          stateActs?.currentQuestion?.answerType?.name == "texte_ville"
-            ? townName
-            : textareaValue.get(questionContent)
-        }
+        value={textareaValue.get(questionContent)}
         onChange={(e) => handleFormValue(e)}
         onKeyDown={(e) =>
-          stateActs?.currentQuestion?.answerType?.name == "texte_ville" &&
-          handleKeyDown(e)
+          questionContent.answerType?.name == "texte_ville" && handleKeyDown(e)
         }
         style={{
+          padding: 5,
           height: "100%",
           width: "100%",
           border: "none",

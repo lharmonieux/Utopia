@@ -51,6 +51,15 @@ const actSchema = new mongoose.Schema({
           },
           justifyContent: String,
           textColor: String,
+          textArea: {
+            width: Number,
+            height: Number,
+            img: String
+          },
+          answerType: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "AnswerType",
+          },
         },
       ],
       order: {
@@ -97,11 +106,7 @@ const actSchema = new mongoose.Schema({
         feedbackImg: String,
         textAnswerLevel: String,
         spaceAnswer: String,
-        nbOfAnswersRequired: Number
-      },
-      answerType: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: "AnswerType",
+        nbOfAnswersRequired: Number,
       },
       answers: [
         {

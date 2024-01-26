@@ -17,7 +17,7 @@ import { PICTURES_DIR } from "../utils/constants";
 import DisplayingText from "./DisplayingText";
 import { selectionEffect } from "../utils/cssReact";
 
-const Towns = ({ handleSelectedProposition }) => {
+const Towns = ({ handleSelectedProposition, questionContent }) => {
   const stateActs = useSelector((state) => state.act);
   const domConfig = useSelector((state) => state.dom);
   const stateTowns = useSelector((state) => state.town);
@@ -42,7 +42,7 @@ const Towns = ({ handleSelectedProposition }) => {
   const setSelectedTown = (selectedTown) => {
     handleSelectedProposition(
       selectedTown,
-      stateActs.currentQuestion?.answerType?.name,
+      questionContent.answerType?.name,
       selectedTown?.name
     );
     dispatch(updateTownSelected({ towns: stateTowns.towns, selectedTown }));
@@ -139,7 +139,7 @@ const Towns = ({ handleSelectedProposition }) => {
                     onClick={() =>
                       handleSelectedProposition(
                         answer,
-                        stateActs.currentQuestion?.answerType?.name,
+                        questionContent?.answerType?.name,
                         ""
                       )
                     }

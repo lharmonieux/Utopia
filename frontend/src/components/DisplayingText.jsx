@@ -16,7 +16,8 @@ const DisplayingText = ({
   sentence = sentence
     .replace("stateUser.townName", stateUser?.townName)
     .replace("stateUser.secondCharacter.name", stateUser.secondCharacter?.name)
-    .replace("stateUser.townStatus", stateUser?.townStatus);
+    .replace("stateUser.townStatus", stateUser?.townStatus)
+    .replace("stateUser.partyName", stateUser?.partyName);
   return (
     <Typography
       level={level}

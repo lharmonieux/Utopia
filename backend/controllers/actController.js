@@ -54,7 +54,7 @@ export const getAct = async (req, res) => {
   try {
     //Getting acts from DB
     const acts = await Act.find({})
-      .populate("questions.answerType")
+      .populate("questions.content.answerType")
       .populate("questions.answers.thematic");
     if (acts) return res.status(constants.SUCCESS).send(acts);
 

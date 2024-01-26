@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, CircularProgress, Typography } from "@mui/joy";
+import { Box, Button, CircularProgress, Stack, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../../utils/constants";
@@ -58,16 +58,19 @@ const Home = () => {
       </Box>
 
       {/* navigation */}
-      <Box>
+      <Stack spacing={5} direction={"row"}>
         <Button
           disabled={stateActs.currentAct ? false : true}
-          onClick={() => navigate("user/game")}
+          onClick={() => navigate("/user/game")}
         >
           {stateActs.currentAct?.chapter > 1
             ? "Continuer l'aventure"
             : "Commencer à jouer"}
         </Button>
-      </Box>
+        <Button onClick={() => navigate("/user/summary")}>
+          {"Voir le sommaire"}
+        </Button>
+      </Stack>
     </Box>
   ) : (
     <Box

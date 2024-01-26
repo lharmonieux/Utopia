@@ -15,11 +15,12 @@ const userSlice = createSlice({
     town: { region: "", description: "" },
     townName: null,
     townStatus: null,
+    partyName: null,
     saves: [],
     save: {
       logScores: {},
       logAnswers: [],
-      totalResidents: 0
+      totalResidents: 0,
     },
   },
   reducers: {
@@ -66,8 +67,12 @@ const userSlice = createSlice({
       state.town = { region, description };
       return state;
     },
+    setPartyName: (state, action) => {
+      state.partyName = action.payload;
+      return state;
+    },
     setUserInfos: (state, action) => {
-      const {firstname, lastname} = action.payload;
+      const { firstname, lastname } = action.payload;
       state.firstname = firstname;
       state.lastname = lastname;
       return state;
@@ -79,7 +84,7 @@ const userSlice = createSlice({
     setIdUser: (state, action) => {
       state.idUser = action.payload;
       return state;
-    }
+    },
   },
 });
 
@@ -96,7 +101,8 @@ export const {
   setUserInfos,
   storeSaves,
   setIdUser,
-  setCurrentAct
+  setCurrentAct,
+  setPartyName,
 } = userSlice.actions;
 
 export default userSlice.reducer;

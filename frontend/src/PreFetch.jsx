@@ -35,6 +35,7 @@ import {
   setCurrentAct,
   setIdUser,
   setMotto,
+  setPartyName,
   setThematicScore,
   setTown,
   setTownStatus,
@@ -136,6 +137,7 @@ const PreFetch = () => {
             account.user.secondCharacter &&
               dispatch(setUserSecondCharacter(account.user.secondCharacter));
             account.user.town && dispatch(setTown(account.user.town));
+            account.user.partyName && dispatch(setPartyName(account.user.partyName));
 
             // Last save
             const indexLastSave = account.user.saves.length - 1;

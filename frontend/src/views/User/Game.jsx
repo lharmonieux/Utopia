@@ -35,6 +35,7 @@ import {
 import { backgroundSize } from "../../utils/backgroundSizeProvider.js";
 import {
   setMotto,
+  setPartyName,
   setTown,
   setUserCharacter,
   setUserSecondCharacter,
@@ -64,7 +65,6 @@ const Game = () => {
   const [showAlertNoAnswer, setShowAlertNoAnswer] = useState(false);
   const [showAlertBadAnswerNumber, setShowAlertBadAnswerNumber] =
     useState(false);
-  const [townName, setTownName] = useState("");
   const [textareaValue, setTextareaValue] = useState(new Map());
   const [rankUserText, setRankUserText] = useState("");
 
@@ -78,6 +78,7 @@ const Game = () => {
   const [orderedAnswers, setOrderedAnswers] = useState([]);
   const [percentAnswers, setPercentAnswers] = useState(new Map());
   const [answerModal, setAnswerModal] = useState("");
+  const [percentFinalAnswer, setPercentFinalAnswer] = useState({});
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -138,13 +139,17 @@ const Game = () => {
       if (fullContentBox) {
         if (stateActs.currentQuestion) {
           // For manage multi-form
-          if (stateActs.currentQuestion?.answerType?.name == "texte") {
-            const allTextareas = new Map();
-            for (let questionContent of stateActs.currentQuestion.content) {
-              allTextareas.set(questionContent._id, "");
-            }
-            setTextareaValue(allTextareas);
-          } else setTextareaValue(new Map());
+          for (let content of stateActs.currentQuestion.content)
+            if (
+              content?.answerType?.name == "texte" ||
+              content?.answerType?.name == "texte_ville"
+            ) {
+              const allTextareas = new Map();
+              for (let questionContent of stateActs.currentQuestion.content) {
+                allTextareas.set(questionContent._id, "");
+              }
+              setTextareaValue(allTextareas);
+            } else setTextareaValue(new Map());
 
           //Loading of question's datas
           setQuestionBackgroundImg(
@@ -229,7 +234,7 @@ const Game = () => {
     if (answerType == "proposition") {
       // log choice's score
       updateStoreAnswer(selectedAnswer, answerType);
-      storeScore(selectedAnswer);
+      storeScore(answerType, selectedAnswer);
       dispatch(
         updateQuestion({
           currentQuestion: stateActs.currentQuestion,
@@ -239,45 +244,77 @@ const Game = () => {
       );
     }
     //For answer with classement
+    //For store the score, we have to pass only the fisrt element of the table rank
     else if (answerType == "classement") {
+      let newOrderedAnswers = [...orderedAnswers];
       if (orderedAnswers.length > 0) {
         if (orderedAnswers.includes(selectedAnswer._id)) {
-          let newOrderedAnswers = [...orderedAnswers];
           newOrderedAnswers = newOrderedAnswers.filter(
             (id) => id != selectedAnswer._id
           );
           setOrderedAnswers(newOrderedAnswers);
         } else {
-          const newOrderedAnswers = [...orderedAnswers];
           newOrderedAnswers.push(selectedAnswer._id);
           setOrderedAnswers(newOrderedAnswers);
         }
       } else {
-        const newOrderedAnswers = [];
         newOrderedAnswers.push(selectedAnswer._id);
         setOrderedAnswers(newOrderedAnswers);
       }
 
       updateStoreAnswer(selectedAnswer, answerType);
-      storeScore(selectedAnswer);
-      dispatch(
-        updateQuestion({
-          currentQuestion: stateActs.currentQuestion,
-          selectedAnswer,
-          typeAnswer: "multiple",
-        })
+      const newSelectedAnswer = stateActs.currentQuestion.answers?.filter(
+        (answer) => answer._id == newOrderedAnswers[0]
       );
+
+      //For the fisrt click/selection
+      if (newSelectedAnswer.length > 0 || selectedAnswer.selected) {
+        if (newSelectedAnswer[0]?._id == selectedAnswer._id) {
+          dispatch(
+            updateQuestion({
+              currentQuestion: stateActs.currentQuestion,
+              selectedAnswer,
+              typeAnswer: "single",
+            })
+          );
+          storeScore(answerType, selectedAnswer);
+          return;
+        }
+
+        //If the answer with rank 1 is selected again
+        if (selectedAnswer.selected) {
+          dispatch(
+            updateQuestion({
+              currentQuestion: stateActs.currentQuestion,
+              selectedAnswer: newSelectedAnswer[0] || selectedAnswer,
+              typeAnswer: "single",
+            })
+          );
+          storeScore(answerType, newSelectedAnswer[0] || selectedAnswer);
+        }
+      }
     }
     //For answer with percentage
     else if (answerType == "pourcentage") {
-      updateStoreAnswer(selectedAnswer, answerType);
-      storeScore(selectedAnswer);
+      if (percentFinalAnswer._id == selectedAnswer._id) return;
+      else {
+        updateStoreAnswer(selectedAnswer, answerType);
+        storeScore(answerType, selectedAnswer);
+        dispatch(
+          updateQuestion({
+            currentQuestion: stateActs.currentQuestion,
+            selectedAnswer: selectedAnswer,
+            typeAnswer: "single",
+          })
+        );
+        setPercentFinalAnswer(selectedAnswer);
+      }
     }
     //For select town
     else if (answerType == "town") {
       if (stateActs?.currentQuestion?.visual?.mapView?.hasAnswer) {
         updateStoreAnswer(selectedAnswer, answerType);
-        storeScore(selectedAnswer);
+        storeScore(answerType, selectedAnswer);
         dispatch(
           updateQuestion({
             currentQuestion: stateActs.currentQuestion,
@@ -305,7 +342,7 @@ const Game = () => {
         selectedAnswer.selected
       ) {
         updateStoreAnswer(selectedAnswer, answerType);
-        storeScore(selectedAnswer);
+        storeScore(answerType, selectedAnswer);
         dispatch(
           updateQuestion({
             currentQuestion: stateActs.currentQuestion,
@@ -318,7 +355,7 @@ const Game = () => {
   };
 
   const answerToDisplay = (questionContent) => {
-    switch (stateActs?.currentQuestion?.answerType?.name) {
+    switch (questionContent.answerType?.name) {
       //Affichage du choix des persos
       case "personnage":
         return (
@@ -348,10 +385,9 @@ const Game = () => {
       // Affichage d'une zone de texte
       case "texte":
       case "texte_ville":
+      case "texte_fete":
         return (
           <TextArea
-            town={townName}
-            setTownName={setTownName}
             textareaValue={textareaValue}
             setTextareaValue={setTextareaValue}
             questionContent={questionContent}
@@ -367,7 +403,12 @@ const Game = () => {
         );
 
       case "town":
-        return <Towns handleSelectedProposition={handleSelectedProposition} />;
+        return (
+          <Towns
+            handleSelectedProposition={handleSelectedProposition}
+            questionContent={questionContent}
+          />
+        );
 
       default:
         break;
@@ -405,6 +446,7 @@ const Game = () => {
                 domConfig.height * 0.85
               ),
               position: "relative",
+              paddingTop: "5%"
             }}
           >
             <ModalClose variant="outlined" />
@@ -688,8 +730,8 @@ const Game = () => {
     );
   };
 
-  const storeScore = (selectedAnswer = null, answers = []) => {
-    switch (stateActs.currentQuestion?.answerType?.name) {
+  const storeScore = (answerType, selectedAnswer = null, answers = []) => {
+    switch (answerType) {
       case "proposition":
       case "proposition_multiple":
       case "personnage":
@@ -717,9 +759,31 @@ const Game = () => {
           setScoresThematic(newScoresThematic);
         } else {
           //update score for thematic
-          const oldScore = scoresThematic.get(selectedAnswer.thematic.name);
-          const oldGivenResidents = scoresThematic.get("residents");
+          let oldScore;
+          let oldGivenResidents = scoresThematic.get("residents");
           let newScoresThematic = new Map(scoresThematic);
+
+          //Remove score of the previous selected answer
+          for (let answer of stateActs.currentQuestion.answers) {
+            if (answer.selected) {
+              oldScore = newScoresThematic.get(answer.thematic.name);
+              newScoresThematic.set(
+                "residents",
+                oldGivenResidents
+                  ? oldGivenResidents - answer.givenResidents
+                  : 0
+              );
+
+              newScoresThematic.set(
+                answer.thematic.name,
+                oldScore ? oldScore - answer.score : 0
+              );
+            }
+          }
+
+          //Store new score
+          oldScore = newScoresThematic.get(selectedAnswer.thematic.name);
+          oldGivenResidents = newScoresThematic.get("residents");
           newScoresThematic.set(
             "residents",
             oldGivenResidents
@@ -777,7 +841,6 @@ const Game = () => {
     });
     dispatch(setQuestionOrder(stateActs.questionOrder + 1));
     setStoreAnswer([]);
-    setTownName("");
     setObjectCharacterSelected(null);
     setShowAlertNoAnswer(false);
     setShowAlertBadAnswerNumber(false);
@@ -793,11 +856,11 @@ const Game = () => {
     //Control of if there are an given answer
     if (
       storeAnswer.length > 0 ||
-      townName ||
       scaleAnswers.size > 0 ||
       objectCharacterSelected ||
       textareaValue.size > 0 ||
-      stateActs?.currentQuestion?.answerType?.name == "reponse_double"
+      stateActs?.currentQuestion?.content[0]?.answerType?.name ==
+        "reponse_double"
     ) {
       //Textarea control
       let tmpValue;
@@ -811,6 +874,15 @@ const Game = () => {
             return;
           }
         }
+
+        // Store townName
+        for (let content of stateActs.currentQuestion.content) {
+          if (content.answerType.name == "texte_ville")
+            dispatch(storeTownName(textareaValue.get(content._id)));
+          else if (content.answerType.name == "texte_fete")
+            dispatch(setPartyName(textareaValue.get(content._id)));
+          else continue;
+        }
       }
       //Store character
       if (objectCharacterSelected) {
@@ -819,10 +891,6 @@ const Game = () => {
           : dispatch(setUserCharacter(objectCharacterSelected));
       }
 
-      // Store town name
-      if (townName) {
-        dispatch(storeTownName(townName));
-      }
       //Scale answer control
       if (scaleAnswers.size > 0) {
         setOpenScaleModal(true);
@@ -830,7 +898,7 @@ const Game = () => {
       }
       //Multiple answers control
       if (
-        stateActs?.currentQuestion?.answerType?.name ==
+        stateActs?.currentQuestion?.content[0]?.answerType?.name ==
           "proposition_multiple" &&
         storeAnswer.length <
           (stateActs.currentQuestion?.visual?.nbOfAnswersRequired || 3)
@@ -840,15 +908,23 @@ const Game = () => {
       }
       // Ranking answer control
       if (
-        stateActs?.currentQuestion?.answerType?.name == "classement" &&
+        stateActs?.currentQuestion?.content[0]?.answerType?.name ==
+          "classement" &&
         storeAnswer.length < stateActs?.currentQuestion?.answers?.length
       ) {
         setShowAlertBadAnswerNumber(true);
         return;
       }
-      // Store score for double answer
-      if (stateActs?.currentQuestion?.answerType?.name == "reponse_double") {
-        storeScore(null, stateActs.currentQuestion?.answers);
+      if (
+        stateActs?.currentQuestion?.content[0]?.answerType?.name ==
+        "reponse_double"
+      ) {
+        // Store score for double answer
+        storeScore(
+          stateActs?.currentQuestion?.content[0]?.answerType?.name,
+          null,
+          stateActs.currentQuestion?.answers
+        );
       }
       // If answer has a feedback
       if (containsFeedback) {
@@ -944,7 +1020,10 @@ const Game = () => {
                 animateOut(openScaleModal, "#modal-scale", () => {
                   setOpenScaleModal(false);
                   dispatch(setMotto(choosenMotto[0]?.content?.text?.text));
-                  storeScore(choosenMotto[0]);
+                  storeScore(
+                    stateActs?.currentQuestion?.content[0]?.answerType?.name,
+                    choosenMotto[0]
+                  );
                   initializingState();
                 })
               }

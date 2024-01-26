@@ -28,7 +28,7 @@ const Propositions = ({
 
   useEffect(() => {
     // Initializing of percent values for propositions
-    if (stateActs.currentQuestion.answerType.name == "pourcentage") {
+    if (questionContent.answerType.name == "pourcentage") {
       let percentAnswers = new Map();
       for (let answer of stateActs.currentQuestion.answers) {
         percentAnswers.set(answer._id, 0);
@@ -98,30 +98,24 @@ const Propositions = ({
       stateActs.currentQuestion.answers[0]
     );
 
-    handleSelectedProposition(
-      finalAnswer,
-      stateActs.currentQuestion.answerType.name,
-      ""
-    );
+    handleSelectedProposition(finalAnswer, questionContent.answerType.name, "");
 
     setPercentAnswers(newPercentAnswers);
   };
 
   const contentChoice = (answer) => {
-    switch (stateActs.currentQuestion.answerType.name) {
+    switch (questionContent.answerType.name) {
       case "proposition_multiple":
         if (answer.selected)
           return <IoIosCheckmarkCircle color="green" size={25} />;
         break;
 
       case "classement":
-        if (answer.selected)
-          return (
-            <Typography level="title-lg">
-              {orderedAnswer.indexOf(answer._id) + 1}
-            </Typography>
-          );
-        break;
+        return (
+          <Typography level="title-lg">
+            {orderedAnswer.indexOf(answer._id) + 1 || ""}
+          </Typography>
+        );
 
       case "pourcentage":
         return (
@@ -287,18 +281,18 @@ const Propositions = ({
                 //     : 0
                 // }
                 onClick={() =>
-                  stateActs.currentQuestion.answerType.name != "pourcentage" &&
+                  questionContent.answerType.name != "pourcentage" &&
                   handleSelectedProposition(
                     answer,
-                    stateActs.currentQuestion?.answerType?.name,
+                    questionContent?.answerType?.name,
                     ""
                   )
                 }
                 sx={[
                   {
                     cursor:
-                      stateActs.currentQuestion.answerType.name !=
-                        "pourcentage" && "pointer",
+                      questionContent.answerType.name != "pourcentage" &&
+                      "pointer",
                     backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
                     backgroundSize: backgroundSize(
                       domConfig.width * answer?.content?.img?.width,
