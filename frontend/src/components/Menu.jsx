@@ -1,7 +1,7 @@
 import { Drawer, Box, List, ListItem, ListItemButton } from "@mui/joy";
 
 // eslint-disable-next-line react/prop-types
-const Menu = ({ showDrawer, setShowDrawer, setShowSummary }) => {
+const Menu = ({ showDrawer, setShowDrawer }) => {
   return (
     <Drawer
       anchor="left"
@@ -13,7 +13,7 @@ const Menu = ({ showDrawer, setShowDrawer, setShowSummary }) => {
           <ListItem>
             <ListItemButton
               onClick={() => {
-                window.location.href = "/user/home";
+                window.location.href = "/user";
                 setShowDrawer(false);
               }}
             >

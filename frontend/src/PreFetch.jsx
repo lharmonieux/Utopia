@@ -7,14 +7,7 @@ import {
   Box,
   CircularProgress,
   CssVarsProvider,
-  IconButton,
-  Modal,
-  ModalDialog,
-  ModalClose,
-  DialogTitle,
-  List,
-  ListItem,
-  ListItemButton,
+  IconButton
 } from "@mui/joy";
 import GlobalContainer from "./components/GlobalContainer.jsx";
 import { setSizes } from "./utils/redux/DOMSlice.js";
@@ -57,7 +50,6 @@ const PreFetch = () => {
   const [heightMainContent, setHeightMainContent] = useState(0);
   const [mainContentDOM, setMainContentDOM] = useState();
   const [showDrawer, setShowDrawer] = useState(false);
-  const [showSummary, setShowSummary] = useState(false);
   const [acts, setActs] = useState([]);
   //Getting datas from api
 
@@ -268,30 +260,9 @@ const PreFetch = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainContentDOM, widthMainContent, heightMainContent, loading]);
 
-  const modalSummary = () => (
-    <Modal open={showSummary} onClose={() => setShowSummary(false)}>
-      <ModalDialog>
-        <ModalClose variant="outlined" />
-        <DialogTitle>Sommaire</DialogTitle>
-
-        <List>
-          {stateActs.acts.map((act) => (
-            <ListItem key={act._id}>
-              <ListItemButton>
-                Acte {act.chapter} : {act.name}
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </ModalDialog>
-    </Modal>
-  );
-
   return !loading ? (
     <CssVarsProvider theme={typographyTheme}>
       <GlobalContainer>
-        {/* Summary */}
-        {showSummary && modalSummary()}
 
         {/* Menu button  */}
         <IconButton
@@ -304,7 +275,6 @@ const PreFetch = () => {
         <MenuDrawer
           showDrawer={showDrawer}
           setShowDrawer={setShowDrawer}
-          setShowSummary={setShowSummary}
         />
 
         {/* Main content */}

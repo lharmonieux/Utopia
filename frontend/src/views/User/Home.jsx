@@ -67,7 +67,7 @@ const Home = () => {
             ? "Continuer l'aventure"
             : "Commencer à jouer"}
         </Button>
-        <Button onClick={() => navigate("/user/summary")}>
+        <Button onClick={() => (window.location.href = "/user/summary")}>
           {"Voir le sommaire"}
         </Button>
       </Stack>

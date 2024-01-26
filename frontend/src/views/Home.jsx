@@ -53,7 +53,7 @@ const Home = () => {
   useEffect(() => {
     if (authState.token) {
       dispatch(createUserError(null));
-      window.location.href = "/user/home";
+      window.location.href = "/user";
     }
 
     //Update sizes's states
