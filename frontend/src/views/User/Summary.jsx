@@ -70,7 +70,11 @@ const Summary = () => {
 
                 <Typography
                   level="title-lg"
-                  textColor={colors.titleBackDark}
+                  textColor={
+                    act.status == "DONE"
+                      ? colors.titleBackLight
+                      : colors.titleBackDark
+                  }
                   fontWeight={400}
                   marginLeft={"15%"}
                 >
