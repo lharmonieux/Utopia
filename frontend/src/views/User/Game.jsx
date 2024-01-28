@@ -446,7 +446,7 @@ const Game = () => {
                 domConfig.height * 0.85
               ),
               position: "relative",
-              paddingTop: "5%"
+              paddingTop: "5%",
             }}
           >
             <ModalClose variant="outlined" />
@@ -546,6 +546,7 @@ const Game = () => {
       town: stateUser.town,
       townName: stateUser.townName,
       townStatus: stateUser.townStatus,
+      partyName: stateUser.partyName,
       saves,
     };
 
@@ -1148,83 +1149,87 @@ const Game = () => {
                           }}
                         >
                           {stateActs.currentQuestion?.content?.map(
-                            (questionContent, index) => (
-                              <Box
-                                key={index}
-                                height={parseInt(domConfig.height * 0.95)}
-                                width={parseInt(domConfig.width)}
-                                display={"flex"}
-                                flexDirection={
-                                  stateActs.currentQuestion?.visual
-                                    ?.directionAnswer == "column"
-                                    ? "row"
-                                    : "column"
-                                }
-                                position={"relative"}
-                                justifyContent={questionContent?.justifyContent}
-                                alignItems={"center"}
-                              >
-                                {/* Question's content  */}
+                            (questionContent, index) => {
+                              return (
                                 <Box
-                                  width={parseInt(
-                                    domConfig.width *
-                                      questionContent?.backgroundImg?.width
-                                  )}
-                                  height={parseInt(
-                                    domConfig.height *
-                                      questionContent?.backgroundImg?.height
-                                  )}
+                                  key={index}
+                                  height={parseInt(domConfig.height * 0.95)}
+                                  width={parseInt(domConfig.width)}
                                   display={"flex"}
-                                  justifyContent={"center"}
-                                  alignItems={
-                                    !stateActs.currentQuestion.visual
-                                      .boxAnswersImg
-                                      ? "center"
-                                      : "flex-start"
+                                  flexDirection={
+                                    stateActs.currentQuestion?.visual
+                                      ?.directionAnswer == "column"
+                                      ? "row"
+                                      : "column"
                                   }
-                                  position={
-                                    stateActs?.currentQuestion
-                                      ?.additionalContent.length > 0
-                                      ? "absolute"
-                                      : "static"
+                                  position={"relative"}
+                                  justifyContent={
+                                    questionContent?.justifyContent
                                   }
-                                  left={
-                                    stateActs?.currentQuestion
-                                      ?.additionalContent.length > 0
-                                      ? `${questionContent?.backgroundImg?.left}%`
-                                      : 0
-                                  }
-                                  top={
-                                    stateActs?.currentQuestion
-                                      ?.additionalContent.length > 0
-                                      ? `${questionContent?.backgroundImg?.top}%`
-                                      : 0
-                                  }
-                                  zIndex={1}
-                                  sx={{
-                                    // bgcolor: "red",
-                                    marginBottom: 1,
-                                    backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg.img})`,
-                                    backgroundSize: backgroundSize(
+                                  alignItems={"center"}
+                                >
+                                  {/* Question's content  */}
+                                  <Box
+                                    width={parseInt(
                                       domConfig.width *
-                                        questionContent?.backgroundImg?.width,
+                                        questionContent?.backgroundImg?.width
+                                    )}
+                                    height={parseInt(
                                       domConfig.height *
                                         questionContent?.backgroundImg?.height
-                                    ),
-                                  }}
-                                >
-                                  <DisplayingText
-                                    sentence={questionContent.text}
-                                    level={"title-lg"}
-                                    textColor={questionContent.textColor}
-                                    padding={2}
-                                    textAlign={"center"}
-                                    marginLeft={`${questionContent.marginLeft}%`}
-                                  />
+                                    )}
+                                    display={"flex"}
+                                    justifyContent={"center"}
+                                    alignItems={
+                                      !stateActs.currentQuestion.visual
+                                        .boxAnswersImg
+                                        ? "center"
+                                        : "flex-start"
+                                    }
+                                    position={
+                                      stateActs?.currentQuestion
+                                        ?.additionalContent.length > 0
+                                        ? "absolute"
+                                        : "static"
+                                    }
+                                    left={
+                                      stateActs?.currentQuestion
+                                        ?.additionalContent.length > 0
+                                        ? `${questionContent?.backgroundImg?.left}%`
+                                        : 0
+                                    }
+                                    top={
+                                      stateActs?.currentQuestion
+                                        ?.additionalContent.length > 0
+                                        ? `${questionContent?.backgroundImg?.top}%`
+                                        : 0
+                                    }
+                                    zIndex={1}
+                                    sx={{
+                                      // bgcolor: "red",
+                                      marginBottom: 1,
+                                      backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg.img})`,
+                                      backgroundSize: backgroundSize(
+                                        domConfig.width *
+                                          questionContent?.backgroundImg?.width,
+                                        domConfig.height *
+                                          questionContent?.backgroundImg?.height
+                                      ),
+                                    }}
+                                  >
+                                    <DisplayingText
+                                      sentence={questionContent.text}
+                                      level={"title-lg"}
+                                      textColor={questionContent.textColor}
+                                      padding={2}
+                                      textAlign={"center"}
+                                      marginLeft={`${questionContent.marginLeft}%`}
+                                    />
+                                  </Box>
+                                  {answerToDisplay(questionContent)}
                                 </Box>
-                                {answerToDisplay(questionContent)}
-                              </Box>
-                            )
+                              );
+                            }
                           )}
 
                           {/* Validate button */}

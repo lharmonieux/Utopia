@@ -19,6 +19,7 @@ import { login } from "../api/authAPI.js";
 import GlobalContainer from "../components/GlobalContainer.jsx";
 import { backgroundSize } from "../utils/backgroundSizeProvider.js";
 import { createUserError } from "../utils/redux/userSlice.js";
+import { loginFail, setToken } from "../utils/redux/authSlice.js";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -31,6 +32,7 @@ const Home = () => {
   const [openRegisterModal, setOpenRegisterModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
@@ -67,8 +69,21 @@ const Home = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     // send to auth API
-    login({ email, password }, dispatch);
+    const result = login({ email, password });
+    result
+      .then((response) => {
+        if (response)
+          dispatch(setToken({ token: response.data.accessToken, error: null }));
+        setLoading(false);
+      })
+      .catch((error) => {
+        dispatch(
+          loginFail({ error: error?.response?.data?.message, token: null })
+        );
+        setLoading(false);
+      });
   };
 
   return (
@@ -252,7 +267,14 @@ const Home = () => {
                               }}
                               type="submit"
                             >
-                              Soumettre
+                              {loading ? (
+                                <CircularProgress
+                                  variant="outlined"
+                                  color="neutral"
+                                />
+                              ) : (
+                                "Soumettre"
+                              )}
                             </Button>
                           </Stack>
                         </form>

@@ -2,6 +2,7 @@
 import {
   Alert,
   Button,
+  CircularProgress,
   DialogTitle,
   Input,
   Modal,
@@ -12,7 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../api/userAPi";
-import { createUserSuccess } from "../utils/redux/userSlice";
+import { createUserError, createUserSuccess } from "../utils/redux/userSlice";
 
 const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Reset form when user is created
   useEffect(() => {
@@ -30,16 +32,26 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
       setEmail("");
       setPassword("");
 
-      setTimeout(()=>{
+      setTimeout(() => {
         window.location.href = "/";
-      }, 1500)
+      }, 1500);
     }
   }, [creationState.successLogin]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     // Send informations to user API
-    createUser({ firstname, lastname, email, password }, dispatch);
+    const result = createUser({ firstname, lastname, email, password });
+    result
+      .then((response) => {
+        if (response) dispatch(createUserSuccess(response.data.message));
+        setLoading(false);
+      })
+      .catch((error) => {
+        dispatch(createUserError(error.response.data.message));
+        setLoading(false);
+      });
   };
 
   return (
@@ -82,7 +94,13 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button type="submit">Soumettre</Button>
+            <Button type="submit">
+              {loading ? (
+                <CircularProgress variant="outlined" color="neutral" />
+              ) : (
+                "Soumettre"
+              )}
+            </Button>
           </Stack>
         </form>
 

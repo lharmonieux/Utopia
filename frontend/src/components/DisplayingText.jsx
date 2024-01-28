@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
-import React from "react";
+// import React from "react";
 import { Typography } from "@mui/joy";
 import { useSelector } from "react-redux";
+import { TypeAnimation } from "react-type-animation";
 
 const DisplayingText = ({
   sentence,
@@ -27,11 +28,13 @@ const DisplayingText = ({
       textAlign={textAlign}
       marginLeft={marginLeft}
     >
-      {sentence?.split("\n").map((chaine, index) => (
-        <React.Fragment key={index}>
-          {`${chaine}`} <br />
-        </React.Fragment>
-      ))}
+      <TypeAnimation
+        sequence={[sentence]}
+        speed={50}
+        repeat={1}
+        cursor={false}
+        style={{ whiteSpace: "pre-line" }}
+      />
     </Typography>
   );
 };

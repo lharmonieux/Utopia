@@ -1,15 +1,13 @@
 import axios from "axios";
-import { loginFail, setToken } from "../utils/redux/authSlice";
 
-export const login = (credentials, dispatch) => {
-  axios
-    .post(`${import.meta.env.VITE_REACT_URL_BACK}/auth`, credentials, {
-      withCredentials: true,
-    })
-    .then((response) => {
-      dispatch(setToken({ token: response?.data?.accessToken, error: null }));
-    })
-    .catch((error) => {
-      dispatch(loginFail({ error: error?.response?.data?.message, token: null }));
-    });
+export const login = async (credentials) => {
+  const result = await axios({
+    method: "post",
+    baseURL: import.meta.env.VITE_REACT_URL_BACK,
+    url: "/auth",
+    withCredentials: true,
+    data: credentials,
+  });
+
+  return result;
 };

@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Box, Button, CircularProgress, Stack, Typography } from "@mui/joy";
+import { TypeAnimation } from "react-type-animation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../../utils/constants";
@@ -39,21 +40,18 @@ const Home = () => {
           fontWeight={400}
           textAlign={"center"}
         >
-          {
-            "2027 ne fut décidemment pas une année comme les autres. Un premier terrien sur Mars, une base sur la Lune… et une nouvelle exoplanète découverte parfaitement habitable !"
-          }
-          <br />
-          {
-            "Ce nouvel astre fut nommé Exploria, et il fallut plus de 300 ans à l'humanité pour s'y installer… En 2357, une poignée d'humains fondèrent la première colonie. Ce fut le point de départ d'une importante immigration, et 50 ans plus tard, près de 10 000 000 habitants la peuplaient."
-          }
-          <br />
-          {
-            "De la capitale Méridian essaimèrent une dizaine de villes moyennes, administrant chacune un nouveau territoire."
-          }
-          <br />
-          {
-            "Né dans l'une de ces villes beaucoup trop moyennes pour vous, vous n'avez qu'un rêve : fonder votre propre Cité !"
-          }
+          <TypeAnimation
+            sequence={[
+              `2027 ne fut décidemment pas une année comme les autres. Un premier terrien sur Mars, une base sur la Lune… et une nouvelle exoplanète découverte parfaitement habitable !
+          Ce nouvel astre fut nommé Exploria, et il fallut plus de 300 ans à l'humanité pour s'y installer… En 2357, une poignée d'humains fondèrent la première colonie. Ce fut le point de départ d'une importante immigration, et 50 ans plus tard, près de 10 000 000 habitants la peuplaient.
+          De la capitale Méridian essaimèrent une dizaine de villes moyennes, administrant chacune un nouveau territoire.
+          Né dans l'une de ces villes beaucoup trop moyennes pour vous, vous n'avez qu'un rêve : fonder votre propre Cité !`,
+            ]}
+            speed={60}
+            repeat={1}
+            cursor={false}
+            style={{ whiteSpace: "pre-line" }}
+          />
         </Typography>
       </Box>
 
