@@ -90,6 +90,7 @@ const Game = () => {
   const [titleEndActImg, setTitleEndActImg] = useState();
   const [rankEndActImg, setRankEndActImg] = useState();
   const [bgEndActImg, setBgEndActImg] = useState();
+
   // Getting total number of questions for current act
   let actQuestionsLength = stateActs.currentAct?.questions?.length;
   //Var for modal entrance animation

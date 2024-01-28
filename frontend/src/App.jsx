@@ -16,7 +16,7 @@ const App = () => {
       <Route path="/admin/acts" element={<Act />} />
 
       {/* Routes user  */}
-      <Route path="/user" element={<PreFetch />}>
+      <Route path="user" element={<PreFetch />}>
         <Route index element={<HomeUser />} />
         <Route path="game" element={<Game />} />
         <Route path="summary" element={<Summary />} />
