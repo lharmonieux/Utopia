@@ -46,7 +46,7 @@ app.use("/thematic", thematicRoute);
 app.use("/answer_type", answerTypeRoute);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/frontend/dist")));
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
   app.get(
     "/*",
