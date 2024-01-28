@@ -13,6 +13,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from 'path';
 
+export const __dirname = path.resolve();
+
 const app = express();
 dotenv.config({
   path: "./.env",
