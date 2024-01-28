@@ -11,6 +11,7 @@ import answerTypeRoute from "./routes/answerTypeRoute.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from 'path';
 
 const app = express();
 dotenv.config({
