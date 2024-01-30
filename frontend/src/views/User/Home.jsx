@@ -28,8 +28,8 @@ const Home = () => {
       flexDirection={"column"}
       sx={{
         backgroundImage: `url(${backgroundImg})`,
-        backgroundSize: `${domConfig.width}px ${domConfig.height}px`
-      }} 
+        backgroundSize: `${domConfig.width}px ${domConfig.height}px`,
+      }}
       className={"animate__animated animate__zoomIn"}
     >
       {/* home's text  */}
@@ -65,7 +65,7 @@ const Home = () => {
             ? "Continuer l'aventure"
             : "Commencer à jouer"}
         </Button>
-        <Button onClick={() => (window.location.href = "/user/summary")}>
+        <Button onClick={() => navigate("/user/summary")}>
           {"Voir le sommaire"}
         </Button>
       </Stack>
