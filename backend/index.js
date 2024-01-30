@@ -20,7 +20,7 @@ dotenv.config({
   path: "./.env",
 });
 
-const port = process.env.PORT;
+const port = process.env.PORT || 8080;
 
 // Middleware for parsing request body
 app.use(express.json({ limit: "5mb" }));
