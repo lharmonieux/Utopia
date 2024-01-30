@@ -45,22 +45,22 @@ app.use("/auth", authRoute);
 app.use("/thematic", thematicRoute);
 app.use("/answer_type", answerTypeRoute);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  app.get(
-    "/*",
-    (req, res) =>
-      res.sendFile(path.join(__dirname, "frontend", "dist", "index.html")),
-    function (error) {
-      if (error) {
-        res.status(500).send(error);
-      }
-    }
-  );
-} else {
-  app.get("/", (req, res) => res.send("Api running"));
-}
+//   app.get(
+//     "/*",
+//     (req, res) =>
+//       res.sendFile(path.join(__dirname, "frontend", "dist", "index.html")),
+//     function (error) {
+//       if (error) {
+//         res.status(500).send(error);
+//       }
+//     }
+//   );
+// } else {
+//   app.get("/", (req, res) => res.send("Api running"));
+// }
 
 //Connection Database, Then running server
 mongoose

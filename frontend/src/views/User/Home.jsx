@@ -28,8 +28,8 @@ const Home = () => {
       flexDirection={"column"}
       sx={{
         backgroundImage: `url(${backgroundImg})`,
-        backgroundSize: `${domConfig.width}px ${domConfig.height}px`,
-      }}
+        backgroundSize: `${domConfig.width}px ${domConfig.height}px`
+      }} 
       className={"animate__animated animate__zoomIn"}
     >
       {/* home's text  */}
@@ -37,7 +37,7 @@ const Home = () => {
         <Typography
           textColor={"white"}
           level="title-lg"
-          fontWeight={400}
+          fontWeight={500}
           textAlign={"center"}
         >
           <TypeAnimation
@@ -47,7 +47,7 @@ const Home = () => {
           De la capitale Méridian essaimèrent une dizaine de villes moyennes, administrant chacune un nouveau territoire.
           Né dans l'une de ces villes beaucoup trop moyennes pour vous, vous n'avez qu'un rêve : fonder votre propre Cité !`,
             ]}
-            speed={60}
+            speed={80}
             repeat={1}
             cursor={false}
             style={{ whiteSpace: "pre-line" }}

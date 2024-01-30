@@ -11,14 +11,17 @@ const DisplayingText = ({
   padding,
   textAlign,
   marginLeft,
+  marginTop,
   fontWeight,
+  animated,
 }) => {
   const stateUser = useSelector((state) => state.user);
   sentence = sentence
     .replace("stateUser.townName", stateUser?.townName)
     .replace("stateUser.secondCharacter.name", stateUser.secondCharacter?.name)
     .replace("stateUser.townStatus", stateUser?.townStatus)
-    .replace("stateUser.partyName", stateUser?.partyName);
+    .replace("stateUser.partyName", stateUser?.partyName)
+    .replace("stateUser.town.region", stateUser?.town?.region);
   return (
     <Typography
       level={level}
@@ -27,14 +30,19 @@ const DisplayingText = ({
       padding={padding}
       textAlign={textAlign}
       marginLeft={marginLeft}
+      marginTop={marginTop}
     >
-      <TypeAnimation
-        sequence={[sentence]}
-        speed={50}
-        repeat={1}
-        cursor={false}
-        style={{ whiteSpace: "pre-line" }}
-      />
+      {animated ? (
+        <TypeAnimation
+          sequence={[`${sentence}`]}
+          speed={80}
+          repeat={1}
+          cursor={false}
+          style={{ whiteSpace: "pre-line" }}
+        />
+      ) : (
+        `${sentence}`
+      )}
     </Typography>
   );
 };

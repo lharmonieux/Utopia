@@ -482,6 +482,7 @@ const Game = () => {
                   sentence={feedbackText}
                   level="title-md"
                   textColor={"black"}
+                  animated={true}
                 />
               </Typography>
 
@@ -581,19 +582,19 @@ const Game = () => {
         const percentRank = 100 - (totalResidents / maxResidents) * 100;
         if (percentRank < 100 && percentRank >= 80)
           setRankUserText(
-            `\nVous faites partie des 80% les meilleurs. Il va falloir accélérer, tout reste à conquérir !`
+            `\n\nVous faites partie des 80% les meilleurs. Il va falloir accélérer, tout reste à conquérir !`
           );
         else if (percentRank < 80 && percentRank >= 50)
           setRankUserText(
-            `\nVous faites partie des 50% les meilleurs. Encore un effort, vous êtes sur la bonne voie !`
+            `\n\nVous faites partie des 50% les meilleurs. Encore un effort, vous êtes sur la bonne voie !`
           );
         else if (percentRank < 50 && percentRank >= 0)
           setRankUserText(
-            `\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
+            `\n\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
           );
         else
           setRankUserText(
-            `\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
+            `\n\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
           );
       })
       .catch((error) => {
@@ -683,6 +684,7 @@ const Game = () => {
                     stateActs.currentAct?.resolution?.textStyle?.weight
                   }
                   sentence={resolutionText}
+                  animated={true}
                 />
                 <DisplayingText
                   level={stateActs.currentAct?.resolution?.textStyle?.size}
@@ -1220,11 +1222,14 @@ const Game = () => {
                                   >
                                     <DisplayingText
                                       sentence={questionContent.text}
-                                      level={"title-lg"}
+                                      level={
+                                        questionContent.textLevel || "title-md"
+                                      }
                                       textColor={questionContent.textColor}
                                       padding={2}
                                       textAlign={"center"}
                                       marginLeft={`${questionContent.marginLeft}%`}
+                                      animated={true}
                                     />
                                   </Box>
                                   {answerToDisplay(questionContent)}

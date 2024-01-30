@@ -41,7 +41,6 @@ import {
 
 const PreFetch = () => {
   const authState = useSelector((state) => state.auth);
-  const stateActs = useSelector((state) => state.act);
   const stateUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();

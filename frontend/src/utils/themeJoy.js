@@ -16,6 +16,9 @@ export const typographyTheme = extendTheme({
         },
         "title-lg": {
             fontFamily: 'typo'
+        },
+        "title-md": {
+            fontFamily: 'typo'
         }
     }
 })

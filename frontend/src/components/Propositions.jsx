@@ -274,12 +274,6 @@ const Propositions = ({
                 display={"flex"}
                 justifyContent={"center"}
                 alignItems={"center"}
-                // position={answer.choiceImg ? "absolute" : "relative"}
-                // left={
-                //   answer.choiceImg && answer.choiceImg.align == "left"
-                //     ? `${answer?.choiceImg?.img?.width * 280}%`
-                //     : 0
-                // }
                 onClick={() =>
                   questionContent.answerType.name != "pourcentage" &&
                   handleSelectedProposition(
@@ -304,18 +298,19 @@ const Propositions = ({
               >
                 {/* Display text if it isn't hidden */}
                 {!answer.content.text.hiddenText && (
-                  <Typography
+                  <DisplayingText
+                    marginLeft={`${answer.content.text.position?.marginLeft}%`}
+                    marginTop={`${answer.content.text.position?.marginTop}%`}
+                    padding={2}
+                    sentence={answer.content.text.text}
                     textColor={answer.content.textColor}
                     fontWeight={400}
-                    padding={2}
                     textAlign={"center"}
                     level={
                       stateActs?.currentQuestion?.visual?.textAnswerLevel ||
                       "title-sm"
                     }
-                  >
-                    <DisplayingText sentence={answer.content.text.text} />
-                  </Typography>
+                  />
                 )}
 
                 {/* Display second text on selection */}
@@ -324,6 +319,7 @@ const Propositions = ({
                     sentence={answer?.content?.text?.secondText}
                     level={"title-lg"}
                     textColor={colors.titleBackLight}
+                    textAlign={"center"}
                   />
                 )}
               </Box>
@@ -359,7 +355,7 @@ const Propositions = ({
                     color: element?.textColor || "black",
                   }}
                 >
-                  {element.text}
+                  <DisplayingText sentence={element.text} animated={false} />
                 </Typography>{" "}
               </Box>
             ))}

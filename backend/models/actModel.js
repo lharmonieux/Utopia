@@ -117,10 +117,8 @@ const actSchema = new mongoose.Schema({
               hiddenText: Boolean,
               textLevel: String,
               position: {
-                top: Number,
-                left: Number,
-                width: Number,
-                height: Number,
+                marginLeft: Number,
+                marginTop: Number
               },
             },
             textColor: String,
