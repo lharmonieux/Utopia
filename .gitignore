@@ -11,7 +11,7 @@ lerna-debug.log*
 frontend/dist
 dist-ssr
 *.local
-*/.env
+*.env
 .gitignore
 
 # Editor directories and files
