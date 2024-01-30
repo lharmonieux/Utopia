@@ -5,7 +5,7 @@ const request = async (endpoint, method, accessToken, options) => {
   try {
     const response = await axios({
       method: method,
-      baseURL: import.meta.env.VITE_REACT_URL_BACK,
+      baseURL: import.meta.env.VITE_REACT_URL_BACK || "",
       url: endpoint,
       withCredentials: true,
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -21,7 +21,7 @@ const refreshToken = async () => {
   try {
     const response = await axios({
       method: "get",
-      baseURL: import.meta.env.VITE_REACT_URL_BACK,
+      baseURL: import.meta.env.VITE_REACT_URL_BACK || "",
       url: "auth/refresh",
       withCredentials: true,
     });
