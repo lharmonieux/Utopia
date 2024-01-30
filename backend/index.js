@@ -5,13 +5,13 @@ import characterRoute from "./routes/characterRoute.js";
 import cloudinaryRoute from "./routes/cloudinaryRoute.js";
 import townRoute from "./routes/townRoute.js";
 import userRoute from "./routes/userRoute.js";
-import authRoute from './routes/authRoute.js';
+import authRoute from "./routes/authRoute.js";
 import thematicRoute from "./routes/thematicRoute.js";
 import answerTypeRoute from "./routes/answerTypeRoute.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import path from 'path';
+import path from "path";
 
 export const __dirname = path.resolve();
 
@@ -31,7 +31,7 @@ app.use(cookieParser());
 let corsOptions = {
   origin: process.env.URL_FRONT,
   optionsSuccessStatus: 200,
-  credentials: true
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
@@ -46,6 +46,11 @@ app.use("/thematic", thematicRoute);
 app.use("/answer_type", answerTypeRoute);
 
 if (process.env.NODE_ENV === "production") {
+  // Redirection
+  app.use("/user/summary", (req, res) => {
+    res.redirect(301, "/summary");
+  });
+  
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
   app.get(

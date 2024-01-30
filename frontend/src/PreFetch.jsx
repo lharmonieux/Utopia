@@ -51,7 +51,6 @@ const PreFetch = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [acts, setActs] = useState([]);
   //Getting datas from api
-  console.log(authState);
 
   // Refresh token
   useEffect(() => {
