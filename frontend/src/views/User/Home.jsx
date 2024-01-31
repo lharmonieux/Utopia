@@ -59,13 +59,13 @@ const Home = () => {
       <Stack spacing={5} direction={"row"}>
         <Button
           disabled={stateActs.currentAct ? false : true}
-          onClick={() => navigate("/user/game")}
+          onClick={() => navigate("/game")}
         >
           {stateActs.currentAct?.chapter > 1
             ? "Continuer l'aventure"
             : "Commencer à jouer"}
         </Button>
-        <Button onClick={() => navigate("/user/summary")}>
+        <Button onClick={() => navigate("/summary")}>
           {"Voir le sommaire"}
         </Button>
       </Stack>

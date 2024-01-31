@@ -23,7 +23,7 @@ const Menu = ({ showDrawer, setShowDrawer }) => {
           <ListItem>
             <ListItemButton
               onClick={() => {
-                window.location.href = "/user/summary";
+                window.location.href = "/summary";
                 setShowDrawer(false);
               }}
             >
