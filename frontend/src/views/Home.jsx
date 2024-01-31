@@ -20,6 +20,7 @@ import GlobalContainer from "../components/GlobalContainer.jsx";
 import { backgroundSize } from "../utils/backgroundSizeProvider.js";
 import { createUserError } from "../utils/redux/userSlice.js";
 import { loginFail, setToken } from "../utils/redux/authSlice.js";
+import apiRequest from "../api/requestAPI.js";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -53,6 +54,26 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    // Refresh Token
+    if (!authState.token && !stateUser.successLogin) {
+      apiRequest("auth/refresh", "get", authState.token, {})
+        .then((response) => {
+          if (response.response) {
+            dispatch(
+              setToken({
+                token: response?.response?.data?.accessToken,
+                error: null,
+              })
+            );
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          window.location.href = "/";
+        });
+    }
+
+    // Token valid then redirect to app 
     if (authState.token) {
       dispatch(createUserError(null));
       window.location.href = "/user";

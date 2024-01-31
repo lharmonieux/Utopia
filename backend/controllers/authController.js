@@ -16,7 +16,9 @@ export const login = async (req, res) => {
     }
 
     // search user
-    const foundAccount = await Account.findOne({ email }).populate('user').exec();
+    const foundAccount = await Account.findOne({ email })
+      .populate("user")
+      .exec();
 
     if (!foundAccount) {
       return res
@@ -63,18 +65,23 @@ export const login = async (req, res) => {
   }
 };
 
+export const logout = async (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.sendStatus(204); //No content
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  return res.status(constants.SUCCESS).json("Cookie cleared");
+};
+
 // @access Public
 export const refresh = async (req, res) => {
   try {
     const cookies = req.cookies;
 
     if (!cookies?.jwt)
-      return res
-        .status(constants.UNAUTHORIZED)
-        .json({
-          message:
-            "Il manque des informations d'authentification. Veuillez vous reconnecter",
-        });
+      return res.status(constants.UNAUTHORIZED).json({
+        message:
+          "Il manque des informations d'authentification. Veuillez vous reconnecter",
+      });
 
     const refreshToken = cookies.jwt;
 
@@ -90,14 +97,14 @@ export const refresh = async (req, res) => {
         // Control of user's exist
         const foundAccount = await Account.findOne({
           email: decoded.email,
-        }).populate('user').exec();
+        })
+          .populate("user")
+          .exec();
 
         if (!foundAccount)
-          return res
-            .status(constants.UNAUTHORIZED)
-            .json({
-              message: "Utilisateur introuvable. Veuillez vous reconnecter",
-            });
+          return res.status(constants.UNAUTHORIZED).json({
+            message: "Utilisateur introuvable. Veuillez vous reconnecter",
+          });
 
         const accessToken = jwt.sign(
           {
