@@ -21,7 +21,8 @@ const DisplayingText = ({
     .replace("stateUser.secondCharacter.name", stateUser.secondCharacter?.name)
     .replace("stateUser.townStatus", stateUser?.townStatus)
     .replace("stateUser.partyName", stateUser?.partyName)
-    .replace("stateUser.town.region", stateUser?.town?.region);
+    .replace("stateUser.town.region", stateUser?.town?.region)
+    .replace("stateUser.symbol", stateUser?.symbol);
   return (
     <Typography
       level={level}

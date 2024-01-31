@@ -20,6 +20,7 @@ const Propositions = ({
   questionContent,
 }) => {
   const stateActs = useSelector((state) => state.act);
+  const stateUser = useSelector((state) => state.user);
   const domConfig = useSelector((state) => state.dom);
   const [widthBoxAnswer, heightBoxAnswer] = [
     stateActs.currentQuestion?.visual?.boxAnswersImg?.width,
@@ -328,37 +329,45 @@ const Propositions = ({
 
           {/* additionnal content  */}
           {stateActs.currentQuestion.additionalContent.length > 0 &&
-            stateActs.currentQuestion.additionalContent.map((element) => (
-              <Box
-                key={element._id}
-                position={"absolute"}
-                width={parseInt(domConfig.width * element.scale.width)}
-                height={parseInt(domConfig.height * element.scale.height)}
-                top={`${element.position.top}%`}
-                left={`${element.position.left}%`}
-                display={"flex"}
-                // justifyContent={"center"}
-                alignItems={"center"}
-                sx={{
-                  backgroundImage: `url(${PICTURES_DIR}/${element.img})`,
-                  backgroundSize: backgroundSize(
-                    domConfig.width * element.scale.width,
-                    domConfig.height * element.scale.height
-                  ),
-                  // opacity: 0.2,
-                }}
-              >
-                <Typography
-                  level={element?.textLevel || "title-sm"}
-                  textAlign={"center"}
+            stateActs.currentQuestion.additionalContent.map((element) => {
+              const isVignette = element.img.includes("stateUser.secondCharacter.vignette");
+              const img = element.img.replace(
+                "stateUser.secondCharacter.vignette",
+                stateUser.secondCharacter.vignette
+              );
+              return (
+                <Box
+                  key={element._id}
+                  position={"absolute"}
+                  width={parseInt(domConfig.width * element.scale.width)}
+                  height={parseInt(domConfig.height * element.scale.height)}
+                  top={`${element.position.top}%`}
+                  left={`${element.position.left}%`}
+                  display={"flex"}
+                  // justifyContent={"center"}
+                  alignItems={"center"}
                   sx={{
-                    color: element?.textColor || "black",
+                    backgroundImage: `url(${PICTURES_DIR}/${img})`,
+                    backgroundSize: backgroundSize(
+                      domConfig.width * element.scale.width,
+                      domConfig.height * element.scale.height
+                    ),
+                    borderRadius: isVignette ? 30 : 0
+                    // opacity: 0.2,
                   }}
                 >
-                  <DisplayingText sentence={element.text} animated={false} />
-                </Typography>{" "}
-              </Box>
-            ))}
+                  <Typography
+                    level={element?.textLevel || "title-sm"}
+                    textAlign={"center"}
+                    sx={{
+                      color: element?.textColor || "black",
+                    }}
+                  >
+                    <DisplayingText sentence={element.text} animated={false} />
+                  </Typography>{" "}
+                </Box>
+              );
+            })}
         </Stack>
         <ButtonNavScroll
           id="up-nav-button"

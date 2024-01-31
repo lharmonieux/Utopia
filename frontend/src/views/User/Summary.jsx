@@ -48,7 +48,7 @@ const Summary = () => {
                 display={"flex"}
                 alignItems={"center"}
                 onClick={() => {
-                  act.status == "IN PROGRESS" && navigate("/user/game");
+                  act.status == "IN PROGRESS" && navigate("/game");
                 }}
                 sx={{
                   backgroundImage: `url(${actRowImg})`,

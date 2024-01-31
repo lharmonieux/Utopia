@@ -27,6 +27,7 @@ const userSchema = mongoose.Schema({
   townName: String,
   townStatus: String,
   partyName: String,
+  symbol: String,
   saves: [
     {
       logScores: Object,

@@ -33,8 +33,8 @@ export const handleValidationErrorsAct = ({
   return false;
 };
 
-export const handleValidationErrorsPersonnages = (name, caracteristic, thematic, score, img) => {
-  if (!name || !caracteristic || !thematic || !score || !img) {
+export const handleValidationErrorsPersonnages = (name, caracteristic, thematic, score, img, vignette) => {
+  if (!name || !caracteristic || !thematic || !score || !img || !vignette) {
     return {
       status: constants.VALIDATION_ERROR,
       message: "Renseignez tous les champs obligatoires."

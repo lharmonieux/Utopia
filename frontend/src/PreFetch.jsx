@@ -129,6 +129,7 @@ const PreFetch = () => {
               dispatch(setUserSecondCharacter(account.user.secondCharacter));
             account.user.town && dispatch(setTown(account.user.town));
             account.user.partyName && dispatch(setPartyName(account.user.partyName));
+            account.user.symbol && dispatch(setPartyName(account.user.symbol));
 
             // Last save
             const indexLastSave = account.user.saves.length - 1;

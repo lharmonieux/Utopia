@@ -14,7 +14,8 @@ export const addPersonnage = async (req, res) => {
           data.caracteristic,
           data.thematic,
           data.score,
-          data.img
+          data.img,
+          data.vignette
         );
 
         //If error exist in list of datas
@@ -31,20 +32,22 @@ export const addPersonnage = async (req, res) => {
           caracteristic: data.caracteristic,
           thematic: data.thematic,
           score: data.score,
-          img: data.img
+          img: data.img,
+          vignette: data.vignette,
         });
 
       return res
         .status(constants.CREATED)
         .json({ message: "Personnages créés avec succès." });
     } else {
-      const { name, caracteristic, thematic, score, img } = req.body;
+      const { name, caracteristic, thematic, score, img, vignette } = req.body;
       const resultValidation = handleValidationErrorsPersonnages(
         name,
         caracteristic,
         thematic,
         score,
-        img
+        img,
+        vignette
       );
 
       //If error
@@ -59,7 +62,8 @@ export const addPersonnage = async (req, res) => {
         caracteristic,
         thematic,
         score,
-        img
+        img,
+        vignette,
       });
       return res
         .status(constants.CREATED)

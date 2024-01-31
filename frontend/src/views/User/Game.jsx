@@ -607,8 +607,7 @@ const Game = () => {
         onClose={() => {
           animateOut(openEndModal, "#modal-end", () => {
             setOpenEndModal(false);
-            // navigate("/user/home");
-            window.location.href = "/user/summary";
+            window.location.href = "/summary";
             initializingState();
           });
         }}
@@ -710,7 +709,7 @@ const Game = () => {
                 onClick={() => {
                   animateOut(openEndModal, "#modal-end", () => {
                     setOpenEndModal(false);
-                    window.location.href = "/user/summary";
+                    window.location.href = "/summary";
                     initializingState();
                   });
                 }}

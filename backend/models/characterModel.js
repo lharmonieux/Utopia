@@ -22,6 +22,10 @@ const characterSchema = mongoose.Schema({
     img: {
         type: String,
         required: true
+    },
+    vignette: {
+        type: String,
+        required: true
     }
 });
 
