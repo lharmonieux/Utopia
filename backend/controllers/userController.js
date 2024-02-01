@@ -104,6 +104,7 @@ export const updateUser = async (req, res) => {
       town,
       townName,
       townStatus,
+      feelings,
       saves,
     } = req.body;
 
@@ -118,6 +119,7 @@ export const updateUser = async (req, res) => {
       town,
       townName,
       townStatus,
+      feelings,
       saves,
     };
 

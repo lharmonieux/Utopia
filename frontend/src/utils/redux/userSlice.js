@@ -17,6 +17,7 @@ const userSlice = createSlice({
     townStatus: null,
     partyName: null,
     symbol: null,
+    feelings: [],
     saves: [],
     save: {
       logScores: {},
@@ -72,6 +73,10 @@ const userSlice = createSlice({
       state.partyName = action.payload;
       return state;
     },
+    setFeelings: (state, action) => {
+      state.feelings = action.payload;
+      return state;
+    },
     setSymbol: (state, action) => {
       state.symbol = action.payload;
       return state;
@@ -108,7 +113,8 @@ export const {
   setIdUser,
   setCurrentAct,
   setPartyName,
-  setSymbol
+  setSymbol,
+  setFeelings
 } = userSlice.actions;
 
 export default userSlice.reducer;

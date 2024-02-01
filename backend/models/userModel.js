@@ -28,6 +28,12 @@ const userSchema = mongoose.Schema({
   townStatus: String,
   partyName: String,
   symbol: String,
+  feelings: [
+    {
+      question: String,
+      answer: String,
+    },
+  ],
   saves: [
     {
       logScores: Object,

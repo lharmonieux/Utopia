@@ -195,13 +195,13 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                     />
                   )}
                 </Box>
-                {!town.labelImg && (
+                {!town.labelImg && !stateActs?.currentQuestion?.visual?.mapView?.hasAnswer && (
                   <>
                     {/* GIF */}
                     <Box
                       position={"absolute"}
-                      top={`${parseFloat(town.top) - 3}%`}
-                      left={`${parseFloat(town.left) - 2}%`}
+                      top={`${parseFloat(town.top)}%`}
+                      left={`${parseFloat(town.left) - 1.7}%`}
                       sx={{ cursor: "pointer" }}
                       onClick={() => {
                         if (
@@ -216,7 +216,7 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                       <img
                         src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.buttonImg?.buttonGif}`}
                         width={domConfig.width * 0.05}
-                        height={domConfig.height * 0.1}
+                        height={domConfig.height * 0.05}
                       />
                     </Box>
 

@@ -112,6 +112,7 @@ const Propositions = ({
         break;
 
       case "classement":
+      case "classement_symbol":
         return (
           <Typography level="title-lg">
             {orderedAnswer.indexOf(answer._id) + 1 || ""}
@@ -330,7 +331,9 @@ const Propositions = ({
           {/* additionnal content  */}
           {stateActs.currentQuestion.additionalContent.length > 0 &&
             stateActs.currentQuestion.additionalContent.map((element) => {
-              const isVignette = element.img.includes("stateUser.secondCharacter.vignette");
+              const isVignette = element.img.includes(
+                "stateUser.secondCharacter.vignette"
+              );
               const img = element.img.replace(
                 "stateUser.secondCharacter.vignette",
                 stateUser.secondCharacter.vignette
@@ -352,7 +355,7 @@ const Propositions = ({
                       domConfig.width * element.scale.width,
                       domConfig.height * element.scale.height
                     ),
-                    borderRadius: isVignette ? 30 : 0
+                    borderRadius: isVignette ? 30 : 0,
                     // opacity: 0.2,
                   }}
                 >

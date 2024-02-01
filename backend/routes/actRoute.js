@@ -9,7 +9,7 @@ import { verifiJWT } from "../middlewares/verfyJWT.js";
 
 const router = express.Router();
 
-// router.use(verifiJWT);
+router.use(verifiJWT);
 router.post("/create", addAct);
 router.get("/", getAct);
 router.put("/update/:id_act", updateAct);

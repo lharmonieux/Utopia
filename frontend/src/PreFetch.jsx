@@ -3,29 +3,21 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import cloudinary from "./utils/cloudinary.js";
 import { Outlet, useNavigate } from "react-router-dom";
-import {
-  Box,
-  CircularProgress,
-  CssVarsProvider,
-  IconButton
-} from "@mui/joy";
+import { Box, CircularProgress, CssVarsProvider, IconButton } from "@mui/joy";
 import GlobalContainer from "./components/GlobalContainer.jsx";
 import { setSizes } from "./utils/redux/DOMSlice.js";
 import { typographyTheme } from "./utils/themeJoy.js";
 import MenuDrawer from "./components/Menu.jsx";
 import { AiOutlineMenuFold } from "react-icons/ai";
 import { setToken } from "./utils/redux/authSlice.js";
-import {
-  storeActs,
-  storeCurrentAct,
-  updateStatusActs,
-} from "./utils/redux/actSlice.js";
+import { storeCurrentAct, updateStatusActs } from "./utils/redux/actSlice.js";
 import apiRequest from "./api/requestAPI.js";
 import { storeCharacters } from "./utils/redux/characterSlice.js";
 import { storeTowns } from "./utils/redux/townSlice.js";
 import {
   createUserError,
   setCurrentAct,
+  setFeelings,
   setIdUser,
   setMotto,
   setPartyName,
@@ -49,7 +41,6 @@ const PreFetch = () => {
   const [heightMainContent, setHeightMainContent] = useState(0);
   const [mainContentDOM, setMainContentDOM] = useState();
   const [showDrawer, setShowDrawer] = useState(false);
-  const [acts, setActs] = useState([]);
   //Getting datas from api
 
   // Refresh token
@@ -82,16 +73,76 @@ const PreFetch = () => {
     apiRequest("acts", "get", authState.token, {})
       .then((response) => {
         if (response.response) {
-          dispatch(setToken({ token: response.accessToken, error: null }));
-          // Store acts for app state
-          dispatch(storeActs({ acts: response.response.data }));
-          setLoading(false);
-          setActs(response.response.data);
+          //User
+          let acts = response.response.data;
+          apiRequest("users", "get", authState.token, {}).then((response) => {
+            if (response.response) {
+              const account = response.response.data;
+              // User infos
+              dispatch(
+                setUserInfos({
+                  firstname: account.user.firstname,
+                  lastname: account.user.lastname,
+                })
+              );
+              dispatch(setIdUser(account.user._id));
+
+              account.user.character &&
+                dispatch(setUserCharacter(account.user.character));
+              account.user.motto && dispatch(setMotto(account.user.motto));
+              account.user.townName &&
+                dispatch(storeTownName(account.user.townName));
+              account.user.secondCharacter &&
+                dispatch(setUserSecondCharacter(account.user.secondCharacter));
+              account.user.town && dispatch(setTown(account.user.town));
+              account.user.partyName &&
+                dispatch(setPartyName(account.user.partyName));
+              account.user.symbol &&
+                dispatch(setPartyName(account.user.symbol));
+              account.user.feelings.length > 0 &&
+                dispatch(setFeelings(account.user.feelings));
+
+              // Last save
+              const indexLastSave = account.user.saves.length - 1;
+              dispatch(
+                setThematicScore({
+                  scoresThematic:
+                    account.user.saves[indexLastSave]?.logScores || {},
+                  givenResidents:
+                    account.user.saves[indexLastSave]?.totalResidents || 0,
+                })
+              );
+
+              //Current act
+              let currentAct = acts[indexLastSave + 1];
+              if (currentAct) {
+                //for user
+                dispatch(setCurrentAct(currentAct?._id));
+
+                // Current act for act's store
+                dispatch(storeCurrentAct(currentAct));
+                // Store town status
+                dispatch(setTownStatus(currentAct?.townStatus));
+              }
+
+              // all saves
+              dispatch(storeSaves(account.user.saves));
+
+              // store acts with status of user
+              dispatch(
+                updateStatusActs({ acts, nbOfSaves: indexLastSave + 1 })
+              );
+              setLoading(false);
+            } else {
+              // Save error message
+              dispatch(createUserError(response?.data?.message));
+              navigate("/");
+            }
+          });
         }
         // Save error message
         else {
           dispatch(createUserError(response?.data?.message));
-
           navigate("/");
         }
       })
@@ -100,93 +151,13 @@ const PreFetch = () => {
         navigate("/");
         setLoading(false);
       });
-  }, []);
-
-  //User
-  useEffect(() => {
-    apiRequest("users", "get", authState.token, {})
-      .then((response) => {
-        if (response.response) {
-          dispatch(setToken({ token: response.accessToken, error: null }));
-          // update only if redux's store for user is empty
-          if (!stateUser.currentAct) {
-            const account = response.response.data;
-            // User infos
-            dispatch(
-              setUserInfos({
-                firstname: account.user.firstname,
-                lastname: account.user.lastname,
-              })
-            );
-            dispatch(setIdUser(account.user._id));
-
-            account.user.character &&
-              dispatch(setUserCharacter(account.user.character));
-            account.user.motto && dispatch(setMotto(account.user.motto));
-            account.user.townName &&
-              dispatch(storeTownName(account.user.townName));
-            account.user.secondCharacter &&
-              dispatch(setUserSecondCharacter(account.user.secondCharacter));
-            account.user.town && dispatch(setTown(account.user.town));
-            account.user.partyName && dispatch(setPartyName(account.user.partyName));
-            account.user.symbol && dispatch(setPartyName(account.user.symbol));
-
-            // Last save
-            const indexLastSave = account.user.saves.length - 1;
-            dispatch(
-              setThematicScore({
-                scoresThematic: account.user.saves[indexLastSave]?.logScores || {},
-                givenResidents:
-                  account.user.saves[indexLastSave]?.totalResidents || 0,
-              })
-            );
-
-            //Current act
-            let currentAct = acts[indexLastSave + 1];
-            if (currentAct) {
-              //for user
-              dispatch(setCurrentAct(currentAct?._id));
-
-              // Current act for act's store
-              dispatch(storeCurrentAct(currentAct));
-              // Store town status
-              dispatch(setTownStatus(currentAct?.townStatus));
-            }
-
-            // all saves
-            dispatch(storeSaves(account.user.saves)); 
-            
-            // update acts's status of user
-            dispatch(updateStatusActs({ acts, nbOfSaves: indexLastSave + 1 }));
-          }
-          // change only currentAct
-          else {
-            for (let i = 0; i < acts.length; i++) {
-              if (acts[i]?._id == stateUser.currentAct)
-                dispatch(setCurrentAct(acts[i + 1]?._id));
-            }
-          }
-        } else {
-          // Save error message
-          dispatch(createUserError(response?.data?.message));
-
-          navigate("/");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-
-        navigate("/");
-        setLoading(false);
-      });
-  }, [acts]);
+  }, [authState.token]);
 
   //Characters
   useEffect(() => {
     apiRequest("characters", "get", authState.token, {})
       .then((response) => {
         if (response.response) {
-          dispatch(setToken({ token: response.accessToken, error: null }));
           dispatch(storeCharacters(response.response.data));
         } else {
           dispatch(createUserError(response?.data?.message));
@@ -198,14 +169,13 @@ const PreFetch = () => {
         console.log(error);
         navigate("/");
       });
-  }, []);
+  }, [authState.token]);
 
   // Towns
   useEffect(() => {
     apiRequest("towns", "get", authState.token, {})
       .then((response) => {
         if (response.response) {
-          dispatch(setToken({ token: response.accessToken, error: null }));
           dispatch(storeTowns(response.response.data));
         } else {
           dispatch(createUserError(response?.data?.message));
@@ -217,7 +187,7 @@ const PreFetch = () => {
         console.log(error);
         navigate("/");
       });
-  }, []);
+  }, [authState.token]);
 
   //CRUD
   // useEffect(() => {
@@ -263,7 +233,6 @@ const PreFetch = () => {
   return !loading ? (
     <CssVarsProvider theme={typographyTheme}>
       <GlobalContainer>
-
         {/* Menu button  */}
         <IconButton
           variant="outlined"
@@ -272,10 +241,7 @@ const PreFetch = () => {
         >
           <AiOutlineMenuFold size={25} color="white" />
         </IconButton>
-        <MenuDrawer
-          showDrawer={showDrawer}
-          setShowDrawer={setShowDrawer}
-        />
+        <MenuDrawer showDrawer={showDrawer} setShowDrawer={setShowDrawer} />
 
         {/* Main content */}
         <Box

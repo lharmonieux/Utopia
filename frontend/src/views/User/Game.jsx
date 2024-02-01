@@ -36,6 +36,7 @@ import { backgroundSize } from "../../utils/backgroundSizeProvider.js";
 import {
   setMotto,
   setPartyName,
+  setSymbol,
   setTown,
   setUserCharacter,
   setUserSecondCharacter,
@@ -190,6 +191,8 @@ const Game = () => {
     openScaleModal,
   ]);
 
+  console.log(stateUser, storeAnswer);
+
   const updateStoreAnswer = (selectedAnswer, answerType) => {
     // Remove answer if selected again
     if (selectedAnswer.selected) {
@@ -200,7 +203,7 @@ const Game = () => {
     }
 
     // Add Answer selected
-    if (answerType == "proposition_multiple" || answerType == "classement")
+    if (answerType == "proposition_multiple" || answerType == "classement" || answerType == "classement_symbol")
       setStoreAnswer([...storeAnswer, selectedAnswer]);
     else if (answerType == "reponse_double") return;
     else setStoreAnswer([selectedAnswer]);
@@ -246,7 +249,7 @@ const Game = () => {
     }
     //For answer with classement
     //For store the score, we have to pass only the fisrt element of the table rank
-    else if (answerType == "classement") {
+    else if (answerType == "classement" || answerType == "classement_symbol") {
       let newOrderedAnswers = [...orderedAnswers];
       if (orderedAnswers.length > 0) {
         if (orderedAnswers.includes(selectedAnswer._id)) {
@@ -371,6 +374,7 @@ const Game = () => {
       case "proposition":
       case "proposition_multiple":
       case "classement":
+      case "classement_symbol":
       case "pourcentage":
       case "reponse_double":
         return (
@@ -911,23 +915,38 @@ const Game = () => {
       }
       // Ranking answer control
       if (
-        stateActs?.currentQuestion?.content[0]?.answerType?.name ==
-          "classement" &&
+        (stateActs?.currentQuestion?.content[0]?.answerType?.name ==
+          "classement" ||
+          stateActs?.currentQuestion?.content[0]?.answerType?.name ==
+            "classement_symbol") &&
         storeAnswer.length < stateActs?.currentQuestion?.answers?.length
       ) {
         setShowAlertBadAnswerNumber(true);
         return;
       }
+      // Store score for double answer
       if (
         stateActs?.currentQuestion?.content[0]?.answerType?.name ==
         "reponse_double"
       ) {
-        // Store score for double answer
         storeScore(
           stateActs?.currentQuestion?.content[0]?.answerType?.name,
           null,
           stateActs.currentQuestion?.answers
         );
+      }
+      // Save symbol choosen
+      if (
+        stateActs?.currentQuestion?.content[0]?.answerType?.name ==
+        "classement_symbol"
+      ) {
+        let nameSymbol = "";
+        for (let answer of stateActs.currentQuestion.answers) {
+          if (answer._id == orderedAnswers[0])
+            nameSymbol = answer.content.text.text;
+        }
+
+        dispatch(setSymbol(nameSymbol));
       }
       // If answer has a feedback
       if (containsFeedback) {
