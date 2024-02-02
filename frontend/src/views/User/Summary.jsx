@@ -149,7 +149,7 @@ const Summary = () => {
             style={{ zIndex: -1000, position: "fixed" }}
           >
             <source
-              src={`${PICTURES_DIR}/background_videos/vecteezy_exo-planet-with-rings-animation-4k_25272383_367.avi`}
+              src={`${PICTURES_DIR}/background_videos/vecteezy_exo-planet-with-rings-animation-4k_25272383_367.mp4`}
               type="video/mp4"
             />
           </video>
