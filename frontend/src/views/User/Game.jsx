@@ -54,12 +54,10 @@ const Game = () => {
   const dispatch = useDispatch();
 
   // State
-  // const [currentQuestion, setCurrentQuestion] = useState();
   const [objectCharacterSelected, setObjectCharacterSelected] = useState(null);
   const [containsFeedback, setContainsFeedback] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
-  // const [orderQuestion, setOrderQuestion] = useState(1);
   const [storeAnswer, setStoreAnswer] = useState([]);
   const [openEndModal, setOpenEndModal] = useState(false);
   const [scoresThematic, setScoresThematic] = useState(new Map());
@@ -68,9 +66,6 @@ const Game = () => {
     useState(false);
   const [textareaValue, setTextareaValue] = useState(new Map());
   const [rankUserText, setRankUserText] = useState("");
-
-  // const [showDrawer, setShowDrawer] = useState(false);
-  // const [showSummary, setShowSummary] = useState(false);
   const [showActPresentation, setShowActPresentation] = useState(true);
   const [showMainContent, setShowMainContent] = useState(false);
   const [scaleAnswers, setScaleAnswers] = useState(new Map());
@@ -80,6 +75,7 @@ const Game = () => {
   const [percentAnswers, setPercentAnswers] = useState(new Map());
   const [answerModal, setAnswerModal] = useState("");
   const [percentFinalAnswer, setPercentFinalAnswer] = useState({});
+  const [answersToLogs, setAnswersToLogs] = useState(new Map());
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -191,8 +187,6 @@ const Game = () => {
     openScaleModal,
   ]);
 
-  console.log(stateUser, storeAnswer);
-
   const updateStoreAnswer = (selectedAnswer, answerType) => {
     // Remove answer if selected again
     if (selectedAnswer.selected) {
@@ -203,7 +197,11 @@ const Game = () => {
     }
 
     // Add Answer selected
-    if (answerType == "proposition_multiple" || answerType == "classement" || answerType == "classement_symbol")
+    if (
+      answerType == "proposition_multiple" ||
+      answerType == "classement" ||
+      answerType == "classement_symbol"
+    )
       setStoreAnswer([...storeAnswer, selectedAnswer]);
     else if (answerType == "reponse_double") return;
     else setStoreAnswer([selectedAnswer]);
@@ -510,7 +508,24 @@ const Game = () => {
                       //Display end modal to summarize act
                       if (stateActs.questionOrder == actQuestionsLength - 1)
                         setOpenEndModal(true);
-                      else initializingState();
+                      else {
+                        if (storeAnswer.length == 1) {
+                          //Single answer proposition
+                          let answerText = storeAnswer[0]?.content?.text?.text;
+                          const newAnswersToLog = new Map(answersToLogs);
+                          newAnswersToLog.set(
+                            stateActs?.currentQuestion?.content[0]?.text,
+                            answerText
+                          );
+                          if (feedback.hasQuestion) {
+                            //Save answer of question in modal
+                            newAnswersToLog.set(feedbackText, answerModal);
+                          }
+                          setAnswersToLogs(newAnswersToLog);
+                        }
+
+                        initializingState();
+                      }
                     }
                   )
                 }
@@ -530,6 +545,7 @@ const Game = () => {
     const totalResidents = copyScoresThematic.get("residents");
     copyScoresThematic.delete("residents");
     const logScores = Object.fromEntries(copyScoresThematic);
+    const logAnswers = Object.fromEntries(answersToLogs);
     let resolutionText = stateActs.currentAct.resolution.text;
 
     resolutionText = resolutionText.replace("totalResidents", totalResidents);
@@ -537,7 +553,7 @@ const Game = () => {
     let saves = [...stateUser.saves];
     saves.push({
       logScores,
-      logAnswers: [],
+      logAnswers,
       totalResidents,
       act: stateActs.currentAct?._id,
     });
@@ -560,12 +576,6 @@ const Game = () => {
     apiRequest("users/update", "put", authState.token, {
       data: { ...userToSave, idUser: stateUser.idUser },
     });
-    // .then((response) => {
-    //   // dispatch(setToken({ token: response.accessToken, error: null }));
-    // })
-    // .catch((error) => {
-    //   console.log(error);
-    // });
 
     const resultAllUsers = apiRequest("users/all", "get", authState.token);
     resultAllUsers
@@ -839,6 +849,12 @@ const Game = () => {
   };
 
   const initializingState = () => {
+    //Display end modal to summarize act
+    if (stateActs.questionOrder == actQuestionsLength - 1) {
+      setOpenEndModal(true);
+      return;
+    }
+
     setShowMainContent(false);
     setContainsFeedback(false);
     setFeedback({
@@ -856,8 +872,11 @@ const Game = () => {
     setOrderedAnswers([]);
     textareaValue.clear();
     setTextareaValue(new Map(textareaValue));
+    percentAnswers.clear();
+    setPercentAnswers(new Map(percentAnswers));
   };
 
+  console.log(answersToLogs, storeAnswer);
   // Manage for the next element to display
   const nextPage = () => {
     //Control of if there are an given answer
@@ -954,13 +973,52 @@ const Game = () => {
         return;
       }
 
-      //Display end modal to summarize act
-      if (stateActs.questionOrder == actQuestionsLength - 1) {
-        setOpenEndModal(true);
-        return;
-      }
-      //Display next page of act
+      //Save answer for historic and Display next page of act
       else {
+        //Multiple answers
+        if (storeAnswer.length > 1) {
+          let answersText = [];
+          const newAnswersToLog = new Map(answersToLogs);
+          for (let answer of storeAnswer) {
+            answersText.push(answer?.content?.text?.text);
+          }
+          newAnswersToLog.set(
+            stateActs?.currentQuestion?.content[0]?.text,
+            answersText
+          );
+          setAnswersToLogs(newAnswersToLog);
+        } else if (percentAnswers.size > 0) {
+          //Percents values
+          let answerObj = Object.fromEntries(percentAnswers);
+          const newAnswersToLog = new Map(answersToLogs);
+          newAnswersToLog.set(
+            stateActs?.currentQuestion?.content[0]?.text,
+            answerObj
+          );
+          setAnswersToLogs(newAnswersToLog);
+        } else if (storeAnswer.length == 1) {
+          //Single answer proposition
+          let answerText = storeAnswer[0]?.content?.text?.text;
+          const newAnswersToLog = new Map(answersToLogs);
+          newAnswersToLog.set(
+            stateActs?.currentQuestion?.content[0]?.text,
+            answerText
+          );
+          setAnswersToLogs(newAnswersToLog);
+        } else {
+          //Save all "reponse_double" for having their status
+          const answersDbl = new Map();
+          const newAnswersToLog = new Map(answersToLogs);
+          for (let answer of stateActs.currentQuestion.answers) {
+            answersDbl.set(answer.content.text.text, answer.selected);
+          }
+          newAnswersToLog.set(
+            stateActs?.currentQuestion?.content[0]?.text,
+            Object.fromEntries(answersDbl)
+          );
+          setAnswersToLogs(newAnswersToLog);
+        }
+
         initializingState();
       }
     } else setShowAlertNoAnswer(true);

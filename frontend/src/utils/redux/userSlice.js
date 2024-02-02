@@ -17,7 +17,7 @@ const userSlice = createSlice({
     townStatus: null,
     partyName: null,
     symbol: null,
-    feelings: [],
+    feelings: null,
     saves: [],
     save: {
       logScores: {},

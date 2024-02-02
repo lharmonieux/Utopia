@@ -32,7 +32,7 @@ const Propositions = ({
     if (questionContent.answerType.name == "pourcentage") {
       let percentAnswers = new Map();
       for (let answer of stateActs.currentQuestion.answers) {
-        percentAnswers.set(answer._id, 0);
+        percentAnswers.set(answer.content.text.text, 0);
       }
       setPercentAnswers(percentAnswers);
     }
@@ -49,11 +49,11 @@ const Propositions = ({
     for (let answer of stateActs.currentQuestion.answers) {
       if (answer == selectedAnswer) continue;
       restAnswers.push(answer);
-      maxPercentGiven += newPercentAnswers.get(answer._id);
+      maxPercentGiven += newPercentAnswers.get(answer.content.text.text);
     }
 
     const answerToUpdate = restAnswers.reduce((acc, curr) => {
-      if (newPercentAnswers.get(curr._id) > newPercentAnswers.get(acc._id))
+      if (newPercentAnswers.get(curr.content.text.text) > newPercentAnswers.get(acc.content.text.text))
         return curr;
       else return acc;
     }, restAnswers[0]);
@@ -62,30 +62,30 @@ const Propositions = ({
     const maxPercentWithAnswer = maxPercentGiven + parseInt(e.target.value);
     if (parseInt(e.target.value) > maxPercent || parseInt(e.target.value) < 0)
       newPercentAnswers.set(
-        selectedAnswer._id,
-        newPercentAnswers.get(selectedAnswer._id)
+        selectedAnswer.content.text.text,
+        newPercentAnswers.get(selectedAnswer.content.text.text)
       );
     else if (maxPercentWithAnswer > maxPercent) {
-      newPercentAnswers.set(selectedAnswer._id, parseInt(e.target.value));
+      newPercentAnswers.set(selectedAnswer.content.text.text, parseInt(e.target.value));
 
       newPercentAnswers.set(
-        answerToUpdate._id,
-        newPercentAnswers.get(answerToUpdate._id) -
+        answerToUpdate.content.text.text,
+        newPercentAnswers.get(answerToUpdate.content.text.text) -
           (maxPercentWithAnswer - maxPercent)
       );
-    } else if (newPercentAnswers.get(answerToUpdate._id) == 0) {
-      newPercentAnswers.set(selectedAnswer._id, parseInt(e.target.value));
+    } else if (newPercentAnswers.get(answerToUpdate.content.text.text) == 0) {
+      newPercentAnswers.set(selectedAnswer.content.text.text, parseInt(e.target.value));
 
       newPercentAnswers.set(
-        answerToUpdate._id,
+        answerToUpdate.content.text.text,
         maxPercent - maxPercentWithAnswer
       );
     } else if (maxPercentWithAnswer < maxPercent) {
-      newPercentAnswers.set(selectedAnswer._id, parseInt(e.target.value));
+      newPercentAnswers.set(selectedAnswer.content.text.text, parseInt(e.target.value));
 
       newPercentAnswers.set(
-        answerToUpdate._id,
-        newPercentAnswers.get(answerToUpdate._id) +
+        answerToUpdate.content.text.text,
+        newPercentAnswers.get(answerToUpdate.content.text.text) +
           (maxPercent - maxPercentWithAnswer)
       );
     }
@@ -93,7 +93,7 @@ const Propositions = ({
     //Define final answer
     const finalAnswer = stateActs.currentQuestion.answers.reduce(
       (acc, curr) =>
-        newPercentAnswers.get(curr._id) > newPercentAnswers.get(acc._id)
+        newPercentAnswers.get(curr.content.text.text) > newPercentAnswers.get(acc.content.text.text)
           ? curr
           : acc,
       stateActs.currentQuestion.answers[0]
@@ -123,7 +123,7 @@ const Propositions = ({
         return (
           <input
             type="number"
-            value={percentAnswers.get(answer._id)}
+            value={percentAnswers.get(answer.content.text.text)}
             onChange={(e) => handlePercentsValue(e, answer)}
             key={`input_${answer._id}`}
             style={{

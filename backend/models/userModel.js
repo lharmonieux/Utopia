@@ -28,21 +28,11 @@ const userSchema = mongoose.Schema({
   townStatus: String,
   partyName: String,
   symbol: String,
-  feelings: [
-    {
-      question: String,
-      answer: String,
-    },
-  ],
+  feelings: Object,
   saves: [
     {
       logScores: Object,
-      logAnswers: [
-        {
-          question: String,
-          answers: [{ content: String }],
-        },
-      ],
+      logAnswers: Object,
       totalResidents: Number,
       act: {
         type: mongoose.SchemaTypes.ObjectId,

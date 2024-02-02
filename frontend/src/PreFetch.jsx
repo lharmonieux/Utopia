@@ -99,7 +99,7 @@ const PreFetch = () => {
                 dispatch(setPartyName(account.user.partyName));
               account.user.symbol &&
                 dispatch(setPartyName(account.user.symbol));
-              account.user.feelings.length > 0 &&
+              account.user.feelings &&
                 dispatch(setFeelings(account.user.feelings));
 
               // Last save

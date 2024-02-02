@@ -1,8 +1,12 @@
-export const textArea = {
-  borderTopLeftRadius: 0,
-  borderBottomLeftRadius: 20,
-  borderTopRightRadius: 20,
-  borderBottomRightRadius: 0,
+export const textAreaStyle = {
+  padding: 5,
+  height: "100%",
+  width: "100%",
+  border: "none",
+  backgroundColor: "transparent",
+  outline: "none",
+  marginLeft: 10,
+  resize: 'none',
 };
 
 export const selectionEffect = (element) => {

@@ -8,30 +8,121 @@ import {
   Stack,
   Typography,
 } from "@mui/joy";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PICTURES_DIR } from "../../utils/constants";
-import { backgroundSize } from "../../utils/backgroundSizeProvider";
 import { colors } from "../../utils/colors";
 import { useEffect, useState } from "react";
+import { textAreaStyle } from "../../utils/cssReact";
+import "animate.css";
+import { IoInformationCircle } from "react-icons/io5";
+import apiRequest from "../../api/requestAPI";
+import { createUserError } from "../../utils/redux/userSlice";
 
 const Summary = () => {
   const stateActs = useSelector((state) => state.act);
   const stateUser = useSelector((state) => state.user);
   const domConfig = useSelector((state) => state.dom);
+  const authState = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [openModalFeelings, setOpenModalFeelings] = useState(false);
+  const [feelingsAnswer, setFeelingsAnswer] = useState(new Map());
+
+  //Variables
+  let questions = [
+    "Qu'est-ce que cette aventure me révèle sur moi ?",
+    "Où me suis-je senti le plus à l'aise ? Moins à l'aise ?",
+    "Des choix ont-ils été difficiles à effectuer ? Comment le comprendre ?",
+    "Qu'est-ce que cela vous évoque dans l'exercice de votre métier ?",
+    "Au final, que retenez-vous de cette aventure ?",
+  ];
 
   useEffect(() => {
     if (
-      stateUser.feelings?.length == 0 &&
+      !stateUser.feelings &&
       stateUser.saves?.length == stateActs.acts?.length
     ) {
+      //Data structure for save feelings answers with textarea content
+      const newFeelingsAnswer = new Map();
+      for (let question of questions) {
+        newFeelingsAnswer.set(question, { answer: "", noAnswer: false });
+      }
+      setFeelingsAnswer(newFeelingsAnswer);
       setOpenModalFeelings(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateUser, stateActs]);
 
   const modalFeelings = () => {
+    const handleTextArea = (e, question) => {
+      let newFeelingsAnswer = new Map(feelingsAnswer);
+      newFeelingsAnswer.set(question, {
+        answer: e.target.value,
+        noAnswer: false,
+      });
+      setFeelingsAnswer(newFeelingsAnswer);
+    };
+
+    const handleFormError = () => {
+      //Check if all textarea contain text
+      const itrFeelingsAnswer = new Map(feelingsAnswer);
+      const iterator = itrFeelingsAnswer.entries();
+      let hasError = false;
+
+      for (let i = 0; i < itrFeelingsAnswer.size; i++) {
+        let objAnswer = iterator.next().value;
+        if (!objAnswer[1].answer) {
+          itrFeelingsAnswer.set(objAnswer[0], {
+            ...objAnswer[1],
+            noAnswer: true,
+          });
+          hasError = true;
+        } else {
+          itrFeelingsAnswer.set(objAnswer[0], {
+            ...objAnswer[1],
+            noAnswer: false,
+          });
+        }
+      }
+
+      setFeelingsAnswer(itrFeelingsAnswer);
+      return hasError;
+    };
+
+    const submitFeelings = () => {
+      const formError = handleFormError();
+      if (formError) return;
+
+      //Save feelings answers
+      const userToSave = {
+        firstname: stateUser.firstname,
+        lastname: stateUser.lastname,
+        role: "JOUEUR",
+        character: stateUser.character,
+        secondCharacter: stateUser.secondCharacter,
+        motto: stateUser.motto,
+        town: stateUser.town,
+        townName: stateUser.townName,
+        townStatus: stateUser.townStatus,
+        partyName: stateUser.partyName,
+        feelings: Object.fromEntries(feelingsAnswer),
+        saves: stateUser.saves,
+      };
+
+      apiRequest("users/update", "put", authState.token, {
+        data: { ...userToSave, idUser: stateUser.idUser },
+      })
+        .then(() => {
+          window.location.href = "/summary";
+        })
+        .catch((err) => {
+          dispatch(createUserError(err.message));
+          navigate("/user");
+          console.log(err);
+        });
+    };
+
     return (
       <Modal
         open={openModalFeelings}
@@ -40,10 +131,11 @@ const Summary = () => {
         <ModalDialog
           sx={{
             width: parseInt(domConfig.width),
-            height: parseInt(domConfig.height * 0.9),
+            height: parseInt(domConfig.height * 0.8),
             position: "relative",
             padding: 0,
           }}
+          className="animate__animated animate__zoomIn"
         >
           <ModalClose variant="outlined" />
 
@@ -57,7 +149,7 @@ const Summary = () => {
             style={{ zIndex: -1000, position: "fixed" }}
           >
             <source
-              src={`${PICTURES_DIR}/background_videos/vecteezy_exo-planet-with-rings-animation-4k_25272383_367.mp4`}
+              src={`${PICTURES_DIR}/background_videos/vecteezy_exo-planet-with-rings-animation-4k_25272383_367.avi`}
               type="video/mp4"
             />
           </video>
@@ -66,16 +158,16 @@ const Summary = () => {
             paddingTop={"5%"}
             spacing={2}
             direction={"column"}
-            height={"100%"}
+            height={"90%"}
             width={"100%"}
             flexWrap={"wrap"}
-            useFlexGap
             position={"relative"}
             zIndex={1}
+            useFlexGap
           >
             {/* Bravo Box */}
             <Box
-              height={"30%"}
+              height={"25%"}
               width={"50%"}
               display={"flex"}
               flexDirection={"column"}
@@ -96,11 +188,72 @@ const Summary = () => {
                 {"Alors, qu'en retenez-vous ?"}
               </Typography>
             </Box>
+
+            {/* Question Answers */}
+            {questions.map((question, index) => (
+              <Box
+                key={index}
+                height={"30%"}
+                width={"50%"}
+                display={"flex"}
+                flexDirection={"column"}
+                justifyContent={"center"}
+                alignItems={"center"}
+                zIndex={1}
+              >
+                {" "}
+                <Typography
+                  level="title-md"
+                  textColor={"white"}
+                  fontWeight={500}
+                  paddingLeft={"10%"}
+                  paddingRight={"10%"}
+                >
+                  {question}
+                </Typography>
+                {/* textarea */}
+                <Box
+                  height={"70%"}
+                  width={"80%"}
+                  sx={{
+                    backgroundImage: `url(${PICTURES_DIR}/textarea_end.svg)`,
+                    backgroundSize: "100% 100%",
+                    border:
+                      feelingsAnswer.get(question).noAnswer && "solid 2px",
+                    borderColor: feelingsAnswer.get(question).noAnswer && "red",
+                    borderRadius:
+                      feelingsAnswer.get(question).noAnswer && "15%",
+                  }}
+                >
+                  <textarea
+                    style={textAreaStyle}
+                    value={feelingsAnswer.get(question).answer}
+                    onChange={(e) => handleTextArea(e, question)}
+                    placeholder="Entrez votre réponse..."
+                  />
+                  {feelingsAnswer.get(question).noAnswer && (
+                    <Typography
+                      marginTop={"-5%"}
+                      level="body-sm"
+                      fontWeight={600}
+                      textColor={"red"}
+                      startDecorator={<IoInformationCircle />}
+                    >
+                      Une réponse est requise
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            ))}
           </Stack>
+
+          {/* Submit Button */}
+          <Button onClick={() => submitFeelings()}>Valider</Button>
         </ModalDialog>
       </Modal>
     );
   };
+
   return (
     <>
       {stateActs.acts ? (
@@ -113,7 +266,7 @@ const Summary = () => {
           alignItems={"center"}
           sx={{
             backgroundImage: `url(${PICTURES_DIR}/sommaire_bg.jpg)`,
-            backgroundSize: backgroundSize(domConfig.width, domConfig.height),
+            backgroundSize: "100% 100%",
           }}
         >
           {stateActs?.acts?.map((act) => {
@@ -141,10 +294,7 @@ const Summary = () => {
                   alignItems={"center"}
                   sx={{
                     backgroundImage: `url(${actRowImg})`,
-                    backgroundSize: backgroundSize(
-                      domConfig.width * 0.6,
-                      domConfig.height * 0.1
-                    ),
+                    backgroundSize: "100% 100%",
                   }}
                 >
                   <Typography

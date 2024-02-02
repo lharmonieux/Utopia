@@ -21,35 +21,19 @@ const Characters = ({
   const domConfig = useSelector((state) => state.dom);
 
   const handleSelectedCharacter = (selectedCharacter) => {
-    if (stateUser.character) {
-      //If selected again
-      if (selectedCharacter == objectSelectedCharacter) {
-        setObjectCharacterSelected(null);
-      } else {
-        setObjectCharacterSelected(selectedCharacter);
-      }
-
-      dispatch(
-        updateCharactersSelected({
-          characters: stateCharacters.characters,
-          selectedCharacter,
-        })
-      );
+    //If selected again
+    if (selectedCharacter._id == objectSelectedCharacter?._id) {
+      setObjectCharacterSelected(null);
     } else {
-      //If selected again
-      if (selectedCharacter == objectSelectedCharacter) {
-        setObjectCharacterSelected(null);
-      } else {
-        setObjectCharacterSelected(selectedCharacter);
-      }
-
-      dispatch(
-        updateCharactersSelected({
-          characters: stateCharacters.characters,
-          selectedCharacter,
-        })
-      );
+      setObjectCharacterSelected(selectedCharacter);
     }
+
+    dispatch(
+      updateCharactersSelected({
+        characters: stateCharacters.characters,
+        selectedCharacter,
+      })
+    );
   };
 
   return (
