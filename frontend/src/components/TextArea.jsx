@@ -15,7 +15,10 @@ const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
   };
 
   const handleFormValue = (e) => {
-    newTextareaValue.set(questionContent._id, e.target.value);
+    newTextareaValue.set(questionContent.text, {
+      answerText: e.target.value,
+      answerType: questionContent.answerType.name,
+    });
     setTextareaValue(newTextareaValue);
   };
 
@@ -25,11 +28,11 @@ const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
       height={parseInt(domConfig.height * questionContent?.textArea?.height)}
       sx={{
         backgroundImage: `url(${PICTURES_DIR}/${questionContent?.textArea?.img})`,
-        backgroundSize: '100% 100%',
+        backgroundSize: "100% 100%",
       }}
     >
       <textarea
-        value={textareaValue.get(questionContent)}
+        value={textareaValue.get(questionContent.text)?.answerText}
         onChange={(e) => handleFormValue(e)}
         onKeyDown={(e) =>
           questionContent.answerType?.name == "texte_ville" && handleKeyDown(e)

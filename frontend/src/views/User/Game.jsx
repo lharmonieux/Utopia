@@ -43,6 +43,7 @@ import {
   storeTownName,
 } from "../../utils/redux/userSlice.js";
 import apiRequest from "../../api/requestAPI.js";
+import { IoInformationCircle } from "react-icons/io5";
 
 const Game = () => {
   // variables
@@ -73,7 +74,10 @@ const Game = () => {
   const [fullContentBox, setFullContentBox] = useState();
   const [orderedAnswers, setOrderedAnswers] = useState([]);
   const [percentAnswers, setPercentAnswers] = useState(new Map());
-  const [answerModal, setAnswerModal] = useState("");
+  const [answerModal, setAnswerModal] = useState({
+    answerText: "",
+    hasAnswer: true,
+  });
   const [percentFinalAnswer, setPercentFinalAnswer] = useState({});
   const [answersToLogs, setAnswersToLogs] = useState(new Map());
 
@@ -140,11 +144,15 @@ const Game = () => {
           for (let content of stateActs.currentQuestion.content)
             if (
               content?.answerType?.name == "texte" ||
-              content?.answerType?.name == "texte_ville"
+              content?.answerType?.name == "texte_ville" ||
+              content?.answerType?.name == "texte_fete"
             ) {
               const allTextareas = new Map();
               for (let questionContent of stateActs.currentQuestion.content) {
-                allTextareas.set(questionContent._id, "");
+                allTextareas.set(questionContent.text, {
+                  answerText: "",
+                  answerType: "",
+                });
               }
               setTextareaValue(allTextareas);
             } else setTextareaValue(new Map());
@@ -419,23 +427,50 @@ const Game = () => {
   };
 
   const modalFeedback = () => {
+    const handleSubmit = () => {
+      if (!answerModal.answerText) {
+        setAnswerModal({ answerText: "", hasAnswer: false });
+        return;
+      }
+      animateOut(openFeedbackModal, "#modal-feedback-content", () => {
+        //Display end modal to summarize act
+        if (stateActs.questionOrder == actQuestionsLength - 1)
+          setOpenEndModal(true);
+        else {
+          if (storeAnswer.length == 1) {
+            //Single answer proposition
+            let answerText = storeAnswer[0]?.content?.text?.text;
+            const newAnswersToLog = new Map(answersToLogs);
+            newAnswersToLog.set(
+              stateActs?.currentQuestion?.content[0]?.text,
+              answerText
+            );
+            if (feedback.hasQuestion) {
+              //Save answer of question in modal
+              newAnswersToLog.set(feedbackText, answerModal);
+            }
+            setAnswersToLogs(newAnswersToLog);
+          }
+
+          setOpenFeedbackModal(false);
+          initializingState();
+        }
+      });
+    };
+
     const secondCharacterName = stateUser?.secondCharacter?.name;
     let feedbackText = feedback.content;
     feedbackText = feedbackText.replace(
       "secondCharacterName",
       secondCharacterName
     );
+
     // Modal for feedbacks
     return (
       feedbackImg && (
         <Modal
           open={openFeedbackModal}
-          onClose={() =>
-            animateOut(openFeedbackModal, "#modal-feedback-content", () => {
-              setOpenFeedbackModal(false);
-              initializingState();
-            })
-          }
+          onClose={() => handleSubmit()}
           className={animationModalIn}
           id={"modal-feedback-content"}
         >
@@ -490,48 +525,35 @@ const Game = () => {
 
               {/* Text area for some answers */}
               {feedback.hasQuestion && (
-                <textarea
-                  value={answerModal}
-                  onChange={(e) => setAnswerModal(e.target.value)}
-                  rows={6}
-                  cols={45}
-                />
+                <>
+                  <textarea
+                    value={answerModal.answerText}
+                    onChange={(e) =>
+                      setAnswerModal({
+                        answerText: e.target.value,
+                        hasAnswer: true,
+                      })
+                    }
+                    rows={6}
+                    cols={45}
+                    style={{ resize: "none" }}
+                  />
+
+                  {!answerModal.hasAnswer && (
+                    <Typography
+                      marginTop={"-5%"}
+                      level="body-sm"
+                      fontWeight={600}
+                      textColor={"red"}
+                      startDecorator={<IoInformationCircle />}
+                    >
+                      Une réponse est requise
+                    </Typography>
+                  )}
+                </>
               )}
 
-              <Button
-                onClick={() =>
-                  animateOut(
-                    openFeedbackModal,
-                    "#modal-feedback-content",
-                    () => {
-                      setOpenFeedbackModal(false);
-                      //Display end modal to summarize act
-                      if (stateActs.questionOrder == actQuestionsLength - 1)
-                        setOpenEndModal(true);
-                      else {
-                        if (storeAnswer.length == 1) {
-                          //Single answer proposition
-                          let answerText = storeAnswer[0]?.content?.text?.text;
-                          const newAnswersToLog = new Map(answersToLogs);
-                          newAnswersToLog.set(
-                            stateActs?.currentQuestion?.content[0]?.text,
-                            answerText
-                          );
-                          if (feedback.hasQuestion) {
-                            //Save answer of question in modal
-                            newAnswersToLog.set(feedbackText, answerModal);
-                          }
-                          setAnswersToLogs(newAnswersToLog);
-                        }
-
-                        initializingState();
-                      }
-                    }
-                  )
-                }
-              >
-                Continuer
-              </Button>
+              <Button onClick={() => handleSubmit()}>Continuer</Button>
             </Box>
           </ModalDialog>
         </Modal>
@@ -876,7 +898,7 @@ const Game = () => {
     setPercentAnswers(new Map(percentAnswers));
   };
 
-  console.log(answersToLogs, storeAnswer);
+  console.log(answersToLogs, textareaValue);
   // Manage for the next element to display
   const nextPage = () => {
     //Control of if there are an given answer
@@ -995,6 +1017,18 @@ const Game = () => {
             stateActs?.currentQuestion?.content[0]?.text,
             answerObj
           );
+          setAnswersToLogs(newAnswersToLog);
+        } else if (textareaValue.size > 0) {
+          //Store random textarea answer
+          const iterator = textareaValue.entries();
+          const newAnswersToLog = new Map(answersToLogs);
+          for (let i = 0; i < textareaValue.size; i++) {
+            const curr = iterator.next().value;
+            if (curr[1].answerType == "texte") {
+              newAnswersToLog.set(curr[0], curr[1].answerText);
+            }
+          }
+
           setAnswersToLogs(newAnswersToLog);
         } else if (storeAnswer.length == 1) {
           //Single answer proposition
