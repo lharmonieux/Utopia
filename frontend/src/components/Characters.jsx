@@ -5,7 +5,6 @@ import "animate.css";
 import { colors } from "../utils/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCharactersSelected } from "../utils/redux/characterSlice";
-import { backgroundSize } from "../utils/backgroundSizeProvider";
 import { PICTURES_DIR } from "../utils/constants";
 import { selectionEffect } from "../utils/cssReact";
 import ButtonNavScroll from "./ButtonNavScroll";
@@ -36,17 +35,16 @@ const Characters = ({
     );
   };
 
+  console.log(stateCharacters.characters);
+
   return (
     <Box
-      height={parseInt(
-        domConfig.height *
-          0.95 *
-          (0.95 - questionContent?.backgroundImg?.height)
-      )}
-      width={domConfig.width}
+      height={`75%`}
+      width={"100%"}
       // sx={{ overflow: "hidden" }}
     >
       <Stack
+        height={"100%"}
         id="character-container"
         direction="row"
         spacing={5}
@@ -64,8 +62,8 @@ const Characters = ({
             return (
               <Box
                 key={character._id}
-                height={parseInt(domConfig.height * character.height)}
-                width={parseInt(domConfig.width * character.width)}
+                height={`100%`}
+                width={`${character.width * 100}%`}
                 onClick={() => {
                   handleSelectedCharacter(character);
                 }}
@@ -76,11 +74,8 @@ const Characters = ({
                     flex: "none",
                     scrollSnapAlign: "start",
                     backgroundImage: `url(${PICTURES_DIR}/${character.img})`,
-                    backgroundSize: backgroundSize(
-                      domConfig.width * character.width,
-                      domConfig.height * character.height
-                    ),
-                    cursor: "pointer",
+                    backgroundSize: "cover",
+                    cursor: "pointer"
                   },
                   selectionEffect(character),
                 ]}

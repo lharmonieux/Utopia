@@ -214,21 +214,21 @@ const PreFetch = () => {
   //   }
   // }, [newActs]);
 
-  useEffect(() => {
-    setMainContentDOM(document.querySelector("#main-content"));
+  // useEffect(() => {
+  //   setMainContentDOM(document.querySelector("#main-content"));
 
-    if (mainContentDOM) {
-      // Main content sizes
-      setWidthMainContent(mainContentDOM.clientWidth);
-      setHeightMainContent(mainContentDOM.clientHeight);
-    }
+  //   if (mainContentDOM) {
+  //     // Main content sizes
+  //     setWidthMainContent(mainContentDOM.clientWidth);
+  //     setHeightMainContent(mainContentDOM.clientHeight);
+  //   }
 
-    if (widthMainContent && heightMainContent)
-      dispatch(
-        setSizes({ width: widthMainContent, height: heightMainContent })
-      );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mainContentDOM, widthMainContent, heightMainContent, loading]);
+  //   if (widthMainContent && heightMainContent)
+  //     dispatch(
+  //       setSizes({ width: widthMainContent, height: heightMainContent })
+  //     );
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [mainContentDOM, widthMainContent, heightMainContent, loading]);
 
   return !loading ? (
     <CssVarsProvider theme={typographyTheme}>

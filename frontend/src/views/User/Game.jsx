@@ -1232,25 +1232,22 @@ const Game = () => {
                   id={"game-main-content"}
                   position={"relative"}
                 >
-                  {domConfig.width && domConfig.height ? (
+                  {
                     questionBackgroundImg &&
                     decorationImg &&
                     stateActs.currentQuestion ? (
-                      <Box height={domConfig.height} width={domConfig.width}>
+                      <Box height={"100%"} width={"100%"}>
                         {/* Main content */}
                         <Box
-                          height={domConfig.height}
-                          width={domConfig.width}
+                          height={"100%"}
+                          width={"100%"}
                           display={"flex"}
                           flexDirection={"column"}
                           justifyContent={"center"}
                           alignItems={"center"}
                           sx={{
                             backgroundImage: `url(${questionBackgroundImg})`,
-                            backgroundSize: backgroundSize(
-                              domConfig.width,
-                              domConfig.height
-                            ),
+                            backgroundSize: 'cover',
                           }}
                         >
                           {stateActs.currentQuestion?.content?.map(
@@ -1258,8 +1255,8 @@ const Game = () => {
                               return (
                                 <Box
                                   key={index}
-                                  height={parseInt(domConfig.height * 0.95)}
-                                  width={parseInt(domConfig.width)}
+                                  height={"95%"}
+                                  width={"100%"}
                                   display={"flex"}
                                   flexDirection={
                                     stateActs.currentQuestion?.visual
@@ -1275,14 +1272,14 @@ const Game = () => {
                                 >
                                   {/* Question's content  */}
                                   <Box
-                                    width={parseInt(
-                                      domConfig.width *
-                                        questionContent?.backgroundImg?.width
-                                    )}
-                                    height={parseInt(
-                                      domConfig.height *
-                                        questionContent?.backgroundImg?.height
-                                    )}
+                                    width={
+                                      `${questionContent?.backgroundImg?.width * 100}%`
+                                        
+                                    }
+                                    height={
+                                      `${questionContent?.backgroundImg?.height * 100}%`
+                                        
+                                    }
                                     display={"flex"}
                                     justifyContent={"center"}
                                     alignItems={
@@ -1314,12 +1311,7 @@ const Game = () => {
                                       // bgcolor: "red",
                                       marginBottom: 1,
                                       backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg.img})`,
-                                      backgroundSize: backgroundSize(
-                                        domConfig.width *
-                                          questionContent?.backgroundImg?.width,
-                                        domConfig.height *
-                                          questionContent?.backgroundImg?.height
-                                      ),
+                                      backgroundSize: 'cover',
                                     }}
                                   >
                                     <DisplayingText
@@ -1342,7 +1334,7 @@ const Game = () => {
 
                           {/* Validate button */}
                           <Box
-                            width={domConfig.width}
+                            width={"100%"}
                             sx={{
                               flex: 1,
                               display: "flex",
@@ -1382,8 +1374,8 @@ const Game = () => {
                         <Box position={"absolute"} bottom={-4} right={0}>
                           <img
                             src={decorationImg}
-                            height={domConfig.height * 0.15}
-                            width={domConfig.width * 0.1}
+                            height={"15%"}
+                            width={"10%"}
                           />
                         </Box>
                       </Box>
@@ -1398,17 +1390,7 @@ const Game = () => {
                         <CircularProgress variant="soft" color="success" />
                       </Box>
                     )
-                  ) : (
-                    <Box
-                      height={"100%"}
-                      width={"100%"}
-                      display={"flex"}
-                      alignItems={"center"}
-                      justifyContent={"center"}
-                    >
-                      <CircularProgress variant="soft" color="success" />
-                    </Box>
-                  )}
+                  }
                 </Box>
               </>
             ) : (
