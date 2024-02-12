@@ -428,10 +428,11 @@ const Game = () => {
 
   const modalFeedback = () => {
     const handleSubmit = () => {
-      if (!answerModal.answerText) {
+      if (feedback.hasQuestion && !answerModal.answerText) {
         setAnswerModal({ answerText: "", hasAnswer: false });
         return;
       }
+
       animateOut(openFeedbackModal, "#modal-feedback-content", () => {
         //Display end modal to summarize act
         if (stateActs.questionOrder == actQuestionsLength - 1)
@@ -732,14 +733,6 @@ const Game = () => {
               </Box>
             </Stack>
 
-            {/* <Stack direction="row" spacing={2} justifyContent="space-evenly">
-                {scoresThematic.map((e) => (
-                  <Typography key={e.thematic}>
-                    {e.thematic} : {e.totalScore}
-                  </Typography>
-                ))}
-              </Stack> */}
-
             <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
               <Button
                 onClick={() => {
@@ -898,7 +891,6 @@ const Game = () => {
     setPercentAnswers(new Map(percentAnswers));
   };
 
-  console.log(answersToLogs, textareaValue);
   // Manage for the next element to display
   const nextPage = () => {
     //Control of if there are an given answer

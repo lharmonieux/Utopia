@@ -21,6 +21,7 @@ import { backgroundSize } from "../utils/backgroundSizeProvider.js";
 import { createUserError } from "../utils/redux/userSlice.js";
 import { loginFail, setToken } from "../utils/redux/authSlice.js";
 import apiRequest from "../api/requestAPI.js";
+import { textAreaStyle } from "../utils/cssReact.js";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -93,6 +94,7 @@ const Home = () => {
     setLoading(true);
     // send to auth API
     const result = login({ email, password });
+    console.log(result);
     result
       .then((response) => {
         if (response)
@@ -116,14 +118,14 @@ const Home = () => {
             {widthMainContent && heightMainContent ? (
               backgroundImg && imgPresentation && logo && decoration ? (
                 <Box
-                  height={heightMainContent}
-                  width={widthMainContent}
+                  height={"100%"}
+                  width={"100%"}
                   position={"relative"}
                   sx={{
                     borderRadius: 3,
                     padding: 0,
                     backgroundImage: `url(${backgroundImg})`,
-                    backgroundSize: `${widthMainContent}px ${heightMainContent}px`,
+                    backgroundSize: `100% 100%`,
                     backgroundRepeat: "no-repeat",
                   }}
                   className={"animate__animated animate__zoomIn animate__slow"}
@@ -132,8 +134,8 @@ const Home = () => {
                     <Alert color="danger">{stateUser.error}</Alert>
                   )}
                   <Box
-                    height={heightMainContent}
-                    width={widthMainContent}
+                    height={"100%"}
+                    width={"100%"}
                     display={"flex"}
                     flexDirection={"row"}
                     justifyContent={"space-evenly"}
@@ -141,19 +143,17 @@ const Home = () => {
                   >
                     {/* Welcome part  */}
                     <Box
-                      width={parseInt(widthMainContent * 0.4)}
-                      height={parseInt(heightMainContent * 0.7)}
+                      width={"40%"}
+                      height={"70%"}
                       sx={{
                         backgroundImage: `url(${imgPresentation})`,
-                        backgroundSize: `${widthMainContent * 0.4}px ${
-                          heightMainContent * 0.7
-                        }px`,
+                        backgroundSize: `100% 100%`,
                         backgroundRepeat: "no-repeat",
                       }}
                     >
                       <Box
-                        width={parseInt(widthMainContent * 0.4)}
-                        height={parseInt(heightMainContent * 0.7)}
+                        width={"100%"}
+                        height={"100%"}
                         display={"flex"}
                         flexDirection={"column"}
                         marginTop={5}
@@ -198,7 +198,7 @@ const Home = () => {
                         height: "100%",
                         width: "40%",
                         display: "flex",
-                        flexDirection: "column",
+                        flexDirection: "column"
                       }}
                     >
                       <img src={logo} alt="logo" />
@@ -225,14 +225,11 @@ const Home = () => {
                         <form onSubmit={handleSubmit}>
                           <Stack spacing={1}>
                             <Box
-                              width={parseInt(widthMainContent * 0.4)}
-                              height={parseInt(heightMainContent * 0.07)}
+                              width={"100%"}
+                              height={"10%"}
                               sx={{
                                 backgroundImage: `url(${PICTURES_DIR}/textarea.svg)`,
-                                backgroundSize: backgroundSize(
-                                  widthMainContent * 0.4,
-                                  heightMainContent * 0.07
-                                ),
+                                backgroundSize: '100% 100%',
                               }}
                             >
                               <input
@@ -240,27 +237,19 @@ const Home = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 type="email"
                                 style={{
-                                  placeholder: "Email...",
-                                  width: "100%",
-                                  height: "100%",
-                                  border: "none",
-                                  backgroundColor: "transparent",
-                                  outline: "none",
-                                  fontSize: 20,
-                                  marginLeft: 10,
+                                  placeholder: "Email...",  
+                                  fontSize: 15,
+                                  ...textAreaStyle
                                 }}
                               />
                             </Box>
 
                             <Box
-                              width={parseInt(widthMainContent * 0.4)}
-                              height={parseInt(heightMainContent * 0.07)}
+                              width={"100%"}
+                              height={"10%"}
                               sx={{
                                 backgroundImage: `url(${PICTURES_DIR}/textarea.svg)`,
-                                backgroundSize: backgroundSize(
-                                  widthMainContent * 0.4,
-                                  heightMainContent * 0.07
-                                ),
+                                backgroundSize: '100% 100%',
                               }}
                             >
                               <input
@@ -268,14 +257,9 @@ const Home = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 type="password"
                                 style={{
-                                  placeholder: "Mot de passe...",
-                                  width: "100%",
-                                  height: "100%",
-                                  border: "none",
-                                  backgroundColor: "transparent",
-                                  outline: "none",
-                                  fontSize: 20,
-                                  marginLeft: 10,
+                                  placeholder: "Mot de passe...",  
+                                  fontSize: 15,
+                                  ...textAreaStyle
                                 }}
                               />
                             </Box>
