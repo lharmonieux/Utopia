@@ -4,7 +4,6 @@ import "animate.css";
 import { useEffect, useState } from "react";
 import { colors } from "../utils/colors";
 import { useSelector } from "react-redux";
-import { backgroundSize } from "../utils/backgroundSizeProvider";
 
 const ActPresentation = ({
   setShowActPresentation,
@@ -15,7 +14,6 @@ const ActPresentation = ({
   logoAppImg,
 }) => {
   const stateActs = useSelector((state) => state.act);
-  const domConfig = useSelector((state) => state.dom);
   const [actPresentationBox, setActPresentationBox] = useState();
 
   useEffect(() => {
@@ -47,7 +45,7 @@ const ActPresentation = ({
           sx={{
             borderRadius: 5,
             backgroundImage: `url(${actPresentationImg})`,
-            backgroundSize: "cover",
+            backgroundSize: "100% 100%",
           }}
           className={`animate__animated animate__fadeIn`}
         >
@@ -61,16 +59,8 @@ const ActPresentation = ({
             alignItems={"center"}
           >
             {/* logo */}
-            <Box
-              marginTop={7}
-              height={"30%"}
-              width={"45%"}
-            >
-              <img
-                src={logoAppImg}
-                width={"100%"}
-                height={"100%"}
-              />
+            <Box marginTop={7} height={"30%"} width={"45%"}>
+              <img src={logoAppImg} width={"100%"} height={"100%"} />
             </Box>
 
             {/* title */}
@@ -82,8 +72,8 @@ const ActPresentation = ({
               width={"25%"}
               sx={{
                 backgroundImage: `url(${titleActImg})`,
-                backgroundSize: "cover",
-                backgroundRepeat: 'no-repeat'
+                backgroundSize: "100% 100%",
+                backgroundRepeat: "no-repeat",
               }}
             >
               <Typography
@@ -101,21 +91,29 @@ const ActPresentation = ({
           </Box>
 
           {/* Decoration  */}
-          <Box position={"absolute"} top={0} left={0}>
+          <Box
+            position={"absolute"}
+            top={"-1.5%"}
+            left={0}
+            width={"35%"}
+            height={"48%"}
+          >
             <img
               src={decorationImg}
-              height={"48%"}
-              width={"35%"}
-              style={{transform: 'rotate(180deg)'}}
+              height={"100%"}
+              width={"100%"}
+              style={{ transform: "rotate(180deg)" }}
             />
           </Box>
 
-          <Box position={"absolute"} bottom={-4} right={0}>
-            <img
-              src={decorationImg}
-              height={"30%"}
-              width={"15%"}
-            />
+          <Box
+            position={"absolute"}
+            bottom={0}
+            left={"85%"}
+            width={"15%"}
+            height={"30%"}
+          >
+            <img src={decorationImg} height={"100%"} width={"100%"} />
           </Box>
         </Box>
       ) : (

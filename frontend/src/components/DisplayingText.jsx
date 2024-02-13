@@ -13,6 +13,7 @@ const DisplayingText = ({
   marginLeft,
   marginTop,
   fontWeight,
+  backgroundText,
   animated,
 }) => {
   const stateUser = useSelector((state) => state.user);
@@ -32,6 +33,9 @@ const DisplayingText = ({
       textAlign={textAlign}
       marginLeft={marginLeft}
       marginTop={marginTop}
+      sx={{
+        backgroundColor: !animated && backgroundText,
+      }}
     >
       {animated ? (
         <TypeAnimation
@@ -39,7 +43,7 @@ const DisplayingText = ({
           speed={80}
           repeat={1}
           cursor={false}
-          style={{ whiteSpace: "pre-line" }}
+          style={{ whiteSpace: "pre-line", background: backgroundText }}
         />
       ) : (
         `${sentence}`

@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, CircularProgress, Stack, Typography } from "@mui/joy";
+import { Box, Button, Stack, Typography } from "@mui/joy";
 import { TypeAnimation } from "react-type-animation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -17,7 +17,8 @@ const Home = () => {
         "/home/snowy-mountain-peak-starry-galaxy-majesty-generative-ai.jpg"
     );
   }, []);
-  return <Box
+  return (
+    <Box
       width={"100%"}
       height={"100%"}
       display={"flex"}
@@ -48,8 +49,12 @@ const Home = () => {
             speed={80}
             repeat={1}
             cursor={false}
-            style={{ whiteSpace: "pre-line", backdropFilter: "blur(5px)",
-            backgroundColor: "rgba(0, 0, 0, 0.4)", borderRadius: 5}}
+            style={{
+              whiteSpace: "pre-line",
+              backdropFilter: "blur(5px)",
+              backgroundColor: "rgba(0, 0, 0, 0.4)",
+              borderRadius: 5,
+            }}
           />
         </Typography>
       </Box>
@@ -69,7 +74,7 @@ const Home = () => {
         </Button>
       </Stack>
     </Box>
-  
+  );
 };
 
 export default Home;

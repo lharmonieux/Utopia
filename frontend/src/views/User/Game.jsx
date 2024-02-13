@@ -3,7 +3,6 @@ import {
   Stack,
   Box,
   Typography,
-  Button,
   Modal,
   ModalDialog,
   ModalClose,
@@ -32,7 +31,6 @@ import {
   setQuestionOrder,
   updateQuestion,
 } from "../../utils/redux/actSlice.js";
-import { backgroundSize } from "../../utils/backgroundSizeProvider.js";
 import {
   setMotto,
   setPartyName,
@@ -44,12 +42,12 @@ import {
 } from "../../utils/redux/userSlice.js";
 import apiRequest from "../../api/requestAPI.js";
 import { IoInformationCircle } from "react-icons/io5";
+import CustomButton from "../../components/CustomButton.jsx";
 
 const Game = () => {
   // variables
   // const { currentAct, characters, acts, towns } = useContext(AppContext);
   const stateActs = useSelector((state) => state.act);
-  const domConfig = useSelector((state) => state.dom);
   const stateUser = useSelector((state) => state.user);
   const authState = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -410,6 +408,7 @@ const Game = () => {
           <ScaleProposition
             setScaleAnswers={setScaleAnswers}
             scaleAnswers={scaleAnswers}
+            questionContent={questionContent}
           />
         );
 
@@ -477,13 +476,10 @@ const Game = () => {
         >
           <ModalDialog
             sx={{
-              width: parseInt(domConfig.width * 0.5),
-              height: parseInt(domConfig.height * 0.85),
+              width: "50%",
+              height: "85%",
               backgroundImage: `url(${feedbackImg})`,
-              backgroundSize: backgroundSize(
-                domConfig.width * 0.5,
-                domConfig.height * 0.85
-              ),
+              backgroundSize: "100% 100%",
               position: "relative",
               paddingTop: "5%",
             }}
@@ -554,7 +550,18 @@ const Game = () => {
                 </>
               )}
 
-              <Button onClick={() => handleSubmit()}>Continuer</Button>
+              <Box width={"25%"} height={"8%"}>
+                <CustomButton
+                  backgroundColor={colors.buttonLight}
+                  hoverColor={colors.buttonLightHover}
+                  width={"100%"}
+                  height={"100%"}
+                  clickMethod={handleSubmit}
+                  textColor={colors.titleBackLight}
+                >
+                  Continuer
+                </CustomButton>
+              </Box>
             </Box>
           </ModalDialog>
         </Modal>
@@ -653,13 +660,10 @@ const Game = () => {
       >
         <ModalDialog
           sx={{
-            height: parseInt(domConfig.height * 0.9),
-            width: parseInt(domConfig.width * 0.9),
+            height: "90%",
+            width: "75%",
             backgroundImage: `url(${bgEndActImg})`,
-            backgroundSize: backgroundSize(
-              domConfig.width * 0.9,
-              domConfig.height * 0.9
-            ),
+            backgroundSize: "100% 100%",
             padding: 0,
           }}
         >
@@ -689,10 +693,7 @@ const Game = () => {
                 alignItems={"center"}
                 sx={{
                   backgroundImage: `url(${titleEndActImg})`,
-                  backgroundSize: backgroundSize(
-                    domConfig.width * 0.9 * 0.4,
-                    domConfig.height * 0.9 * 0.9
-                  ),
+                  backgroundSize: "100% 100%",
                   borderTopLeftRadius: 5,
                 }}
               >
@@ -713,29 +714,41 @@ const Game = () => {
                 justifyContent={"center"}
                 alignItems={"center"}
               >
-                <DisplayingText
-                  level={stateActs.currentAct?.resolution?.textStyle?.size}
-                  textColor={stateActs.currentAct?.resolution?.textStyle?.color}
-                  fontWeight={
-                    stateActs.currentAct?.resolution?.textStyle?.weight
-                  }
-                  sentence={resolutionText}
-                  animated={true}
-                />
-                <DisplayingText
-                  level={stateActs.currentAct?.resolution?.textStyle?.size}
-                  textColor={stateActs.currentAct?.resolution?.textStyle?.color}
-                  fontWeight={
-                    stateActs.currentAct?.resolution?.textStyle?.weight
-                  }
-                  sentence={rankUserText}
-                />
+                {rankUserText ? (
+                  <>
+                    <DisplayingText
+                      level={stateActs.currentAct?.resolution?.textStyle?.size}
+                      textColor={
+                        stateActs.currentAct?.resolution?.textStyle?.color
+                      }
+                      fontWeight={
+                        stateActs.currentAct?.resolution?.textStyle?.weight
+                      }
+                      sentence={resolutionText + rankUserText}
+                      animated={true}
+                      backgroundText={"rgba(70, 8, 134, 0.4)"}
+                    />
+                  </>
+                ) : (
+                  <Box
+                    height={"100%"}
+                    width={"100%"}
+                    display={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                  >
+                    <CircularProgress variant="soft" color="success" />
+                  </Box>
+                )}
               </Box>
             </Stack>
 
-            <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
-              <Button
-                onClick={() => {
+            <Box height={"8%"} display="flex" justifyContent="center">
+              <CustomButton
+                backgroundColor={colors.buttonDark}
+                hoverColor={colors.buttonDarkHover}
+                textColor={colors.titleBackDark}
+                clickMethod={() => {
                   animateOut(openEndModal, "#modal-end", () => {
                     setOpenEndModal(false);
                     window.location.href = "/summary";
@@ -743,8 +756,8 @@ const Game = () => {
                   });
                 }}
               >
-                Next
-              </Button>
+                Passer à la suite
+              </CustomButton>
             </Box>
           </Stack>
         </ModalDialog>
@@ -1074,81 +1087,102 @@ const Game = () => {
       );
     }
 
-    return domConfig.height && domConfig.width ? (
-      feedbackImg ? (
-        <Modal
-          open={openScaleModal}
-          onClose={() =>
-            animateOut(openScaleModal, "#modal-scale", () =>
-              setOpenScaleModal(false)
-            )
-          }
-          className={animationModalIn}
-          id={"modal-scale"}
+    return feedbackImg ? (
+      <Modal
+        open={openScaleModal}
+        onClose={() =>
+          animateOut(openScaleModal, "#modal-scale", () =>
+            setOpenScaleModal(false)
+          )
+        }
+        className={animationModalIn}
+        id={"modal-scale"}
+      >
+        <ModalDialog
+          sx={{
+            width: "40%",
+            height: "70%",
+            position: "relative",
+            backgroundImage: `url(${feedbackImg})`,
+            backgroundSize: "100% 100%",
+          }}
         >
-          <ModalDialog
+          <ModalClose variant="outlined" />
+          <DialogTitle
             sx={{
-              width: parseInt(domConfig.width * 0.7),
-              height: parseInt(domConfig.height * 0.6),
-              position: "relative",
-              backgroundImage: `url(${feedbackImg})`,
-              backgroundSize: backgroundSize(
-                domConfig.width * 0.7,
-                domConfig.height * 0.6
-              ),
+              marginTop: "10%",
+              marginLeft: "45%",
+              color: colors.titleBackLight,
             }}
           >
-            <ModalClose variant="outlined" />
-            <DialogTitle sx={{ position: "absolute", top: "14%", left: "50%" }}>
-              Votre devise
-            </DialogTitle>
+            Votre devise
+          </DialogTitle>
 
-            <Typography sx={{ marginTop: "13%" }}>
+          {/* Main content */}
+          <Box
+            width={"100%"}
+            height={"60%"}
+            display={"flex"}
+            flexDirection={"column"}
+            justifyContent={"space-evenly"}
+            alignItems={"center"}
+          >
+            <Typography textAlign={"justify"}>
               En se basant sur vos notes, la devise qui vous convient le mieux
               est :{" "}
-              <Typography sx={{ fontWeight: "bold" }}>
+              <Typography fontWeight={800}>
                 {choosenMotto && choosenMotto[0]?.content?.text?.text}
               </Typography>
             </Typography>
 
-            <Button
-              onClick={() =>
-                animateOut(openScaleModal, "#modal-scale", () => {
-                  setShowAlertNoAnswer(false);
-                  setOpenScaleModal(false);
-                })
-              }
+            <Box
+              width={"100%"}
+              height={"15%"}
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"space-evenly"}
             >
-              Retour au choix
-            </Button>
-            <Button
-              onClick={() =>
-                animateOut(openScaleModal, "#modal-scale", () => {
-                  setOpenScaleModal(false);
-                  dispatch(setMotto(choosenMotto[0]?.content?.text?.text));
-                  storeScore(
-                    stateActs?.currentQuestion?.content[0]?.answerType?.name,
-                    choosenMotto[0]
-                  );
-                  initializingState();
-                })
-              }
-            >
-              Continuer
-            </Button>
-          </ModalDialog>
-        </Modal>
-      ) : (
-        <Box
-          height={"100%"}
-          width={"100%"}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
-          <CircularProgress variant="soft" color="success" />
-        </Box>
-      )
+              {/* Left button */}
+              <CustomButton
+                backgroundColor={colors.buttonLight}
+                hoverColor={colors.buttonLightHover}
+                height={"100%"}
+                textColor={colors.titleBackLight}
+                clickMethod={() =>
+                  animateOut(openScaleModal, "#modal-scale", () => {
+                    setShowAlertNoAnswer(false);
+                    setOpenScaleModal(false);
+                  })
+                }
+              >
+                Retour au choix
+              </CustomButton>
+
+              {/* Right button */}
+              <CustomButton
+                backgroundColor={colors.buttonLight}
+                hoverColor={colors.buttonLightHover}
+                height={"100%"}
+                textColor={colors.titleBackLight}
+                clickMethod={() =>
+                  animateOut(openScaleModal, "#modal-scale", () => {
+                    setOpenScaleModal(false);
+                    dispatch(setMotto(choosenMotto[0]?.content?.text?.text));
+                    storeScore(
+                      stateActs?.currentQuestion?.content[0]?.answerType?.name,
+                      choosenMotto[0]
+                    );
+                    initializingState();
+                  })
+                }
+              >
+                Continuer
+              </CustomButton>
+            </Box>
+          </Box>
+        </ModalDialog>
+      </Modal>
     ) : (
       <Box
         height={"100%"}
@@ -1232,137 +1266,128 @@ const Game = () => {
                   id={"game-main-content"}
                   position={"relative"}
                 >
-                  {
-                    questionBackgroundImg &&
-                    decorationImg &&
-                    stateActs.currentQuestion ? (
-                      <Box height={"100%"} width={"100%"}>
-                        {/* Main content */}
+                  {questionBackgroundImg &&
+                  decorationImg &&
+                  stateActs.currentQuestion ? (
+                    <Box height={"100%"} width={"100%"}>
+                      {/* Main content */}
+                      <Box
+                        height={"100%"}
+                        width={"100%"}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                        sx={{
+                          backgroundImage: `url(${questionBackgroundImg})`,
+                          backgroundSize: "100% 100%",
+                        }}
+                      >
+                        {stateActs.currentQuestion?.content?.map(
+                          (questionContent, index) => {
+                            return (
+                              <Box
+                                key={index}
+                                height={"95%"}
+                                width={"100%"}
+                                display={"flex"}
+                                flexDirection={
+                                  stateActs.currentQuestion?.visual
+                                    ?.directionAnswer == "column"
+                                    ? "row"
+                                    : "column"
+                                }
+                                position={"relative"}
+                                justifyContent={questionContent?.justifyContent}
+                                alignItems={"center"}
+                              >
+                                {/* Question's content  */}
+                                <Box
+                                  width={`${
+                                    questionContent?.backgroundImg?.width * 100
+                                  }%`}
+                                  height={`${
+                                    questionContent?.backgroundImg?.height * 100
+                                  }%`}
+                                  display={"flex"}
+                                  justifyContent={"center"}
+                                  alignItems={
+                                    !stateActs.currentQuestion.visual
+                                      .boxAnswersImg
+                                      ? "center"
+                                      : "flex-start"
+                                  }
+                                  position={
+                                    stateActs?.currentQuestion
+                                      ?.additionalContent.length > 0
+                                      ? "absolute"
+                                      : "static"
+                                  }
+                                  left={
+                                    stateActs?.currentQuestion
+                                      ?.additionalContent.length > 0
+                                      ? `${questionContent?.backgroundImg?.left}%`
+                                      : 0
+                                  }
+                                  top={
+                                    stateActs?.currentQuestion
+                                      ?.additionalContent.length > 0
+                                      ? `${questionContent?.backgroundImg?.top}%`
+                                      : 0
+                                  }
+                                  zIndex={1}
+                                  sx={{
+                                    // bgcolor: "red",
+                                    marginBottom: 1,
+                                    backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg.img})`,
+                                    backgroundSize: "100% 100%",
+                                  }}
+                                >
+                                  <DisplayingText
+                                    sentence={questionContent.text}
+                                    level={
+                                      questionContent.textLevel || "title-md"
+                                    }
+                                    textColor={questionContent.textColor}
+                                    padding={2}
+                                    textAlign={"center"}
+                                    marginLeft={`${questionContent.marginLeft}%`}
+                                    animated={true}
+                                  />
+                                </Box>
+                                {answerToDisplay(questionContent)}
+                              </Box>
+                            );
+                          }
+                        )}
+
+                        {/* Validate button */}
                         <Box
-                          height={"100%"}
                           width={"100%"}
+                          height={"5%"}
                           display={"flex"}
-                          flexDirection={"column"}
                           justifyContent={"center"}
                           alignItems={"center"}
-                          sx={{
-                            backgroundImage: `url(${questionBackgroundImg})`,
-                            backgroundSize: 'cover',
-                          }}
+                          zIndex={1000}
                         >
-                          {stateActs.currentQuestion?.content?.map(
-                            (questionContent, index) => {
-                              return (
-                                <Box
-                                  key={index}
-                                  height={"95%"}
-                                  width={"100%"}
-                                  display={"flex"}
-                                  flexDirection={
-                                    stateActs.currentQuestion?.visual
-                                      ?.directionAnswer == "column"
-                                      ? "row"
-                                      : "column"
-                                  }
-                                  position={"relative"}
-                                  justifyContent={
-                                    questionContent?.justifyContent
-                                  }
-                                  alignItems={"center"}
-                                >
-                                  {/* Question's content  */}
-                                  <Box
-                                    width={
-                                      `${questionContent?.backgroundImg?.width * 100}%`
-                                        
-                                    }
-                                    height={
-                                      `${questionContent?.backgroundImg?.height * 100}%`
-                                        
-                                    }
-                                    display={"flex"}
-                                    justifyContent={"center"}
-                                    alignItems={
-                                      !stateActs.currentQuestion.visual
-                                        .boxAnswersImg
-                                        ? "center"
-                                        : "flex-start"
-                                    }
-                                    position={
-                                      stateActs?.currentQuestion
-                                        ?.additionalContent.length > 0
-                                        ? "absolute"
-                                        : "static"
-                                    }
-                                    left={
-                                      stateActs?.currentQuestion
-                                        ?.additionalContent.length > 0
-                                        ? `${questionContent?.backgroundImg?.left}%`
-                                        : 0
-                                    }
-                                    top={
-                                      stateActs?.currentQuestion
-                                        ?.additionalContent.length > 0
-                                        ? `${questionContent?.backgroundImg?.top}%`
-                                        : 0
-                                    }
-                                    zIndex={1}
-                                    sx={{
-                                      // bgcolor: "red",
-                                      marginBottom: 1,
-                                      backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg.img})`,
-                                      backgroundSize: 'cover',
-                                    }}
-                                  >
-                                    <DisplayingText
-                                      sentence={questionContent.text}
-                                      level={
-                                        questionContent.textLevel || "title-md"
-                                      }
-                                      textColor={questionContent.textColor}
-                                      padding={2}
-                                      textAlign={"center"}
-                                      marginLeft={`${questionContent.marginLeft}%`}
-                                      animated={true}
-                                    />
-                                  </Box>
-                                  {answerToDisplay(questionContent)}
-                                </Box>
-                              );
-                            }
-                          )}
-
-                          {/* Validate button */}
-                          <Box
-                            width={"100%"}
-                            sx={{
-                              flex: 1,
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                            }}
+                          <CustomButton
+                            width={"15%"}
+                            height={"100%"}
+                            backgroundColor={colors.buttonLight}
+                            hoverColor={colors.buttonLightHover}
+                            clickMethod={nextPage}
+                            textColor={colors.titleBackLight}
                           >
-                            <Button
-                              sx={{
-                                width: "15%",
-                                backgroundColor: colors.buttonLight,
-                                "&:hover": {
-                                  backgroundColor: colors.buttonLightHover,
-                                },
-                              }}
-                              size="lg"
-                              onClick={() => nextPage()}
-                            >
-                              Valider
-                            </Button>
-                          </Box>
-                          {openFeedbackModal && modalFeedback()}
-                          {openEndModal && endOfAct()}
-                          {openScaleModal && scaleModal()}
+                            Valider
+                          </CustomButton>
                         </Box>
+                        {openFeedbackModal && modalFeedback()}
+                        {openEndModal && endOfAct()}
+                        {openScaleModal && scaleModal()}
+                      </Box>
 
-                        {/* Decoration */}
-                        {/* <Box position={"absolute"} top={0} left={0}>
+                      {/* Decoration */}
+                      {/* <Box position={"absolute"} top={0} left={0}>
                             <img
                               src={decorationImg}
                               height={domConfig.height * 0.15}
@@ -1371,26 +1396,31 @@ const Game = () => {
                             />
                           </Box> */}
 
-                        <Box position={"absolute"} bottom={-4} right={0}>
-                          <img
-                            src={decorationImg}
-                            height={"15%"}
-                            width={"10%"}
-                          />
-                        </Box>
-                      </Box>
-                    ) : (
                       <Box
-                        height={"100%"}
-                        width={"100%"}
-                        display={"flex"}
-                        alignItems={"center"}
-                        justifyContent={"center"}
+                        position={"absolute"}
+                        bottom={0}
+                        left={"90%"}
+                        width={"10%"}
+                        height={"15%"}
                       >
-                        <CircularProgress variant="soft" color="success" />
+                        <img
+                          src={decorationImg}
+                          height={"100%"}
+                          width={"100%"}
+                        />
                       </Box>
-                    )
-                  }
+                    </Box>
+                  ) : (
+                    <Box
+                      height={"100%"}
+                      width={"100%"}
+                      display={"flex"}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                    >
+                      <CircularProgress variant="soft" color="success" />
+                    </Box>
+                  )}
                 </Box>
               </>
             ) : (

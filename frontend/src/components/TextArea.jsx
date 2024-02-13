@@ -1,11 +1,9 @@
 /* eslint-disable react/prop-types */
 import { Box } from "@mui/joy";
-import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../utils/constants.js";
 import { textAreaStyle } from "../utils/cssReact.js";
 
 const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
-  const domConfig = useSelector((state) => state.dom);
   const newTextareaValue = new Map(textareaValue);
   //Accept just letters
   const handleKeyDown = (e) => {
@@ -24,8 +22,8 @@ const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
 
   return (
     <Box
-      width={parseInt(domConfig.width * questionContent?.textArea?.width)}
-      height={parseInt(domConfig.height * questionContent?.textArea?.height)}
+      width={`${questionContent?.textArea?.width * 100}%`}
+      height={`${questionContent?.textArea?.height * 100}%`}
       sx={{
         backgroundImage: `url(${PICTURES_DIR}/${questionContent?.textArea?.img})`,
         backgroundSize: "100% 100%",

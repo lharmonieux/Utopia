@@ -22,14 +22,13 @@ import { createUserError } from "../../utils/redux/userSlice";
 const Summary = () => {
   const stateActs = useSelector((state) => state.act);
   const stateUser = useSelector((state) => state.user);
-  const domConfig = useSelector((state) => state.dom);
   const authState = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [openModalFeelings, setOpenModalFeelings] = useState(false);
   const [feelingsAnswer, setFeelingsAnswer] = useState(new Map());
 
-  //Variables
+  //Questions for the user when he will finish all the act's game
   let questions = [
     "Qu'est-ce que cette aventure me révèle sur moi ?",
     "Où me suis-je senti le plus à l'aise ? Moins à l'aise ?",
@@ -130,8 +129,8 @@ const Summary = () => {
       >
         <ModalDialog
           sx={{
-            width: parseInt(domConfig.width),
-            height: parseInt(domConfig.height * 0.8),
+            width: "100%",
+            height: "100%",
             position: "relative",
             padding: 0,
           }}
@@ -264,6 +263,7 @@ const Summary = () => {
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
+          position={"relative"}
           sx={{
             backgroundImage: `url(${PICTURES_DIR}/sommaire_bg.jpg)`,
             backgroundSize: "100% 100%",
@@ -286,10 +286,17 @@ const Summary = () => {
                 break;
             }
             return (
-              <Stack key={act._id} spacing={2} direction={"row"}>
+              <Stack
+                key={act._id}
+                spacing={2}
+                direction={"row"}
+                alignItems={"center"}
+                justifyContent={"center"}
+                width={"100%"}
+              >
                 <Box
-                  width={parseInt(domConfig.width * 0.6)}
-                  height={parseInt(domConfig.height * 0.1)}
+                  width={"60%"}
+                  height={"10vh"}
                   display={"flex"}
                   alignItems={"center"}
                   sx={{
@@ -335,6 +342,51 @@ const Summary = () => {
               </Stack>
             );
           })}
+
+          {/* logo */}
+          <Box
+            top={"-4%"}
+            left={"15%"}
+            position={"absolute"}
+            width={"45%"}
+            height={"30%"}
+          >
+            <img
+              src={`${PICTURES_DIR}/Logo - couleurs + blanc.svg`}
+              width={"100%"}
+              height={"100%"}
+            />
+          </Box>
+
+          {/* decoration  */}
+          <Box
+            position={"absolute"}
+            top={"-1.5%"}
+            left={0}
+            width={"15%"}
+            height={"20%"}
+          >
+            <img
+              src={`${PICTURES_DIR}/Déco - Charte triangle.svg`}
+              height={"100%"}
+              width={"100%"}
+              style={{ transform: "rotate(180deg)" }}
+            />
+          </Box>
+
+          <Box
+            position={"absolute"}
+            bottom={0}
+            left={"85%"}
+            width={"15%"}
+            height={"30%"}
+          >
+            <img
+              src={`${PICTURES_DIR}/Déco - Charte triangle.svg`}
+              height={"100%"}
+              width={"100%"}
+            />
+          </Box>
         </Stack>
       ) : (
         <Box
@@ -347,34 +399,6 @@ const Summary = () => {
           <CircularProgress variant="outlined" />
         </Box>
       )}
-
-      {/* logo */}
-      <Box top={"0%"} left={"15%"} position={"absolute"}>
-        <img
-          src={`${PICTURES_DIR}/Logo - couleurs + blanc.svg`}
-          width={domConfig.width * 0.45}
-          height={domConfig.height * 0.3}
-        />
-      </Box>
-
-      {/* decoration  */}
-      <Box position={"absolute"} top={0} left={0}>
-        <img
-          src={`${PICTURES_DIR}/Déco - Charte triangle.svg`}
-          height={domConfig.height * 0.2}
-          width={domConfig.width * 0.15}
-          style={{ transform: "rotate(180deg)" }}
-        />
-      </Box>
-
-      <Box position={"absolute"} bottom={-4} right={0}>
-        <img
-          src={`${PICTURES_DIR}/Déco - Charte triangle.svg`}
-          height={domConfig.height * 0.3}
-          width={domConfig.width * 0.15}
-        />
-      </Box>
-
       {openModalFeelings && modalFeelings()}
     </>
   );

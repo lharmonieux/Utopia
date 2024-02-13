@@ -17,7 +17,6 @@ const Characters = ({
   const stateCharacters = useSelector((state) => state.character);
   const stateUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const domConfig = useSelector((state) => state.dom);
 
   const handleSelectedCharacter = (selectedCharacter) => {
     //If selected again
@@ -35,11 +34,9 @@ const Characters = ({
     );
   };
 
-  console.log(stateCharacters.characters);
-
   return (
     <Box
-      height={`75%`}
+      height={`${(0.9 - questionContent?.backgroundImg?.height) * 100}%`}
       width={"100%"}
       // sx={{ overflow: "hidden" }}
     >
@@ -74,8 +71,8 @@ const Characters = ({
                     flex: "none",
                     scrollSnapAlign: "start",
                     backgroundImage: `url(${PICTURES_DIR}/${character.img})`,
-                    backgroundSize: "cover",
-                    cursor: "pointer"
+                    backgroundSize: "100% 100%",
+                    cursor: "pointer",
                   },
                   selectionEffect(character),
                 ]}
@@ -83,7 +80,7 @@ const Characters = ({
                 {/* Character's name */}
                 <Box
                   position="absolute"
-                  right={5}
+                  right={"3%"}
                   top={"34%"}
                   width={"70%"}
                   height={"13%"}
@@ -103,7 +100,7 @@ const Characters = ({
                 </Box>
 
                 {/* Character caracteristics title*/}
-                <Box position={"absolute"} top={"49%"} width={"85%"}>
+                <Box position={"absolute"} top={"50%"} width={"90%"}>
                   <Typography
                     textAlign={"center"}
                     level={"h4"}
@@ -115,8 +112,21 @@ const Characters = ({
                 </Box>
 
                 {/* Character's caracteristics content */}
-                <Box position={"absolute"} top={"55%"} width={"85%"}>
-                  <Typography level={"body-sm"} textColor={"white"} padding={2}>
+                <Box
+                  position={"absolute"}
+                  top={"54%"}
+                  width={"90%"}
+                  height={"50%"}
+                  display={"flex"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                >
+                  <Typography
+                    level={"body-sm"}
+                    textAlign={"center"}
+                    textColor={"white"}
+                    padding={2}
+                  >
                     {character.caracteristic}
                   </Typography>
                 </Box>
