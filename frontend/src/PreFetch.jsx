@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Box, CircularProgress, CssVarsProvider, IconButton } from "@mui/joy";
 import GlobalContainer from "./components/GlobalContainer.jsx";
-import { setSizes } from "./utils/redux/DOMSlice.js";
 import { typographyTheme } from "./utils/themeJoy.js";
 import MenuDrawer from "./components/Menu.jsx";
 import { AiOutlineMenuFold } from "react-icons/ai";
@@ -37,9 +36,6 @@ const PreFetch = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [widthMainContent, setWidthMainContent] = useState(0);
-  const [heightMainContent, setHeightMainContent] = useState(0);
-  const [mainContentDOM, setMainContentDOM] = useState();
   const [showDrawer, setShowDrawer] = useState(false);
   //Getting datas from api
 
