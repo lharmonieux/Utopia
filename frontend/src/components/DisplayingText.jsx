@@ -14,6 +14,7 @@ const DisplayingText = ({
   marginTop,
   fontWeight,
   backgroundText,
+  style,
   animated,
 }) => {
   const stateUser = useSelector((state) => state.user);
@@ -35,6 +36,7 @@ const DisplayingText = ({
       marginTop={marginTop}
       sx={{
         backgroundColor: !animated && backgroundText,
+        ...style
       }}
     >
       {animated ? (

@@ -47,6 +47,9 @@ const ScaleProposition = ({
               fontWeight={400}
               textColor={answer.content.textColor}
               textAlign={"center"}
+              sx={{"@media screen and (min-width: 1920px)": {
+                fontSize: "1.2em",
+              }}}
             >
               {answer.content.text.text}
             </Typography>

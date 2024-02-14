@@ -11,6 +11,7 @@ const CustomButton = ({
   textColor,
   level,
   style,
+  disabled,
   children,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -35,6 +36,7 @@ const CustomButton = ({
       onClick={clickMethod}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      disabled={disabled}
     >
       <Typography
         textColor={textColor || "black"}

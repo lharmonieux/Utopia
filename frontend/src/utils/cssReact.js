@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
 export const textAreaStyle = {
-  "@media (minWidth: 1280px) and (maxWidth: 1920px)": {
-    padding: 3,
-  },
+  fontSize: 15,
+  padding: 3,
   height: "100%",
   width: "100%",
   border: "none",
