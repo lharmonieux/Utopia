@@ -164,14 +164,6 @@ const Propositions = ({
               type="number"
               value={percentAnswers.get(answer.content.text.text) || 0}
               onChange={(e) => handlePercentsValue(e, answer)}
-              onKeyDown={(e) => {
-                console.log(e);
-                if (e.key === "Backspace" && e.target.value == "3") {
-                  console.log("here");
-                  e.preventDefault();
-                  handlePercentsValue({ target: { value: 0 } }, answer);
-                }
-              }}
               key={`input_${answer._id}`}
               style={{
                 border: "none",
@@ -180,6 +172,8 @@ const Propositions = ({
                 textAlign: "right",
                 width: "90%",
                 height: "100%",
+                fontSize: window.innerWidth >= 1920 ? "1.1em" : "1em",
+
               }}
             />
             <CustomButton
@@ -378,6 +372,10 @@ const Propositions = ({
                       stateActs?.currentQuestion?.visual?.textAnswerLevel ||
                       "title-sm"
                     }
+                    style={{"@media screen and (min-width: 1920px)": {
+                      fontSize: "1.2em",
+                      marginTop: `${answer.content.text.position?.marginTop + 5}%`
+                    }}}
                   />
                 )}
 
@@ -389,6 +387,9 @@ const Propositions = ({
                     textColor={colors.titleBackLight}
                     textAlign={"center"}
                     padding={4}
+                    style={{"@media screen and (min-width: 1920px)": {
+                      padding: 7
+                    }}}
                   />
                 )}
               </Box>
@@ -414,13 +415,11 @@ const Propositions = ({
                   top={`${element.position.top}%`}
                   left={`${element.position.left}%`}
                   display={"flex"}
-                  // justifyContent={"center"}
                   alignItems={"center"}
                   sx={{
                     backgroundImage: `url(${PICTURES_DIR}/${img})`,
                     backgroundSize: "100% 100%",
                     borderRadius: isVignette ? 30 : 0,
-                    // opacity: 0.2,
                   }}
                 >
                   <Typography
@@ -434,6 +433,9 @@ const Propositions = ({
                       padding={5}
                       sentence={element.text}
                       animated={false}
+                      style={{"@media screen and (min-width: 1920px)": {
+                        fontSize: "1.3em",
+                      }}}
                     />
                   </Typography>{" "}
                 </Box>

@@ -245,6 +245,11 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                             textColor={colors.titleBackLight}
                             fontWeight={400}
                             textAlign={"center"}
+                            sx={{
+                              "@media screen and (min-width: 1920px)": {
+                                fontSize: "1.2em",
+                              }
+                            }}
                           >
                             {town?.name}
                           </Typography>
@@ -262,6 +267,12 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                             paddingRight={2}
                             paddingTop={1}
                             textAlign={"center"}
+                            sx={{
+                              "@media screen and (min-width: 1920px)": {
+                                fontSize: "1em",
+                                padding: 5
+                              }
+                            }}
                           >
                             {town?.description}
                           </Typography>

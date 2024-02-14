@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   CircularProgress,
   Modal,
   ModalClose,
@@ -166,6 +165,12 @@ const Summary = () => {
             position={"relative"}
             zIndex={1}
             useFlexGap
+            sx={{
+              "@media screen and (min-width: 1920px)": {
+                width: "80%",
+                height: "90%",
+              },
+            }}
           >
             {/* Bravo Box */}
             <Box
@@ -177,7 +182,16 @@ const Summary = () => {
               alignItems={"center"}
               zIndex={1}
             >
-              <Typography level="h3" fontWeight={600} textColor={"white"}>
+              <Typography
+                level="h3"
+                fontWeight={600}
+                textColor={"white"}
+                sx={{
+                  "@media screen and (min-width: 1920px)": {
+                    fontSize: "1.8em",
+                  },
+                }}
+              >
                 BRAVO,
               </Typography>
               <Typography
@@ -185,6 +199,11 @@ const Summary = () => {
                 fontWeight={400}
                 textColor={"white"}
                 textAlign={"center"}
+                sx={{
+                  "@media screen and (min-width: 1920px)": {
+                    fontSize: "1.2em",
+                  },
+                }}
               >
                 {"vous venez de vivre l'aventure Exploria."} <br />{" "}
                 {"Alors, qu'en retenez-vous ?"}
@@ -210,6 +229,11 @@ const Summary = () => {
                   fontWeight={500}
                   paddingLeft={"10%"}
                   paddingRight={"10%"}
+                  sx={{
+                    "@media screen and (min-width: 1920px)": {
+                      fontSize: "1.1em",
+                    },
+                  }}
                 >
                   {question}
                 </Typography>
@@ -322,6 +346,12 @@ const Summary = () => {
                     textColor={"white"}
                     fontWeight={400}
                     marginLeft={"8%"}
+                    sx={{
+                      "@media screen and (min-width: 1920px)": {
+                        fontSize: "2em",
+                        marginLeft: "5%",
+                      },
+                    }}
                   >
                     {`ACTE ${act.chapter}`}
                   </Typography>
@@ -335,6 +365,12 @@ const Summary = () => {
                     }
                     fontWeight={400}
                     marginLeft={"15%"}
+                    sx={{
+                      "@media screen and (min-width: 1920px)": {
+                        fontSize: "2em",
+                        marginLeft: "8%",
+                      },
+                    }}
                   >
                     {`${act.name}`}
                   </Typography>
@@ -342,15 +378,19 @@ const Summary = () => {
 
                 {/* Play button */}
                 {act.status == "IN PROGRESS" && (
-                  <Button
-                    onClick={() => navigate("/game")}
-                    sx={{
-                      bgcolor: colors.buttonLight,
-                      "&:hover": { bgcolor: colors.buttonLightHover },
-                    }}
-                  >
-                    {"Continuer l'aventure"}
-                  </Button>
+                  <Box height={"5vh"} width={"18%"}>
+                    <CustomButton
+                      width={"100%"}
+                      height={"100%"}
+                      clickMethod={() => navigate("/game")}
+                      backgroundColor={colors.buttonLight}
+                      hoverColor={colors.buttonLightHover}
+                    >
+                      {act.chapter == 1
+                        ? "Commencer à jouer"
+                        : "Continuer l'aventure"}
+                    </CustomButton>
+                  </Box>
                 )}
               </Stack>
             );

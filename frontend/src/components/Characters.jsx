@@ -93,7 +93,12 @@ const Characters = ({
                     textAlign="center"
                     fontWeight={400}
                     textColor={"white"}
-                    sx={{ lineHeight: 1 }}
+                    sx={{
+                      lineHeight: 1,
+                      "@media screen and (min-width: 1920px)": {
+                        fontSize: "1.5em",
+                      },
+                    }}
                   >
                     {character.name}
                   </Typography>
@@ -106,6 +111,9 @@ const Characters = ({
                     level={"h4"}
                     textColor={colors.titleBackDark}
                     fontWeight={400}
+                    sx={{"@media screen and (min-width: 1920px)": {
+                      fontSize: "1.4em",
+                    }}}
                   >
                     Caractéristiques
                   </Typography>
@@ -119,13 +127,17 @@ const Characters = ({
                   height={"50%"}
                   display={"flex"}
                   justifyContent={"center"}
-                  alignItems={"center"}
+                  alignItems={"start"}
                 >
                   <Typography
                     level={"body-sm"}
                     textAlign={"center"}
                     textColor={"white"}
                     padding={2}
+                    sx={{"@media screen and (min-width: 1920px)": {
+                      fontSize: "1.1em",
+                      padding: 5,
+                    }}}
                   >
                     {character.caracteristic}
                   </Typography>

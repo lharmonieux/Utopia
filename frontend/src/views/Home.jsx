@@ -113,7 +113,7 @@ const Home = () => {
               borderRadius: 3,
               padding: 0,
               backgroundImage: `url(${backgroundImg})`,
-              backgroundSize: `cover`,
+              backgroundSize: "100% 100%",
               backgroundRepeat: "no-repeat",
             }}
             className={"animate__animated animate__zoomIn animate__slow"}
@@ -144,15 +144,27 @@ const Home = () => {
                   display={"flex"}
                   flexDirection={"column"}
                   sx={{
-                    "@media (min-width: 1280px) and (max-width: 1920px)": {
+                    marginTop: "15%",
+                    "@media (min-width: 1920px)": {
                       marginTop: "15%",
                     },
+                    
                   }}
                 >
                   <Typography
                     textColor={colors.titleBackDark}
                     level="h2"
                     textAlign={"center"}
+                    sx={{
+                      "@media screen and (min-width: 1920px)": {
+                        fontSize: "2.5em",
+                        padding: "1%"
+                      },
+                      "@media screen and (min-width: 1425px) and (max-width: 1920px)": {
+                        fontSize: "2em",
+                        padding: "1%"
+                      }
+                    }}
                   >
                     Bienvenue cher visiteur !
                   </Typography>
@@ -161,6 +173,12 @@ const Home = () => {
                     textColor={"white"}
                     level="body-sm"
                     textAlign={"center"}
+                    sx={{
+                      "@media screen and (min-width: 1920px)": {
+                        fontSize: "1.2em",
+                        padding: "2%"
+                      }
+                    }}
                   >
                     {`Vous allez être plongés dans une aventure extraordinaire, dans
                 laquelle vous incarnerez un héros en proie à des choix décisifs
@@ -177,6 +195,12 @@ const Home = () => {
                     textColor={colors.titleBackDark}
                     level="h3"
                     textAlign={"center"}
+                    sx={{
+                      "@media screen and (min-width: 1920px)": {
+                        fontSize: "1.7em",
+                        padding: "2%"
+                      }
+                    }}
                   >
                     Vous êtes prêts ?
                   </Typography>
@@ -226,7 +250,6 @@ const Home = () => {
                           type="email"
                           style={{
                             placeholder: "Email...",
-                            fontSize: 15,
                             ...textAreaStyle,
                           }}
                         />

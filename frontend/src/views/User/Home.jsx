@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, Stack, Typography } from "@mui/joy";
+import { Box, Button, Typography } from "@mui/joy";
 import { TypeAnimation } from "react-type-animation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
 import "animate.css";
+import CustomButton from "../../components/CustomButton";
+import { colors } from "../../utils/colors";
 
 const Home = () => {
   const stateActs = useSelector((state) => state.act);
@@ -38,6 +40,11 @@ const Home = () => {
           level="title-lg"
           fontWeight={500}
           textAlign={"center"}
+          sx={{
+            "@media screen and (min-width: 1920px)": {
+              fontSize: "1.8em",
+            },
+          }}
         >
           <TypeAnimation
             sequence={[
@@ -59,19 +66,43 @@ const Home = () => {
       </Box>
 
       {/* navigation */}
-      <Stack spacing={5} direction={"row"}>
-        <Button
-          disabled={stateActs.currentAct ? false : true}
-          onClick={() => navigate("/game")}
-        >
-          {stateActs.currentAct?.chapter > 1
-            ? "Continuer l'aventure"
-            : "Commencer à jouer"}
-        </Button>
-        <Button onClick={() => navigate("/summary")}>
-          {"Voir le sommaire"}
-        </Button>
-      </Stack>
+      <Box
+        width={"40%"}
+        height={"10%"}
+        display={"flex"}
+        justifyContent={"space-evenly"}
+        alignItems={"center"}
+      >
+        {/* left button  */}
+        <Box width={"40%"} height={"100%"}>
+          <CustomButton
+            width={"100%"}
+            height={"100%"}
+            clickMethod={() => navigate("/game")}
+            disabled={stateActs.currentAct ? false : true}
+            backgroundColor={colors.buttonLight}
+            hoverColor={colors.buttonLightHover}
+          >
+            {stateActs.currentAct?.chapter > 1
+              ? "Continuer l'aventure"
+              : "Commencer à jouer"}
+          </CustomButton>
+        </Box>
+
+        {/* right button  */}
+        <Box width={"30%"} height={"100%"}>
+          <CustomButton
+            width={"100%"}
+            height={"100%"}
+            clickMethod={() => navigate("/summary")}
+            disabled={stateActs.currentAct ? false : true}
+            backgroundColor={colors.buttonLight}
+            hoverColor={colors.buttonLightHover}
+          >
+            {"Voir le sommaire"}
+          </CustomButton>
+        </Box>
+      </Box>
     </Box>
   );
 };

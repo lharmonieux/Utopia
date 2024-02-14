@@ -517,6 +517,12 @@ const Game = () => {
                   level="title-md"
                   textColor={"black"}
                   animated={true}
+                  style={{
+                    "@media screen and (min-width: 1920px)": {
+                      fontSize: "1.4em",
+                      padding: 5
+                    }
+                  }}
                 />
               </Typography>
 
@@ -702,6 +708,11 @@ const Game = () => {
                   level="h3"
                   textColor={"white"}
                   fontWeight={400}
+                  sx={{
+                    "@media screen and (min-width: 1920px)": {
+                      fontSize: "2em",
+                    }
+                  }}
                 >{`Résolution de l'ACTE ${stateActs.currentAct?.chapter}`}</Typography>
               </Box>
 
@@ -727,6 +738,11 @@ const Game = () => {
                       sentence={resolutionText + rankUserText}
                       animated={true}
                       backgroundText={"rgba(70, 8, 134, 0.7)"}
+                      style={{
+                        "@media screen and (min-width: 1920px)": {
+                          fontSize: "1.54em",
+                        }
+                      }}
                     />
                   </>
                 ) : (
@@ -1113,6 +1129,10 @@ const Game = () => {
               marginTop: "10%",
               marginLeft: "45%",
               color: colors.titleBackLight,
+              "@media screen and (min-width: 1920px)": {
+                fontSize: "1.3em",
+                marginTop: "9%"
+              }
             }}
           >
             Votre devise
@@ -1127,7 +1147,12 @@ const Game = () => {
             justifyContent={"space-evenly"}
             alignItems={"center"}
           >
-            <Typography textAlign={"justify"}>
+            <Typography textAlign={"justify"} sx={{
+              "@media screen and (min-width: 1920px)": {
+                fontSize: "1.15em",
+                padding: 3
+              }
+            }}>
               En se basant sur vos notes, la devise qui vous convient le mieux
               est :{" "}
               <Typography fontWeight={800}>
@@ -1352,6 +1377,11 @@ const Game = () => {
                                     textAlign={"center"}
                                     marginLeft={`${questionContent.marginLeft}%`}
                                     animated={true}
+                                    style={{
+                                      "@media screen and (min-width: 1920px)": {
+                                        fontSize: "1.3em",
+                                      }
+                                    }}
                                   />
                                 </Box>
                                 {answerToDisplay(questionContent)}
