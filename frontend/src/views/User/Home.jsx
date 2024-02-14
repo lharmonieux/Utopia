@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, Typography } from "@mui/joy";
+import { Box, Typography } from "@mui/joy";
 import { TypeAnimation } from "react-type-animation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -95,7 +95,6 @@ const Home = () => {
             width={"100%"}
             height={"100%"}
             clickMethod={() => navigate("/summary")}
-            disabled={stateActs.currentAct ? false : true}
             backgroundColor={colors.buttonLight}
             hoverColor={colors.buttonLightHover}
           >
