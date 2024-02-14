@@ -36,7 +36,7 @@ const Characters = ({
 
   return (
     <Box
-      height={`${(0.9 - questionContent?.backgroundImg?.height) * 100}%`}
+      height={`${(0.95 - questionContent?.backgroundImg?.height) * 100}%`}
       width={"100%"}
       // sx={{ overflow: "hidden" }}
     >

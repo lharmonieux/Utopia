@@ -18,6 +18,7 @@ import "animate.css";
 import { IoInformationCircle } from "react-icons/io5";
 import apiRequest from "../../api/requestAPI";
 import { createUserError } from "../../utils/redux/userSlice";
+import CustomButton from "../../components/CustomButton";
 
 const Summary = () => {
   const stateActs = useSelector((state) => state.act);
@@ -129,14 +130,16 @@ const Summary = () => {
       >
         <ModalDialog
           sx={{
-            width: "100%",
-            height: "100%",
+            width: "90%",
+            height: "90%",
             position: "relative",
+            display: "flex",
+            alignItems: "center",
             padding: 0,
           }}
           className="animate__animated animate__zoomIn"
         >
-          <ModalClose variant="outlined" />
+          <ModalClose variant="outlined" sx={{ zIndex: 1000 }} />
 
           {/* Background */}
           <video
@@ -145,7 +148,7 @@ const Summary = () => {
             loop
             width={"100%"}
             height={"100%"}
-            style={{ zIndex: -1000, position: "fixed" }}
+            style={{ position: "fixed" }}
           >
             <source
               src={`${PICTURES_DIR}/background_videos/vecteezy_exo-planet-with-rings-animation-4k_25272383_367.mp4`}
@@ -154,11 +157,11 @@ const Summary = () => {
           </video>
 
           <Stack
-            paddingTop={"5%"}
+            paddingTop={"4%"}
             spacing={2}
             direction={"column"}
-            height={"90%"}
-            width={"100%"}
+            height={"85%"}
+            width={"90%"}
             flexWrap={"wrap"}
             position={"relative"}
             zIndex={1}
@@ -232,7 +235,7 @@ const Summary = () => {
                   />
                   {feelingsAnswer.get(question).noAnswer && (
                     <Typography
-                      marginTop={"-5%"}
+                      marginTop={"-2%"}
                       level="body-sm"
                       fontWeight={600}
                       textColor={"red"}
@@ -247,7 +250,17 @@ const Summary = () => {
           </Stack>
 
           {/* Submit Button */}
-          <Button onClick={() => submitFeelings()}>Valider</Button>
+          <CustomButton
+            width={"15%"}
+            height={"15%"}
+            clickMethod={submitFeelings}
+            backgroundColor={colors.buttonLight}
+            hoverColor={colors.buttonLightHover}
+            textColor={colors.titleBackLight}
+            style={{ zIndex: 1000 }}
+          >
+            Soumettre
+          </CustomButton>
         </ModalDialog>
       </Modal>
     );

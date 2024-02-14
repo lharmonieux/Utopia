@@ -726,7 +726,7 @@ const Game = () => {
                       }
                       sentence={resolutionText + rankUserText}
                       animated={true}
-                      backgroundText={"rgba(70, 8, 134, 0.4)"}
+                      backgroundText={"rgba(70, 8, 134, 0.7)"}
                     />
                   </>
                 ) : (
@@ -922,18 +922,18 @@ const Game = () => {
         const valuesIterator = textareaValue.values();
         for (let i = 0; i < textareaValue.size; i++) {
           tmpValue = valuesIterator.next().value;
-          if (!tmpValue) {
+          if (!tmpValue.answerText) {
             setShowAlertNoAnswer(true);
             return;
           }
         }
 
-        // Store townName
+        // Store townName and partyName
         for (let content of stateActs.currentQuestion.content) {
           if (content.answerType.name == "texte_ville")
-            dispatch(storeTownName(textareaValue.get(content._id)));
+            dispatch(storeTownName(textareaValue.get(content.text).answerText));
           else if (content.answerType.name == "texte_fete")
-            dispatch(setPartyName(textareaValue.get(content._id)));
+            dispatch(setPartyName(textareaValue.get(content.text).answerText));
           else continue;
         }
       }
@@ -1338,7 +1338,6 @@ const Game = () => {
                                   zIndex={1}
                                   sx={{
                                     // bgcolor: "red",
-                                    marginBottom: 1,
                                     backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg.img})`,
                                     backgroundSize: "100% 100%",
                                   }}
@@ -1349,7 +1348,7 @@ const Game = () => {
                                       questionContent.textLevel || "title-md"
                                     }
                                     textColor={questionContent.textColor}
-                                    padding={2}
+                                    padding={5}
                                     textAlign={"center"}
                                     marginLeft={`${questionContent.marginLeft}%`}
                                     animated={true}

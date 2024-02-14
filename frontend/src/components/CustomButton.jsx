@@ -9,6 +9,8 @@ const CustomButton = ({
   height,
   clickMethod,
   textColor,
+  level,
+  style,
   children,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -28,6 +30,7 @@ const CustomButton = ({
         width: width,
         height: height,
         border: "none",
+        ...style
       }}
       onClick={clickMethod}
       onMouseEnter={handleMouseEnter}
@@ -36,7 +39,7 @@ const CustomButton = ({
       <Typography
         textColor={textColor || "black"}
         fontWeight={600}
-        level="title-lg"
+        level={level || "title-lg"}
       >
         {children}
       </Typography>

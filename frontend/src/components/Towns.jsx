@@ -137,6 +137,7 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                     sentence={answer?.content?.text?.text}
                     textColor={answer?.content?.textColor}
                     textAlign={"center"}
+                    padding={2}
                     fontWeight={600}
                   />
                 </Box>
