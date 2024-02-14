@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Box, CircularProgress, Stack, Typography } from "@mui/joy";
 import { useSelector } from "react-redux";
-import { backgroundSize } from "../utils/backgroundSizeProvider";
 import { PICTURES_DIR } from "../utils/constants";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import { AiFillLike, AiFillDislike } from "react-icons/ai";
@@ -11,6 +10,8 @@ import { selectionEffect } from "../utils/cssReact";
 import { colors } from "../utils/colors";
 import { TbArrowBigDownFilled, TbArrowBigUpFilled } from "react-icons/tb";
 import ButtonNavScroll from "./ButtonNavScroll";
+import CustomButton from "./CustomButton";
+import { GrPowerReset } from "react-icons/gr";
 
 const Propositions = ({
   handleSelectedProposition,
@@ -52,11 +53,12 @@ const Propositions = ({
       maxPercentGiven += newPercentAnswers.get(answer.content.text.text);
     }
 
-    const answerToUpdate = restAnswers.reduce((acc, curr) => {
-      if (newPercentAnswers.get(curr.content.text.text) > newPercentAnswers.get(acc.content.text.text))
-        return curr;
-      else return acc;
-    }, restAnswers[0]);
+    //Sort all values that exist in order
+    restAnswers.sort(
+      (a, b) =>
+        newPercentAnswers.get(b.content.text.text) -
+        newPercentAnswers.get(a.content.text.text)
+    );
 
     //Control if the new value can pass
     const maxPercentWithAnswer = maxPercentGiven + parseInt(e.target.value);
@@ -66,26 +68,55 @@ const Propositions = ({
         newPercentAnswers.get(selectedAnswer.content.text.text)
       );
     else if (maxPercentWithAnswer > maxPercent) {
-      newPercentAnswers.set(selectedAnswer.content.text.text, parseInt(e.target.value));
-
       newPercentAnswers.set(
-        answerToUpdate.content.text.text,
-        newPercentAnswers.get(answerToUpdate.content.text.text) -
-          (maxPercentWithAnswer - maxPercent)
+        selectedAnswer.content.text.text,
+        parseInt(e.target.value)
       );
-    } else if (newPercentAnswers.get(answerToUpdate.content.text.text) == 0) {
-      newPercentAnswers.set(selectedAnswer.content.text.text, parseInt(e.target.value));
+
+      //Distribution off values for avoid negatives possibilities
+      const valToDeduce = maxPercentWithAnswer - maxPercent;
+      let firstNewPercent = 0;
+      let secondNewPercent = 0;
+      if (
+        newPercentAnswers.get(restAnswers[0].content.text.text) < valToDeduce
+      ) {
+        secondNewPercent =
+          newPercentAnswers.get(restAnswers[1].content.text.text) -
+          parseInt(
+            valToDeduce -
+              newPercentAnswers.get(restAnswers[0].content.text.text)
+          );
+      } else {
+        firstNewPercent = parseInt(
+          newPercentAnswers.get(restAnswers[0].content.text.text) - valToDeduce
+        );
+      }
+
+      newPercentAnswers.set(restAnswers[0].content.text.text, firstNewPercent);
+      secondNewPercent &&
+        newPercentAnswers.set(
+          restAnswers[1].content.text.text,
+          secondNewPercent
+        );
+    } else if (newPercentAnswers.get(restAnswers[0].content.text.text) == 0) {
+      newPercentAnswers.set(
+        selectedAnswer.content.text.text,
+        parseInt(e.target.value)
+      );
 
       newPercentAnswers.set(
-        answerToUpdate.content.text.text,
+        restAnswers[0].content.text.text,
         maxPercent - maxPercentWithAnswer
       );
     } else if (maxPercentWithAnswer < maxPercent) {
-      newPercentAnswers.set(selectedAnswer.content.text.text, parseInt(e.target.value));
+      newPercentAnswers.set(
+        selectedAnswer.content.text.text,
+        parseInt(e.target.value)
+      );
 
       newPercentAnswers.set(
-        answerToUpdate.content.text.text,
-        newPercentAnswers.get(answerToUpdate.content.text.text) +
+        restAnswers[0].content.text.text,
+        newPercentAnswers.get(restAnswers[0].content.text.text) +
           (maxPercent - maxPercentWithAnswer)
       );
     }
@@ -93,7 +124,8 @@ const Propositions = ({
     //Define final answer
     const finalAnswer = stateActs.currentQuestion.answers.reduce(
       (acc, curr) =>
-        newPercentAnswers.get(curr.content.text.text) > newPercentAnswers.get(acc.content.text.text)
+        newPercentAnswers.get(curr.content.text.text) >
+        newPercentAnswers.get(acc.content.text.text)
           ? curr
           : acc,
       stateActs.currentQuestion.answers[0]
@@ -121,27 +153,80 @@ const Propositions = ({
 
       case "pourcentage":
         return (
-          <input
-            type="number"
-            value={percentAnswers.get(answer.content.text.text)}
-            onChange={(e) => handlePercentsValue(e, answer)}
-            key={`input_${answer._id}`}
-            style={{
-              border: "none",
-              outline: "none",
-              backgroundColor: "transparent",
-              textAlign: "right",
-              width: parseInt(domConfig.width * answer?.choiceImg?.img?.width),
-              height: parseInt(
-                domConfig.height * answer?.choiceImg?.img?.height
-              ),
-            }}
-          />
+          <Box
+            width={"100%"}
+            height={"100%"}
+            display={"flex"}
+            flexDirection={"row"}
+            position={"relative"}
+          >
+            <input
+              type="number"
+              value={percentAnswers.get(answer.content.text.text) || 0}
+              onChange={(e) => handlePercentsValue(e, answer)}
+              onKeyDown={(e) => {
+                console.log(e);
+                if (e.key === "Backspace" && e.target.value == "3") {
+                  console.log("here");
+                  e.preventDefault();
+                  handlePercentsValue({ target: { value: 0 } }, answer);
+                }
+              }}
+              key={`input_${answer._id}`}
+              style={{
+                border: "none",
+                outline: "none",
+                backgroundColor: "transparent",
+                textAlign: "right",
+                width: "90%",
+                height: "100%",
+              }}
+            />
+            <CustomButton
+              height={"50%"}
+              width={"40%"}
+              level={"title-sm"}
+              style={{
+                marginLeft: "110%",
+                marginTop: "20%",
+                position: "absolute",
+              }}
+              clickMethod={() =>
+                handlePercentsValue({ target: { value: 0 } }, answer)
+              }
+            >
+              <GrPowerReset />
+            </CustomButton>
+          </Box>
         );
 
       case "reponse_double":
-        if (answer.selected) return <AiFillLike color="yellow" size={40} />;
-        else return <AiFillDislike color="yellow" size={40} />;
+        if (answer.selected)
+          return (
+            <Box
+              width={"100%"}
+              height={"100%"}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              marginLeft={"25%"}
+            >
+              <AiFillLike color="yellow" size={30} />
+            </Box>
+          );
+        else
+          return (
+            <Box
+              width={"100%"}
+              height={"100%"}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              marginLeft={"25%"}
+            >
+              <AiFillDislike color="yellow" size={30} />
+            </Box>
+          );
 
       default:
         break;
@@ -154,17 +239,18 @@ const Propositions = ({
       <Box
         id="proposition-container"
         width={
-          stateActs.currentQuestion?.visual?.boxAnswersImg &&
-          parseInt(widthBoxAnswer * domConfig.width)
+          stateActs.currentQuestion?.visual?.boxAnswersImg
+            ? parseInt(heightBoxAnswer * domConfig.width)
+            : stateActs.currentQuestion?.visual?.directionAnswer == "row"
+            ? "100%"
+            : `${(0.9 - questionContent?.backgroundImg?.width) * 100}%`
         }
         height={
           stateActs.currentQuestion?.visual?.boxAnswersImg
             ? parseInt(heightBoxAnswer * domConfig.height)
             : stateActs.currentQuestion?.visual?.directionAnswer == "row"
-            ? parseInt(
-                domConfig.height * (1 - questionContent?.backgroundImg?.height)
-              )
-            : parseInt(domConfig.height * 0.9)
+            ? `${(1 - questionContent?.backgroundImg?.height) * 100}%`
+            : "90%"
         }
         display={"flex"}
         justifyContent={"center"}
@@ -175,8 +261,9 @@ const Propositions = ({
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        {" "}
         <Stack
+          width={"100%"}
+          height={"100%"}
           display={"flex"}
           justifyContent="space-evenly"
           alignItems={"center"}
@@ -198,25 +285,18 @@ const Propositions = ({
           }
           sx={{
             backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.boxAnswersImg?.img})`,
-            backgroundSize: backgroundSize(
-              domConfig.width * widthBoxAnswer,
-              domConfig.height * heightBoxAnswer
-            ),
-            // overflow: "scroll",
-            // scrollbarWidth: "none",
-            // msOverflowStyle: "none",
-            // "&::-webkit-scrollbar": { display: "none" },
+            backgroundSize: "100% 100%",
           }}
         >
           {stateActs.currentQuestion?.answers.map((answer) => (
             <Box
               key={answer._id}
-              width={parseInt(
-                domConfig.width *
-                  (answer?.content?.img?.width +
-                    (answer?.choiceImg ? answer?.choiceImg?.img?.width : 0))
-              )}
-              height={parseInt(domConfig.height * answer?.content?.img?.height)}
+              width={`${
+                (answer?.content?.img?.width +
+                  (answer?.choiceImg?.img?.width || 0)) *
+                100
+              }%`}
+              height={`${answer?.content?.img?.height * 100}%`}
               display={"flex"}
               flexDirection={
                 answer.choiceImg && answer.choiceImg.align == "left"
@@ -245,23 +325,14 @@ const Propositions = ({
               {/* Box choice visual/area */}
               {answer.choiceImg && (
                 <Box
-                  width={parseInt(
-                    domConfig.width * answer?.choiceImg?.img?.width
-                  )}
-                  height={parseInt(
-                    domConfig.height * answer?.choiceImg?.img?.height
-                  )}
-                  // position={"absolute"}
-                  // left={answer.choiceImg.align == "left" ? 0 : "90%"}
+                  width={`15%`}
+                  height={`60%`}
                   display={"flex"}
                   justifyContent={"center"}
                   alignItems={"center"}
                   sx={{
                     backgroundImage: `url(${PICTURES_DIR}/${answer.choiceImg.img.name})`,
-                    backgroundSize: backgroundSize(
-                      domConfig.width * answer?.choiceImg?.img?.width,
-                      domConfig.height * answer?.choiceImg?.img?.height
-                    ),
+                    backgroundSize: "100% 100%",
                   }}
                 >
                   {contentChoice(answer)}
@@ -269,10 +340,8 @@ const Propositions = ({
               )}
               {/* Answer Box */}
               <Box
-                width={parseInt(domConfig.width * answer?.content?.img?.width)}
-                height={parseInt(
-                  domConfig.height * answer?.content?.img?.height
-                )}
+                width={answer.choiceImg ? `80%` : "100%"}
+                height={`100%`}
                 display={"flex"}
                 justifyContent={"center"}
                 alignItems={"center"}
@@ -290,10 +359,7 @@ const Propositions = ({
                       questionContent.answerType.name != "pourcentage" &&
                       "pointer",
                     backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
-                    backgroundSize: backgroundSize(
-                      domConfig.width * answer?.content?.img?.width,
-                      domConfig.height * answer?.content?.img?.height
-                    ),
+                    backgroundSize: "100% 100%",
                   },
                   selectionEffect(answer),
                 ]}
@@ -303,7 +369,7 @@ const Propositions = ({
                   <DisplayingText
                     marginLeft={`${answer.content.text.position?.marginLeft}%`}
                     marginTop={`${answer.content.text.position?.marginTop}%`}
-                    padding={2}
+                    padding={4}
                     sentence={answer.content.text.text}
                     textColor={answer.content.textColor}
                     fontWeight={400}
@@ -322,6 +388,7 @@ const Propositions = ({
                     level={"title-lg"}
                     textColor={colors.titleBackLight}
                     textAlign={"center"}
+                    padding={4}
                   />
                 )}
               </Box>
@@ -342,8 +409,8 @@ const Propositions = ({
                 <Box
                   key={element._id}
                   position={"absolute"}
-                  width={parseInt(domConfig.width * element.scale.width)}
-                  height={parseInt(domConfig.height * element.scale.height)}
+                  width={`${element.scale.width * 100}%`}
+                  height={`${element.scale.height * 100}%`}
                   top={`${element.position.top}%`}
                   left={`${element.position.left}%`}
                   display={"flex"}
@@ -351,10 +418,7 @@ const Propositions = ({
                   alignItems={"center"}
                   sx={{
                     backgroundImage: `url(${PICTURES_DIR}/${img})`,
-                    backgroundSize: backgroundSize(
-                      domConfig.width * element.scale.width,
-                      domConfig.height * element.scale.height
-                    ),
+                    backgroundSize: "100% 100%",
                     borderRadius: isVignette ? 30 : 0,
                     // opacity: 0.2,
                   }}
@@ -366,7 +430,11 @@ const Propositions = ({
                       color: element?.textColor || "black",
                     }}
                   >
-                    <DisplayingText sentence={element.text} animated={false} />
+                    <DisplayingText
+                      padding={5}
+                      sentence={element.text}
+                      animated={false}
+                    />
                   </Typography>{" "}
                 </Box>
               );

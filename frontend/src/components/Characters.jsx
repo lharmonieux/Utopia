@@ -5,7 +5,6 @@ import "animate.css";
 import { colors } from "../utils/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCharactersSelected } from "../utils/redux/characterSlice";
-import { backgroundSize } from "../utils/backgroundSizeProvider";
 import { PICTURES_DIR } from "../utils/constants";
 import { selectionEffect } from "../utils/cssReact";
 import ButtonNavScroll from "./ButtonNavScroll";
@@ -18,7 +17,6 @@ const Characters = ({
   const stateCharacters = useSelector((state) => state.character);
   const stateUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const domConfig = useSelector((state) => state.dom);
 
   const handleSelectedCharacter = (selectedCharacter) => {
     //If selected again
@@ -38,15 +36,12 @@ const Characters = ({
 
   return (
     <Box
-      height={parseInt(
-        domConfig.height *
-          0.95 *
-          (0.95 - questionContent?.backgroundImg?.height)
-      )}
-      width={domConfig.width}
+      height={`${(0.95 - questionContent?.backgroundImg?.height) * 100}%`}
+      width={"100%"}
       // sx={{ overflow: "hidden" }}
     >
       <Stack
+        height={"100%"}
         id="character-container"
         direction="row"
         spacing={5}
@@ -64,8 +59,8 @@ const Characters = ({
             return (
               <Box
                 key={character._id}
-                height={parseInt(domConfig.height * character.height)}
-                width={parseInt(domConfig.width * character.width)}
+                height={`100%`}
+                width={`${character.width * 100}%`}
                 onClick={() => {
                   handleSelectedCharacter(character);
                 }}
@@ -76,10 +71,7 @@ const Characters = ({
                     flex: "none",
                     scrollSnapAlign: "start",
                     backgroundImage: `url(${PICTURES_DIR}/${character.img})`,
-                    backgroundSize: backgroundSize(
-                      domConfig.width * character.width,
-                      domConfig.height * character.height
-                    ),
+                    backgroundSize: "100% 100%",
                     cursor: "pointer",
                   },
                   selectionEffect(character),
@@ -88,7 +80,7 @@ const Characters = ({
                 {/* Character's name */}
                 <Box
                   position="absolute"
-                  right={5}
+                  right={"3%"}
                   top={"34%"}
                   width={"70%"}
                   height={"13%"}
@@ -108,7 +100,7 @@ const Characters = ({
                 </Box>
 
                 {/* Character caracteristics title*/}
-                <Box position={"absolute"} top={"49%"} width={"85%"}>
+                <Box position={"absolute"} top={"50%"} width={"90%"}>
                   <Typography
                     textAlign={"center"}
                     level={"h4"}
@@ -120,8 +112,21 @@ const Characters = ({
                 </Box>
 
                 {/* Character's caracteristics content */}
-                <Box position={"absolute"} top={"55%"} width={"85%"}>
-                  <Typography level={"body-sm"} textColor={"white"} padding={2}>
+                <Box
+                  position={"absolute"}
+                  top={"54%"}
+                  width={"90%"}
+                  height={"50%"}
+                  display={"flex"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                >
+                  <Typography
+                    level={"body-sm"}
+                    textAlign={"center"}
+                    textColor={"white"}
+                    padding={2}
+                  >
                     {character.caracteristic}
                   </Typography>
                 </Box>

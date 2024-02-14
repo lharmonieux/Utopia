@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, CircularProgress, Stack, Typography } from "@mui/joy";
+import { Box, Button, Stack, Typography } from "@mui/joy";
 import { TypeAnimation } from "react-type-animation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import "animate.css";
 
 const Home = () => {
-  const domConfig = useSelector((state) => state.dom);
   const stateActs = useSelector((state) => state.act);
   const navigate = useNavigate();
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -18,7 +17,7 @@ const Home = () => {
         "/home/snowy-mountain-peak-starry-galaxy-majesty-generative-ai.jpg"
     );
   }, []);
-  return domConfig.width && domConfig.height ? (
+  return (
     <Box
       width={"100%"}
       height={"100%"}
@@ -28,7 +27,7 @@ const Home = () => {
       flexDirection={"column"}
       sx={{
         backgroundImage: `url(${backgroundImg})`,
-        backgroundSize: `${domConfig.width}px ${domConfig.height}px`,
+        backgroundSize: `cover`,
       }}
       className={"animate__animated animate__zoomIn"}
     >
@@ -50,7 +49,11 @@ const Home = () => {
             speed={80}
             repeat={1}
             cursor={false}
-            style={{ whiteSpace: "pre-line" }}
+            style={{
+              whiteSpace: "pre-line",
+              backgroundColor: "rgba(0, 0, 0, 0.6)",
+              borderRadius: 5,
+            }}
           />
         </Typography>
       </Box>
@@ -69,16 +72,6 @@ const Home = () => {
           {"Voir le sommaire"}
         </Button>
       </Stack>
-    </Box>
-  ) : (
-    <Box
-      height={"100%"}
-      width={"100%"}
-      display={"flex"}
-      alignItems={"center"}
-      justifyContent={"center"}
-    >
-      <CircularProgress variant="soft" color="success" />
     </Box>
   );
 };

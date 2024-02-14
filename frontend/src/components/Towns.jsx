@@ -1,25 +1,16 @@
 /* eslint-disable react/prop-types */
 
-import {
-  Box,
-  CircularProgress,
-  CssVarsProvider,
-  Stack,
-  Typography,
-} from "@mui/joy";
-import { typographyTheme } from "../utils/themeJoy";
+import { Box, CircularProgress, Stack, Typography } from "@mui/joy";
 import { colors } from "../utils/colors";
 import "animate.css";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTownSelected } from "../utils/redux/townSlice";
-import { backgroundSize } from "../utils/backgroundSizeProvider";
 import { PICTURES_DIR } from "../utils/constants";
 import DisplayingText from "./DisplayingText";
 import { selectionEffect } from "../utils/cssReact";
 
 const Towns = ({ handleSelectedProposition, questionContent }) => {
   const stateActs = useSelector((state) => state.act);
-  const domConfig = useSelector((state) => state.dom);
   const stateTowns = useSelector((state) => state.town);
   const dispatch = useDispatch();
 
@@ -49,159 +40,154 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
   };
 
   return (
-    <Stack display={"flex"} direction={"column"} alignItems={"center"}>
+    <Box
+      display={"flex"}
+      direction={"column"}
+      alignItems={"center"}
+      justifyContent={"center"}
+      width={"85%"}
+      height={`${(1 - questionContent?.backgroundImg?.height) * 100}%`}
+    >
       {stateActs.currentQuestion ? (
-        <CssVarsProvider theme={typographyTheme}>
+        <Box
+          width={"100%"}
+          height={"100%"}
+          position={"relative"}
+          marginTop={`${stateActs.currentQuestion?.visual?.mapView?.marginTop}%`}
+          sx={{
+            backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.backgroundImg})`,
+            backgroundSize: "100% 100%",
+          }}
+        >
+          {/* Map image  */}
           <Box
-            width={parseInt(domConfig.width * 0.85)}
-            height={parseInt(domConfig.height * 0.8)}
-            position={"relative"}
-            marginTop={`${stateActs.currentQuestion?.visual?.mapView?.marginTop}%`}
-            sx={{
-              backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.backgroundImg})`,
-              backgroundSize: backgroundSize(
-                domConfig.width * 0.85,
-                domConfig.height * 0.8
-              ),
-            }}
+            height={"100%"}
+            width={"100%"}
+            sx={{ position: "absolute", top: "-32%", left: "-6%" }}
           >
-            {/* Map image  */}
-            <Box
-              height={"100%"}
-              width={"100%"}
-              sx={{ position: "absolute", top: "-32%", left: "-6%" }}
-            >
-              <img
-                src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.mapImg}`}
-                height={"140%"}
-                width={"112%"}
-              />
-            </Box>
+            <img
+              src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.mapImg}`}
+              height={"140%"}
+              width={"112%"}
+            />
+          </Box>
 
-            {/* Additionnal content */}
-            {stateActs.currentQuestion.additionalContent.length > 0 &&
-              stateActs.currentQuestion.additionalContent?.map((element) => (
+          {/* Additionnal content */}
+          {stateActs.currentQuestion.additionalContent.length > 0 &&
+            stateActs.currentQuestion.additionalContent?.map((element) => (
+              <Box
+                key={element._id}
+                position={"absolute"}
+                width={`${element.scale.width * 100}%`}
+                height={`${element.scale.height * 100}%`}
+                top={`${element.position.top}%`}
+                left={`${element.position.left}%`}
+                display={"flex"}
+                // justifyContent={"center"}
+                alignItems={"center"}
+                zIndex={2}
+                sx={{
+                  backgroundImage: `url(${PICTURES_DIR}/${element.img})`,
+                  backgroundSize: "100% 100%",
+                }}
+              >
+                <Typography level="title-xs" textAlign={"center"}>
+                  {element.text}
+                </Typography>{" "}
+              </Box>
+            ))}
+
+          {/* Answers box */}
+          {stateActs?.currentQuestion?.visual?.mapView?.hasAnswer && (
+            <Stack
+              width={"100%"}
+              height={"100%"}
+              direction={"column"}
+              spacing={2}
+              zIndex={2}
+              position={"absolute"}
+              left={`${stateActs?.currentQuestion?.answers[0]?.content?.img?.left}%`}
+              top={`${stateActs?.currentQuestion?.answers[0]?.content?.img?.top}%`}
+            >
+              {stateActs?.currentQuestion?.answers?.map((answer) => (
                 <Box
-                  key={element._id}
-                  position={"absolute"}
-                  width={parseInt(
-                    domConfig.width *
-                    element.scale.width
-                  )}
-                  height={parseInt(
-                    domConfig.height *
-                    element.scale.height
-                  )}
-                  top={`${element.position.top}%`}
-                  left={`${element.position.left}%`}
+                  key={answer._id}
+                  width={`${answer?.content?.img?.width * 100}%`}
+                  height={`${answer?.content?.img?.height * 100}%`}
                   display={"flex"}
-                  // justifyContent={"center"}
+                  justifyContent={"center"}
                   alignItems={"center"}
-                  zIndex={2}
-                  sx={{
-                    backgroundImage: `url(${PICTURES_DIR}/${element.img})`,
-                    backgroundSize: backgroundSize(
-                      domConfig.width *
-                        element.scale.width,
-                      domConfig.height *
-                        element.scale.height
-                    ),
-                  }}
+                  onClick={() =>
+                    handleSelectedProposition(
+                      answer,
+                      questionContent?.answerType?.name,
+                      ""
+                    )
+                  }
+                  sx={[
+                    {
+                      cursor: "pointer",
+                      backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
+                      backgroundSize: "100% 100%",
+                    },
+                    selectionEffect(answer),
+                  ]}
                 >
-                  <Typography level="title-xs" textAlign={"center"}>
-                    {element.text}
-                  </Typography>{" "}
+                  <DisplayingText
+                    sentence={answer?.content?.text?.text}
+                    textColor={answer?.content?.textColor}
+                    textAlign={"center"}
+                    padding={2}
+                    fontWeight={600}
+                  />
                 </Box>
               ))}
+            </Stack>
+          )}
 
-            {/* Answers box */}
-            {stateActs?.currentQuestion?.visual?.mapView?.hasAnswer && (
-              <Stack
-                direction={"column"}
-                spacing={2}
-                zIndex={2}
-                position={"absolute"}
-                left={`${stateActs?.currentQuestion?.answers[0]?.content?.img?.left}%`}
-                top={`${stateActs?.currentQuestion?.answers[0]?.content?.img?.top}%`}
+          {stateTowns.towns?.map((town) => (
+            <Box
+              key={town._id}
+              width={"15%"}
+              height={"5%"}
+              position={"absolute"}
+              top={`${town.top}%`}
+              left={`${town.left}%`}
+            >
+              <Box
+                width={"100%"}
+                height={"100%"}
+                display={"flex"}
+                flexDirection={"row"}
+                alignItems={"center"}
+                justifyContent={"space-between"}
               >
-                {stateActs?.currentQuestion?.answers?.map((answer) => (
-                  <Box
-                    key={answer._id}
-                    width={parseInt(
-                      domConfig.width * answer?.content?.img?.width
-                    )}
-                    height={parseInt(
-                      domConfig.height * answer?.content?.img?.height
-                    )}
-                    display={"flex"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    onClick={() =>
-                      handleSelectedProposition(
-                        answer,
-                        questionContent?.answerType?.name,
-                        ""
-                      )
-                    }
-                    sx={[
-                      {
-                        cursor: "pointer",
-                        backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
-                        backgroundSize: backgroundSize(
-                          domConfig.width * answer?.content?.img?.width,
-                          domConfig.height * answer?.content?.img?.height
-                        ),
-                      },
-                      selectionEffect(answer),
-                    ]}
-                  >
-                    <DisplayingText
-                      sentence={answer?.content?.text?.text}
-                      textColor={answer?.content?.textColor}
-                      textAlign={"center"}
-                      fontWeight={600}
-                    />
-                  </Box>
-                ))}
-              </Stack>
-            )}
+                {/* Button's img  */}
+                <img
+                  src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.buttonImg?.button}`}
+                  width={"10%"}
+                  height={"45%"}
+                />
 
-            {stateTowns.towns?.map((town) => (
-              <Box key={town._id}>
-                <Box
-                  width={parseInt(domConfig.width * 0.12)}
-                  height={parseInt(domConfig.height * 0.05)}
-                  position={"absolute"}
-                  top={`${town.top}%`}
-                  left={`${town.left}%`}
-                  display={"flex"}
-                  flexDirection={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                >
-                  {/* Button's img  */}
+                {/* Button label  */}
+                {town?.labelImg && (
                   <img
-                    src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.buttonImg?.button}`}
-                    width={domConfig.width * 0.015}
-                    height={domConfig.height * 0.025}
+                    src={`${PICTURES_DIR}/${town?.labelImg}`}
+                    width={"85%"}
+                    height={"100%"}
                   />
-
-                  {/* Button label  */}
-                  {town?.labelImg && (
-                    <img
-                      src={`${PICTURES_DIR}/${town?.labelImg}`}
-                      width={domConfig.width * 0.1}
-                      height={domConfig.height * 0.05}
-                    />
-                  )}
-                </Box>
-                {!town.labelImg && !stateActs?.currentQuestion?.visual?.mapView?.hasAnswer && (
+                )}
+              </Box>
+              {!town.labelImg &&
+                !stateActs?.currentQuestion?.visual?.mapView?.hasAnswer && (
                   <>
                     {/* GIF */}
                     <Box
                       position={"absolute"}
-                      top={`${parseFloat(town.top)}%`}
-                      left={`${parseFloat(town.left) - 1.7}%`}
+                      width={"20%"}
+                      height={"45%"}
+                      top={`10%`}
+                      left={`-5%`}
                       sx={{ cursor: "pointer" }}
                       onClick={() => {
                         if (
@@ -215,26 +201,26 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                     >
                       <img
                         src={`${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.buttonImg?.buttonGif}`}
-                        width={domConfig.width * 0.05}
-                        height={domConfig.height * 0.05}
+                        width={"100%"}
+                        height={"100%"}
                       />
                     </Box>
 
                     {/* town's description */}
                     <Box
-                      width={parseInt(domConfig.width * 0.2)}
-                      height={parseInt(domConfig.height * 0.35)}
-                      position={"absolute"}
+                      zIndex={1000}
+                      width={"15vw"}
+                      height={"35vh"}
                       display={"none"}
-                      top={`${parseFloat(town.top) - 12}%`}
-                      left={`${parseFloat(town.left) - 25}%`}
+                      position={"absolute"}
+                      top={`-250%`}
+                      left={`20%`}
+                      onClick={() => setSelectedTown(town)}
                       sx={[
                         {
+                          cursor: "pointer",
                           backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.mapView?.descriptionImg})`,
-                          backgroundSize: backgroundSize(
-                            domConfig.width * 0.2,
-                            domConfig.height * 0.35
-                          ),
+                          backgroundSize: "100% 100%",
                         },
                         selectionEffect(town),
                       ]}
@@ -248,53 +234,65 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                         flexDirection={"column"}
                         alignItems={"center"}
                       >
-                        <Typography
-                          level="title-lg"
-                          textColor={colors.titleBackLight}
-                          marginTop={3}
-                          fontWeight={400}
+                        <Box
+                          width={"60%"}
+                          height={"20%"}
+                          marginTop={"3%"}
+                          marginLeft={"15%"}
                         >
-                          {town?.name}
-                        </Typography>
-                        <Typography
-                          level="body-xs"
-                          paddingLeft={2}
-                          paddingRight={2}
-                          paddingTop={1}
-                          textAlign={"center"}
-                        >
-                          {town?.description}
-                        </Typography>
-                      </Box>
+                          <Typography
+                            level="title-lg"
+                            textColor={colors.titleBackLight}
+                            fontWeight={400}
+                            textAlign={"center"}
+                          >
+                            {town?.name}
+                          </Typography>
+                        </Box>
 
-                      {/* Button "chosir" */}
-                      <Box
-                        width={parseInt(domConfig.width * 0.15)}
-                        height={parseInt(domConfig.height * 0.05)}
-                        // position={"absolute"}
-                        // top={`${parseFloat(town?.top) + 15.5}%`}
-                        // left={`${parseFloat(town?.left) - 24}%`}
-                        marginTop={-9.3}
-                        marginLeft={1}
-                        onClick={() => setSelectedTown(town)}
-                        sx={{ cursor: "pointer" }}
-                      >
-                        <Typography
-                          level="title-lg"
-                          textColor={colors.titleBackLight}
-                          fontWeight={400}
-                          textAlign={"center"}
+                        <Box
+                          width={"100%"}
+                          height={"40%"}
+                          display={"flex"}
+                          alignItems={"center"}
                         >
-                          Choisir
-                        </Typography>
+                          <Typography
+                            level="body-xs"
+                            paddingLeft={2}
+                            paddingRight={2}
+                            paddingTop={1}
+                            textAlign={"center"}
+                          >
+                            {town?.description}
+                          </Typography>
+                        </Box>
+
+                        {/* Button "chosir" */}
+                        <Box
+                          width={"75%"}
+                          height={"15%"}
+                          marginTop={"5%"}
+                          marginLeft={"-18%"}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyContent={"center"}
+                        >
+                          <Typography
+                            level="title-lg"
+                            textColor={colors.titleBackLight}
+                            fontWeight={400}
+                            textAlign={"center"}
+                          >
+                            Choisir
+                          </Typography>
+                        </Box>
                       </Box>
                     </Box>
                   </>
                 )}
-              </Box>
-            ))}
-          </Box>
-        </CssVarsProvider>
+            </Box>
+          ))}
+        </Box>
       ) : (
         <Box
           height={"100%"}
@@ -306,7 +304,7 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
           <CircularProgress variant="soft" color="success" />
         </Box>
       )}
-    </Stack>
+    </Box>
   );
 };
 
