@@ -2,7 +2,7 @@
 // import React from "react";
 import { Typography } from "@mui/joy";
 import { useSelector } from "react-redux";
-import { TypeAnimation } from "react-type-animation";
+import { ReactTyped } from "react-typed";
 
 const DisplayingText = ({
   sentence,
@@ -16,6 +16,7 @@ const DisplayingText = ({
   backgroundText,
   style,
   animated,
+  onComplete,
 }) => {
   const stateUser = useSelector((state) => state.user);
   sentence = sentence
@@ -36,15 +37,16 @@ const DisplayingText = ({
       marginTop={marginTop}
       sx={{
         backgroundColor: !animated && backgroundText,
-        ...style
+        ...style,
       }}
     >
       {animated ? (
-        <TypeAnimation
-          sequence={[`${sentence}`]}
-          speed={80}
-          repeat={1}
-          cursor={false}
+        <ReactTyped
+          strings={[sentence]}
+          typeSpeed={10}
+          showCursor={false}
+          on
+          onComplete={onComplete || function () {}}
           style={{ whiteSpace: "pre-line", background: backgroundText }}
         />
       ) : (

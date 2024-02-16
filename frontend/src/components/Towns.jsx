@@ -100,11 +100,11 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
           {/* Answers box */}
           {stateActs?.currentQuestion?.visual?.mapView?.hasAnswer && (
             <Stack
-              width={"100%"}
-              height={"100%"}
               direction={"column"}
               spacing={2}
               zIndex={2}
+              width={"40%"}
+              height={"80%"}
               position={"absolute"}
               left={`${stateActs?.currentQuestion?.answers[0]?.content?.img?.left}%`}
               top={`${stateActs?.currentQuestion?.answers[0]?.content?.img?.top}%`}
@@ -112,7 +112,7 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
               {stateActs?.currentQuestion?.answers?.map((answer) => (
                 <Box
                   key={answer._id}
-                  width={`${answer?.content?.img?.width * 100}%`}
+                  width={`100%`}
                   height={`${answer?.content?.img?.height * 100}%`}
                   display={"flex"}
                   justifyContent={"center"}
@@ -129,6 +129,15 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                       cursor: "pointer",
                       backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
                       backgroundSize: "100% 100%",
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":{
+                        height: `${answer?.content?.img?.height * 100 + 5}%`,
+                      },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":{
+                        height: `${answer?.content?.img?.height * 100 + 5}%`,
+                      },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":{
+                        height: `${answer?.content?.img?.height * 100 + 10}%`,
+                      }
                     },
                     selectionEffect(answer),
                   ]}
@@ -246,9 +255,10 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                             fontWeight={400}
                             textAlign={"center"}
                             sx={{
-                              "@media screen and (min-width: 1920px)": {
-                                fontSize: "1.2em",
-                              }
+                              "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                                {
+                                  fontSize: "100%",
+                                },
                             }}
                           >
                             {town?.name}
@@ -268,10 +278,18 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                             paddingTop={1}
                             textAlign={"center"}
                             sx={{
-                              "@media screen and (min-width: 1920px)": {
-                                fontSize: "1em",
-                                padding: 5
-                              }
+                              "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
+                                {
+                                  fontSize: "90%",
+                                },
+                              "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
+                                {
+                                  fontSize: "80%",
+                                },
+                              "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                                {
+                                  fontSize: "60%",
+                                },
                             }}
                           >
                             {town?.description}
