@@ -135,6 +135,18 @@ const Summary = () => {
             display: "flex",
             alignItems: "center",
             padding: 0,
+            "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)": {
+              height: "80%",
+              width: "85%",
+            },
+            "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)": {
+              height: "85%",
+              width: "70%",
+            },
+            "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)": {
+              height: "55%",
+              width: "80%",
+            },
           }}
           className="animate__animated animate__zoomIn"
         >
@@ -165,12 +177,6 @@ const Summary = () => {
             position={"relative"}
             zIndex={1}
             useFlexGap
-            sx={{
-              "@media screen and (min-width: 1920px)": {
-                width: "80%",
-                height: "90%",
-              },
-            }}
           >
             {/* Bravo Box */}
             <Box
@@ -230,9 +236,6 @@ const Summary = () => {
                   paddingLeft={"10%"}
                   paddingRight={"10%"}
                   sx={{
-                    "@media screen and (min-width: 1920px)": {
-                      fontSize: "1.1em",
-                    },
                   }}
                 >
                   {question}
@@ -301,6 +304,8 @@ const Summary = () => {
           justifyContent={"center"}
           alignItems={"center"}
           position={"relative"}
+          padding={0}
+          margin={0}
           sx={{
             backgroundImage: `url(${PICTURES_DIR}/sommaire_bg.jpg)`,
             backgroundSize: "100% 100%",
@@ -347,10 +352,26 @@ const Summary = () => {
                     fontWeight={400}
                     marginLeft={"8%"}
                     sx={{
-                      "@media screen and (min-width: 1920px)": {
-                        fontSize: "2em",
-                        marginLeft: "5%",
-                      },
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
+                        {
+                          fontSize: "1.6em",
+                          marginLeft: "4.5%",
+                        },
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
+                        {
+                          fontSize: "1.3em",
+                          marginLeft: "6%",
+                        },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                        {
+                          fontSize: "1.2em",
+                          marginLeft: "5%",
+                        },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                        {
+                          fontSize: "1.1em",
+                          marginLeft: "5%",
+                        },
                     }}
                   >
                     {`ACTE ${act.chapter}`}
@@ -366,10 +387,26 @@ const Summary = () => {
                     fontWeight={400}
                     marginLeft={"15%"}
                     sx={{
-                      "@media screen and (min-width: 1920px)": {
-                        fontSize: "2em",
-                        marginLeft: "8%",
-                      },
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
+                        {
+                          fontSize: "1.3em",
+                          marginLeft: "7%",
+                        },
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
+                        {
+                          fontSize: "1.3em",
+                          marginLeft: "8%",
+                        },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                        {
+                          fontSize: "1.1em",
+                          marginLeft: "5%",
+                        },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                        {
+                          fontSize: "1.1em",
+                          marginLeft: "6%",
+                        },
                     }}
                   >
                     {`${act.name}`}
@@ -378,7 +415,20 @@ const Summary = () => {
 
                 {/* Play button */}
                 {act.status == "IN PROGRESS" && (
-                  <Box height={"5vh"} width={"18%"}>
+                  <Box
+                    height={"5vh"}
+                    width={"18%"}
+                    sx={{
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
+                        {
+                          height: "6vh",
+                        },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                        {
+                          height: "6vh",
+                        },
+                    }}
+                  >
                     <CustomButton
                       width={"100%"}
                       height={"100%"}
@@ -392,54 +442,54 @@ const Summary = () => {
                     </CustomButton>
                   </Box>
                 )}
+
+                {/* logo */}
+                <Box
+                  top={window.innerHeight >= 950 ? "0%" : "-2%"}
+                  left={"15%"}
+                  position={"absolute"}
+                  width={"45%"}
+                  height={"30%"}
+                >
+                  <img
+                    src={`${PICTURES_DIR}/Logo - couleurs + blanc.svg`}
+                    width={"100%"}
+                    height={window.innerHeight >= 950 ? "80%" : "100%"}
+                  />
+                </Box>
+
+                {/* decoration  */}
+                <Box
+                  position={"absolute"}
+                  top={"0%"}
+                  left={"-1%"}
+                  width={"15%"}
+                  height={"20%"}
+                >
+                  <img
+                    src={`${PICTURES_DIR}/Déco - Charte triangle.svg`}
+                    height={"100%"}
+                    width={"100%"}
+                    style={{ transform: "rotate(180deg)" }}
+                  />
+                </Box>
+
+                <Box
+                  position={"absolute"}
+                  bottom={0}
+                  left={"84%"}
+                  width={"15%"}
+                  height={"30%"}
+                >
+                  <img
+                    src={`${PICTURES_DIR}/Déco - Charte triangle.svg`}
+                    height={"100%"}
+                    width={"100%"}
+                  />
+                </Box>
               </Stack>
             );
           })}
-
-          {/* logo */}
-          <Box
-            top={"-4%"}
-            left={"15%"}
-            position={"absolute"}
-            width={"45%"}
-            height={"30%"}
-          >
-            <img
-              src={`${PICTURES_DIR}/Logo - couleurs + blanc.svg`}
-              width={"100%"}
-              height={"100%"}
-            />
-          </Box>
-
-          {/* decoration  */}
-          <Box
-            position={"absolute"}
-            top={"-1.5%"}
-            left={0}
-            width={"15%"}
-            height={"20%"}
-          >
-            <img
-              src={`${PICTURES_DIR}/Déco - Charte triangle.svg`}
-              height={"100%"}
-              width={"100%"}
-              style={{ transform: "rotate(180deg)" }}
-            />
-          </Box>
-
-          <Box
-            position={"absolute"}
-            bottom={0}
-            left={"85%"}
-            width={"15%"}
-            height={"30%"}
-          >
-            <img
-              src={`${PICTURES_DIR}/Déco - Charte triangle.svg`}
-              height={"100%"}
-              width={"100%"}
-            />
-          </Box>
         </Stack>
       ) : (
         <Box

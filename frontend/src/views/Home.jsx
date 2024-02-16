@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Stack,
-  Button,
   Typography,
   CssVarsProvider,
   CircularProgress,
@@ -21,6 +20,7 @@ import { createUserError } from "../utils/redux/userSlice.js";
 import { loginFail, setToken } from "../utils/redux/authSlice.js";
 import apiRequest from "../api/requestAPI.js";
 import { textAreaStyle } from "../utils/cssReact.js";
+import CustomButton from "../components/CustomButton.jsx";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -114,7 +114,6 @@ const Home = () => {
               padding: 0,
               backgroundImage: `url(${backgroundImg})`,
               backgroundSize: "100% 100%",
-              backgroundRepeat: "no-repeat",
             }}
             className={"animate__animated animate__zoomIn animate__slow"}
           >
@@ -133,8 +132,7 @@ const Home = () => {
                 height={"70%"}
                 sx={{
                   backgroundImage: `url(${imgPresentation})`,
-                  backgroundSize: `cover`,
-                  backgroundRepeat: "no-repeat",
+                  backgroundSize: `100% 100%`,
                 }}
               >
                 {/* Text part */}
@@ -145,10 +143,6 @@ const Home = () => {
                   flexDirection={"column"}
                   sx={{
                     marginTop: "15%",
-                    "@media (min-width: 1920px)": {
-                      marginTop: "15%",
-                    },
-                    
                   }}
                 >
                   <Typography
@@ -156,14 +150,36 @@ const Home = () => {
                     level="h2"
                     textAlign={"center"}
                     sx={{
-                      "@media screen and (min-width: 1920px)": {
-                        fontSize: "2.5em",
-                        padding: "1%"
-                      },
-                      "@media screen and (min-width: 1425px) and (max-width: 1920px)": {
-                        fontSize: "2em",
-                        padding: "1%"
-                      }
+                      "@media screen and (min-width: 2560px) and (min-height: 1906px)":
+                        {
+                          fontSize: "3.5em",
+                          padding: "5%",
+                        },
+                      "@media screen and (min-width: 2560px) and (min-height: 1285px) and (max-height: 1905px)":
+                        {
+                          fontSize: "3.5em",
+                          padding: "0% 2% 0% 2%",
+                        },
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 1009px)":
+                        {
+                          fontSize: "2em",
+                          padding: "5%",
+                        },
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 1008px)":
+                        {
+                          fontSize: "1.8em",
+                          padding: "0% 5% 0% 5%",
+                        },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                        {
+                          fontSize: "1.4em",
+                          padding: "7% 5% 0% 5%",
+                        },
+                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                        {
+                          fontSize: "1.2em",
+                          padding: "0% 10% 0% 10%",
+                        },
                     }}
                   >
                     Bienvenue cher visiteur !
@@ -174,10 +190,32 @@ const Home = () => {
                     level="body-sm"
                     textAlign={"center"}
                     sx={{
-                      "@media screen and (min-width: 1920px)": {
-                        fontSize: "1.2em",
-                        padding: "2%"
-                      }
+                      "@media screen and (min-width: 2560px) and (min-height: 1906px)":
+                        {
+                          fontSize: "2em",
+                          padding: "10%",
+                        },
+                      "@media screen and (min-width: 2560px) and (min-height: 1285px) and (max-height: 1905px)":
+                        {
+                          fontSize: "1.8em",
+                          padding: "4%",
+                        },
+
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 1009px)":
+                        {
+                          fontSize: "1.2em",
+                          padding: "5%",
+                        },
+                        "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 1008px)":
+                        {
+                          fontSize: "0.9em",
+                          padding: "2% 5% 0% 5%",
+                        },
+                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                        {
+                          fontSize: "0.8em",
+                          padding: "5% 10% 0% 10%",
+                        },
                     }}
                   >
                     {`Vous allez être plongés dans une aventure extraordinaire, dans
@@ -196,10 +234,36 @@ const Home = () => {
                     level="h3"
                     textAlign={"center"}
                     sx={{
-                      "@media screen and (min-width: 1920px)": {
-                        fontSize: "1.7em",
-                        padding: "2%"
-                      }
+                      "@media screen and (min-width: 2560px) and (min-height: 1906px)":
+                        {
+                          fontSize: "3em",
+                          padding: "10%",
+                        },
+                      "@media screen and (min-width: 2560px) and (min-height: 1285px) and (max-height: 1905px) ":
+                        {
+                          fontSize: "2.3em",
+                          padding: "2%",
+                        },
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 1009px)":
+                        {
+                          fontSize: "1.7em",
+                          padding: "5%",
+                        },
+                        "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 1008px)":
+                        {
+                          fontSize: "1.3em",
+                          padding: "2% 5% 0% 5%",
+                        },
+                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                        {
+                          fontSize: "1em",
+                          padding: "7% 5% 0% 5%",
+                        },
+                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                        {
+                          fontSize: "1em",
+                          padding: "0% 10% 0% 10%",
+                        },
                     }}
                   >
                     Vous êtes prêts ?
@@ -227,7 +291,16 @@ const Home = () => {
                   marginTop={"15%"}
                   spacing={1}
                 >
-                  <Typography level="h3" textColor={"white"} fontWeight={400}>
+                  <Typography
+                    level="h3"
+                    textColor={"white"}
+                    fontWeight={400}
+                    sx={{
+                      "@media screen and (min-width: 2560px)": {
+                        fontSize: "2.5em",
+                      },
+                    }}
+                  >
                     Se connecter
                   </Typography>
 
@@ -251,6 +324,8 @@ const Home = () => {
                           style={{
                             placeholder: "Email...",
                             ...textAreaStyle,
+                            fontSize:
+                              window.innerWidth >= 1920 ? "1.5em" : "1em",
                           }}
                         />
                       </Box>
@@ -274,24 +349,31 @@ const Home = () => {
                           }}
                         />
                       </Box>
-                      <Button
-                        sx={{
-                          backgroundColor: colors.buttonDark,
-                          "&:hover": {
-                            backgroundColor: colors.buttonDarkHover,
-                          },
-                        }}
-                        type="submit"
+
+                      {/* subimit button  */}
+                      <Box
+                        width={"100%"}
+                        height={"20%"}
+                        display={"flex"}
+                        justifyContent={"center"}
                       >
-                        {loading ? (
-                          <CircularProgress
-                            variant="outlined"
-                            color="neutral"
-                          />
-                        ) : (
-                          "Soumettre"
-                        )}
-                      </Button>
+                        <CustomButton
+                          width={"40%"}
+                          height={"100%"}
+                          backgroundColor={colors.buttonDark}
+                          hoverColor={colors.buttonDarkHover}
+                          textColor={colors.titleBackDark}
+                        >
+                          {loading ? (
+                            <CircularProgress
+                              variant="outlined"
+                              color="neutral"
+                            />
+                          ) : (
+                            "Soumettre"
+                          )}
+                        </CustomButton>
+                      </Box>
                     </Stack>
                   </form>
 
@@ -305,14 +387,26 @@ const Home = () => {
                       "&:hover": {
                         backgroundColor: colors.buttonDarkHover,
                       },
-                      borderRadius: 5
+                      borderRadius: 5,
+                      "@media screen and (min-width: 1920px)": {
+                        fontSize: "1.8em",
+                      },
                     }}
                     onClick={() => setOpenRegisterModal(true)}
                   >
                     Pas encore de compte ? Créez le ici
                   </Typography>
                   {authState.error && (
-                    <Alert color="danger">{authState.error}</Alert>
+                    <Alert
+                      sx={{
+                        "@media screen and (min-width: 2560px)": {
+                          fontSize: "1.8em",
+                        },
+                      }}
+                      color="danger"
+                    >
+                      {authState.error}
+                    </Alert>
                   )}
                 </Stack>
               </Box>

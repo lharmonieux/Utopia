@@ -43,6 +43,7 @@ import {
 import apiRequest from "../../api/requestAPI.js";
 import { IoInformationCircle } from "react-icons/io5";
 import CustomButton from "../../components/CustomButton.jsx";
+import RankView from "../../components/RankView.jsx";
 
 const Game = () => {
   // variables
@@ -78,6 +79,7 @@ const Game = () => {
   });
   const [percentFinalAnswer, setPercentFinalAnswer] = useState({});
   const [answersToLogs, setAnswersToLogs] = useState(new Map());
+  const [displayRankView, setDisplayRankView] = useState(false);
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -511,20 +513,25 @@ const Game = () => {
               alignItems={"center"}
               justifyContent={"space-evenly"}
             >
-              <Typography padding={2} marginTop={5}>
-                <DisplayingText
-                  sentence={feedbackText}
-                  level="title-md"
-                  textColor={"black"}
-                  animated={true}
-                  style={{
-                    "@media screen and (min-width: 1920px)": {
-                      fontSize: "1.4em",
-                      padding: 5
-                    }
-                  }}
-                />
-              </Typography>
+              <DisplayingText
+                sentence={feedbackText}
+                level="title-md"
+                textColor={"black"}
+                animated={true}
+                textAlign={"justify"}
+                style={{
+                  width: "80%",
+                  "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-width: 858px)":
+                    {
+                      fontSize: "110%",
+                    },
+                  "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-width: 858px)":
+                    {
+                      fontSize: "90%",
+                      marginTop: "10%",
+                    },
+                }}
+              />
 
               {/* Text area for some answers */}
               {feedback.hasQuestion && (
@@ -709,9 +716,6 @@ const Game = () => {
                   textColor={"white"}
                   fontWeight={400}
                   sx={{
-                    "@media screen and (min-width: 1920px)": {
-                      fontSize: "2em",
-                    }
                   }}
                 >{`Résolution de l'ACTE ${stateActs.currentAct?.chapter}`}</Typography>
               </Box>
@@ -735,12 +739,15 @@ const Game = () => {
                       fontWeight={
                         stateActs.currentAct?.resolution?.textStyle?.weight
                       }
-                      sentence={resolutionText + rankUserText}
+                      sentence={resolutionText}
                       animated={true}
                       backgroundText={"rgba(70, 8, 134, 0.7)"}
+                      onComplete={function () {
+                        setDisplayRankView(true);
+                      }}
                       style={{
-                        "@media screen and (min-width: 1920px)": {
-                          fontSize: "1.54em",
+                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":{
+                          padding: "5%"
                         }
                       }}
                     />
@@ -756,6 +763,8 @@ const Game = () => {
                     <CircularProgress variant="soft" color="success" />
                   </Box>
                 )}
+
+                {displayRankView && <RankView text={rankUserText} />}
               </Box>
             </Stack>
 
@@ -1116,7 +1125,7 @@ const Game = () => {
       >
         <ModalDialog
           sx={{
-            width: "40%",
+            width: "30%",
             height: "70%",
             position: "relative",
             backgroundImage: `url(${feedbackImg})`,
@@ -1129,10 +1138,24 @@ const Game = () => {
               marginTop: "10%",
               marginLeft: "45%",
               color: colors.titleBackLight,
-              "@media screen and (min-width: 1920px)": {
-                fontSize: "1.3em",
-                marginTop: "9%"
-              }
+              "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)": {
+                fontSize: "110%",
+                marginTop: "13%"
+              },
+              "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)": {
+                fontSize: "110%",
+                marginTop: "18%"
+              },
+              "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)": {
+                fontSize: "110%",
+                marginTop: "15%",
+                marginLeft: "38%"
+              },
+              "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)": {
+                fontSize: "110%",
+                marginTop: "26%",
+                marginLeft: "38%"
+              }    
             }}
           >
             Votre devise
@@ -1147,12 +1170,15 @@ const Game = () => {
             justifyContent={"space-evenly"}
             alignItems={"center"}
           >
-            <Typography textAlign={"justify"} sx={{
-              "@media screen and (min-width: 1920px)": {
-                fontSize: "1.15em",
-                padding: 3
-              }
-            }}>
+            <Typography
+              textAlign={"justify"}
+              sx={{
+                "@media screen and (min-width: 1920px)": {
+                  fontSize: "1.15em",
+                  padding: 3,
+                },
+              }}
+            >
               En se basant sur vos notes, la devise qui vous convient le mieux
               est :{" "}
               <Typography fontWeight={800}>
@@ -1362,7 +1388,6 @@ const Game = () => {
                                   }
                                   zIndex={1}
                                   sx={{
-                                    // bgcolor: "red",
                                     backgroundImage: `url(${PICTURES_DIR}/${questionContent.backgroundImg.img})`,
                                     backgroundSize: "100% 100%",
                                   }}
@@ -1378,9 +1403,16 @@ const Game = () => {
                                     marginLeft={`${questionContent.marginLeft}%`}
                                     animated={true}
                                     style={{
-                                      "@media screen and (min-width: 1920px)": {
-                                        fontSize: "1.3em",
-                                      }
+                                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                                        {
+                                          fontSize: "90%",
+                                          padding: "5%"
+                                        },
+                                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                                        {
+                                          fontSize: "90%",
+                                          padding: "3%"
+                                        },
                                     }}
                                   />
                                 </Box>
@@ -1416,15 +1448,6 @@ const Game = () => {
                       </Box>
 
                       {/* Decoration */}
-                      {/* <Box position={"absolute"} top={0} left={0}>
-                            <img
-                              src={decorationImg}
-                              height={domConfig.height * 0.15}
-                              width={domConfig.width * 0.1}
-                              style={{ transform: "rotate(180)" }}
-                            />
-                          </Box> */}
-
                       <Box
                         position={"absolute"}
                         bottom={0}

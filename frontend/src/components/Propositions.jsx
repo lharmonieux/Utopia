@@ -22,11 +22,6 @@ const Propositions = ({
 }) => {
   const stateActs = useSelector((state) => state.act);
   const stateUser = useSelector((state) => state.user);
-  const domConfig = useSelector((state) => state.dom);
-  const [widthBoxAnswer, heightBoxAnswer] = [
-    stateActs.currentQuestion?.visual?.boxAnswersImg?.width,
-    stateActs.currentQuestion?.visual?.boxAnswersImg?.height,
-  ];
 
   useEffect(() => {
     // Initializing of percent values for propositions
@@ -45,6 +40,16 @@ const Propositions = ({
     let maxPercentGiven = 0;
     let maxPercent = 100;
     let restAnswers = [];
+    let givenValue = 0;
+
+    // If last value was 0, replace this value automacatily by the new one
+    if (newPercentAnswers.get(selectedAnswer.content.text.text) == 0) {
+      if (parseInt(e.target.value % 10) == 0)
+        givenValue = parseInt(e.target.value) / 10;
+      else givenValue = parseInt(e.target.value);
+    }
+    // If we already have not null value
+    else givenValue = parseInt(e.target.value);
 
     //Get all answer where value = 0
     for (let answer of stateActs.currentQuestion.answers) {
@@ -61,8 +66,8 @@ const Propositions = ({
     );
 
     //Control if the new value can pass
-    const maxPercentWithAnswer = maxPercentGiven + parseInt(e.target.value);
-    if (parseInt(e.target.value) > maxPercent || parseInt(e.target.value) < 0)
+    const maxPercentWithAnswer = maxPercentGiven + parseInt(givenValue);
+    if (parseInt(givenValue) > maxPercent || parseInt(givenValue) < 0)
       newPercentAnswers.set(
         selectedAnswer.content.text.text,
         newPercentAnswers.get(selectedAnswer.content.text.text)
@@ -70,7 +75,7 @@ const Propositions = ({
     else if (maxPercentWithAnswer > maxPercent) {
       newPercentAnswers.set(
         selectedAnswer.content.text.text,
-        parseInt(e.target.value)
+        parseInt(givenValue)
       );
 
       //Distribution off values for avoid negatives possibilities
@@ -101,7 +106,7 @@ const Propositions = ({
     } else if (newPercentAnswers.get(restAnswers[0].content.text.text) == 0) {
       newPercentAnswers.set(
         selectedAnswer.content.text.text,
-        parseInt(e.target.value)
+        parseInt(givenValue)
       );
 
       newPercentAnswers.set(
@@ -111,7 +116,7 @@ const Propositions = ({
     } else if (maxPercentWithAnswer < maxPercent) {
       newPercentAnswers.set(
         selectedAnswer.content.text.text,
-        parseInt(e.target.value)
+        parseInt(givenValue)
       );
 
       newPercentAnswers.set(
@@ -169,21 +174,25 @@ const Propositions = ({
                 border: "none",
                 outline: "none",
                 backgroundColor: "transparent",
-                textAlign: "right",
+                textAlign: "center",
                 width: "90%",
                 height: "100%",
-                fontSize: window.innerWidth >= 1920 ? "1.1em" : "1em",
-
+                fontSize:
+                  window.innerWidth >= 1440 && window.innerWidth <= 2559
+                    ? "1.1em"
+                    : "0.9em",
               }}
             />
             <CustomButton
               height={"50%"}
               width={"40%"}
-              level={"title-sm"}
               style={{
                 marginLeft: "110%",
                 marginTop: "20%",
                 position: "absolute",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
               clickMethod={() =>
                 handlePercentsValue({ target: { value: 0 } }, answer)
@@ -205,7 +214,14 @@ const Propositions = ({
               justifyContent={"center"}
               marginLeft={"25%"}
             >
-              <AiFillLike color="yellow" size={30} />
+              <AiFillLike
+                color="yellow"
+                size={
+                  window.innerWidth >= 1024 && window.innerWidth <= 1439
+                    ? 25
+                    : 30
+                }
+              />
             </Box>
           );
         else
@@ -218,7 +234,14 @@ const Propositions = ({
               justifyContent={"center"}
               marginLeft={"25%"}
             >
-              <AiFillDislike color="yellow" size={30} />
+              <AiFillDislike
+                color="yellow"
+                size={
+                  window.innerWidth >= 1024 && window.innerWidth <= 1439
+                    ? 25
+                    : 30
+                }
+              />
             </Box>
           );
 
@@ -233,21 +256,18 @@ const Propositions = ({
       <Box
         id="proposition-container"
         width={
-          stateActs.currentQuestion?.visual?.boxAnswersImg
-            ? parseInt(heightBoxAnswer * domConfig.width)
-            : stateActs.currentQuestion?.visual?.directionAnswer == "row"
+          stateActs.currentQuestion?.visual?.directionAnswer == "row"
             ? "100%"
             : `${(0.9 - questionContent?.backgroundImg?.width) * 100}%`
         }
         height={
-          stateActs.currentQuestion?.visual?.boxAnswersImg
-            ? parseInt(heightBoxAnswer * domConfig.height)
-            : stateActs.currentQuestion?.visual?.directionAnswer == "row"
+          stateActs.currentQuestion?.visual?.directionAnswer == "row"
             ? `${(1 - questionContent?.backgroundImg?.height) * 100}%`
             : "90%"
         }
         display={"flex"}
         justifyContent={"center"}
+        alignItems={"center"}
         sx={{
           overflow: "scroll",
           scrollbarWidth: "none",
@@ -265,7 +285,6 @@ const Propositions = ({
             !stateActs.currentQuestion?.additionalContent.length > 0 && "wrap"
           }
           direction={stateActs.currentQuestion?.visual?.directionAnswer}
-          spacing={!stateActs.currentQuestion?.visual?.boxAnswersImg ? 1 : 0}
           useFlexGap
           left={
             stateActs.currentQuestion?.additionalContent.length > 0 &&
@@ -280,6 +299,7 @@ const Propositions = ({
           sx={{
             backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.boxAnswersImg?.img})`,
             backgroundSize: "100% 100%",
+            gap: "1%",
           }}
         >
           {stateActs.currentQuestion?.answers.map((answer) => (
@@ -327,6 +347,14 @@ const Propositions = ({
                   sx={{
                     backgroundImage: `url(${PICTURES_DIR}/${answer.choiceImg.img.name})`,
                     backgroundSize: "100% 100%",
+                    "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                      {
+                        height: "45%",
+                      },
+                    "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                      {
+                        height: "45%",
+                      },
                   }}
                 >
                   {contentChoice(answer)}
@@ -354,6 +382,22 @@ const Propositions = ({
                       "pointer",
                     backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
                     backgroundSize: "100% 100%",
+                    "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
+                      {
+                        paddingBottom:
+                          answer.content.text.position?.marginTop &&
+                          stateActs?.currentQuestion?.additionalContent.length >
+                            0 &&
+                          "5%",
+                      },
+                    "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                      {
+                        paddingTop:
+                          answer.content.text.position?.marginTop &&
+                          stateActs?.currentQuestion?.additionalContent.length >
+                            0 &&
+                          "15%",
+                      },
                   },
                   selectionEffect(answer),
                 ]}
@@ -363,7 +407,6 @@ const Propositions = ({
                   <DisplayingText
                     marginLeft={`${answer.content.text.position?.marginLeft}%`}
                     marginTop={`${answer.content.text.position?.marginTop}%`}
-                    padding={4}
                     sentence={answer.content.text.text}
                     textColor={answer.content.textColor}
                     fontWeight={400}
@@ -372,10 +415,40 @@ const Propositions = ({
                       stateActs?.currentQuestion?.visual?.textAnswerLevel ||
                       "title-sm"
                     }
-                    style={{"@media screen and (min-width: 1920px)": {
-                      fontSize: "1.2em",
-                      marginTop: `${answer.content.text.position?.marginTop + 5}%`
-                    }}}
+                    style={{
+                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
+                        {
+                          fontSize: "100%",
+                          padding: "10%",
+                          marginTop:
+                            answer.content.text.position?.marginTop &&
+                            `${answer.content.text.position?.marginTop - 5}%`,
+                        },
+                        "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
+                        {
+                          fontSize: "90%",
+                          padding: "10%",
+                          marginTop:
+                            answer.content.text.position?.marginTop &&
+                            `${answer.content.text.position?.marginTop + 5}%`,
+                        },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                        {
+                          fontSize: "80%",
+                          padding: "10%",
+                          marginTop:
+                            answer.content.text.position?.marginTop &&
+                            `${answer.content.text.position?.marginTop - 30}%`,
+                        },
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                        {
+                          fontSize: "75%",
+                          padding: "10%",
+                          marginTop:
+                            answer.content.text.position?.marginTop &&
+                            `${answer.content.text.position?.marginTop - 5}%`,
+                        },
+                    }}
                   />
                 )}
 
@@ -387,9 +460,11 @@ const Propositions = ({
                     textColor={colors.titleBackLight}
                     textAlign={"center"}
                     padding={4}
-                    style={{"@media screen and (min-width: 1920px)": {
-                      padding: 7
-                    }}}
+                    style={{
+                      "@media screen and (min-width: 1920px)": {
+                        padding: 7,
+                      },
+                    }}
                   />
                 )}
               </Box>
@@ -425,19 +500,27 @@ const Propositions = ({
                   <Typography
                     level={element?.textLevel || "title-sm"}
                     textAlign={"center"}
+                    padding={"5%"}
                     sx={{
                       color: element?.textColor || "black",
+                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                        {
+                          padding: "5%",
+                          fontSize: "75%"
+                        },
                     }}
                   >
                     <DisplayingText
-                      padding={5}
                       sentence={element.text}
                       animated={false}
-                      style={{"@media screen and (min-width: 1920px)": {
-                        fontSize: "1.3em",
-                      }}}
+                      textAlign={"justify"}
+                      style={{
+                        "@media screen and (min-width: 1920px)": {
+                          fontSize: "1.3em",
+                        },
+                      }}
                     />
-                  </Typography>{" "}
+                  </Typography>
                 </Box>
               );
             })}
@@ -446,7 +529,7 @@ const Propositions = ({
           id="up-nav-button"
           color="warning"
           directionScroll={-1}
-          left={-7}
+          left={-10}
           top={45}
           height={0.1}
           idContainer={"proposition-container"}
@@ -459,7 +542,7 @@ const Propositions = ({
           id="down-nav-button"
           color="warning"
           directionScroll={1}
-          left={-7}
+          left={-10}
           top={60}
           height={0.1}
           idContainer={"proposition-container"}

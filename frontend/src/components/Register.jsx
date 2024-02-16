@@ -1,10 +1,9 @@
 /* eslint-disable react/prop-types */
 import {
   Alert,
-  Button,
+  Box,
   CircularProgress,
   DialogTitle,
-  Input,
   Modal,
   ModalClose,
   ModalDialog,
@@ -14,6 +13,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../api/userAPi";
 import { createUserError, createUserSuccess } from "../utils/redux/userSlice";
+import CustomButton from "./CustomButton";
+import { colors } from "../utils/colors";
+import { InputRegister } from "./Input";
 
 const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
   const dispatch = useDispatch();
@@ -62,45 +64,73 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
         setOpenRegisterModal(false);
       }}
     >
-      <ModalDialog>
+      <ModalDialog
+        sx={{
+          width: "50%",
+          height: "80%",
+        }}
+      >
         <ModalClose variant="outlined" />
-        <DialogTitle>Création de compte</DialogTitle>
+        <DialogTitle
+          sx={{
+            "@media screen and (min-width: 2560px)": {
+              fontSize: "2.5em",
+              display: "flex",
+            },
+            justifyContent: "center",
+          }}
+        >
+          Création de compte
+        </DialogTitle>
 
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            <Input
-              placeholder="Nom"
-              size="lg"
+        <form onSubmit={handleSubmit} style={{ height: "100%" }}>
+          <Stack spacing={3} height={"100%"}>
+            <InputRegister
+              placeholder={"Nom"}
               value={lastname}
-              onChange={(e) => setLastname(e.target.value)}
+              setValue={setLastname}
+              height={"15%"}
             />
-            <Input
-              placeholder="Prenom"
-              size="lg"
+            <InputRegister
+              placeholder={"Prénom"}
               value={firstname}
-              onChange={(e) => setFirstname(e.target.value)}
+              setValue={setFirstname}
+              height={"15%"}
             />
-            <Input
-              placeholder="Email"
-              size="lg"
-              type="email"
+            <InputRegister
+              placeholder={"Email"}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              setValue={setEmail}
+              height={"15%"}
             />
-            <Input
-              placeholder="Mot de passe"
-              size="lg"
-              type="password"
+            <InputRegister
+              placeholder={"Mot de passe"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              setValue={setPassword}
+              height={"15%"}
             />
-            <Button type="submit">
-              {loading ? (
-                <CircularProgress variant="outlined" color="neutral" />
-              ) : (
-                "Soumettre"
-              )}
-            </Button>
+
+            {/* submit button  */}
+            <Box
+              width={"100%"}
+              height={"10%"}
+              display={"flex"}
+              justifyContent={"center"}
+            >
+              <CustomButton
+                width={"30%"}
+                height={"100%"}
+                backgroundColor={colors.buttonDark}
+                hoverColor={colors.buttonDarkHover}
+                textColor={colors.titleBackDark}
+              >
+                {loading ? (
+                  <CircularProgress variant="outlined" color="neutral" />
+                ) : (
+                  "Soumettre"
+                )}
+              </CustomButton>
+            </Box>
           </Stack>
         </form>
 

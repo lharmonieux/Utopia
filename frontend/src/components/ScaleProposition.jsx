@@ -37,7 +37,7 @@ const ScaleProposition = ({
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: 'center',
+              justifyContent: "center",
               borderRadius: 10,
               backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
               backgroundSize: "100% 100%",
@@ -47,9 +47,17 @@ const ScaleProposition = ({
               fontWeight={400}
               textColor={answer.content.textColor}
               textAlign={"center"}
-              sx={{"@media screen and (min-width: 1920px)": {
-                fontSize: "1.2em",
-              }}}
+              sx={{
+                "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                  {
+                    fontSize: "90%",
+                  },
+                "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                  {
+                    fontSize: "90%",
+                    padding: "5%",
+                  },
+              }}
             >
               {answer.content.text.text}
             </Typography>
