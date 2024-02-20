@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 export const textAreaStyle = {
-  fontSize: 15,
+  fontSize: window.innerWidth >= 1920 ? "1.7em" : "1em",
   padding: 3,
   height: "100%",
   width: "100%",

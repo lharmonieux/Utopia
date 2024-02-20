@@ -2,6 +2,7 @@
 import { Box, Typography } from "@mui/joy";
 import { PICTURES_DIR } from "../utils/constants";
 import "animate.css";
+import "../assets/css/fullHD.css";
 
 const RankView = ({ text }) => {
   return (
@@ -18,7 +19,14 @@ const RankView = ({ text }) => {
         backgroundSize: "100% 100%",
       }}
     >
-      <Typography textAlign={"center"} padding={"10%"} fontWeight={600}>{text}</Typography>
+      <Typography
+        id={"rank-text"}
+        textAlign={"center"}
+        padding={"10%"}
+        fontWeight={600}
+      >
+        {text}
+      </Typography>
     </Box>
   );
 };

@@ -8,6 +8,7 @@ import {
   ModalClose,
   ModalDialog,
   Stack,
+  Typography,
 } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +17,7 @@ import { createUserError, createUserSuccess } from "../utils/redux/userSlice";
 import CustomButton from "./CustomButton";
 import { colors } from "../utils/colors";
 import { InputRegister } from "./Input";
+import "../assets/css/fullHD.css";
 
 const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
   const dispatch = useDispatch();
@@ -73,11 +75,8 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
         <ModalClose variant="outlined" />
         <DialogTitle
           sx={{
-            "@media screen and (min-width: 2560px)": {
-              fontSize: "2.5em",
-              display: "flex",
-            },
             justifyContent: "center",
+            fontSize: "1.6em",
           }}
         >
           Création de compte
@@ -136,11 +135,17 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
 
         {/* feedback server  */}
         {creationState.error && (
-          <Alert color={"danger"}>{creationState.error} </Alert>
+          <Alert color={"danger"}>
+            <Typography level="body-md">{creationState.error}</Typography>
+          </Alert>
         )}
 
         {creationState.successLogin && (
-          <Alert color={"success"}>{creationState.successLogin} </Alert>
+          <Alert color={"success"}>
+            <Typography level="body-md">
+              {creationState.successLogin}
+            </Typography>
+          </Alert>
         )}
       </ModalDialog>
     </Modal>

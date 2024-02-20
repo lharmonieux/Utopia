@@ -7,3 +7,18 @@ body {
   background-color: #1f1409;
 }
 
+.zoom-in{
+  animation: zoomInSelf 1.5s ease;
+  animation-iteration-count: 1;
+}
+
+@keyframes zoomInSelf {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

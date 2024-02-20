@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-
 import { Box, CircularProgress, Stack, Typography } from "@mui/joy";
 import { colors } from "../utils/colors";
 import "animate.css";
@@ -8,11 +7,13 @@ import { updateTownSelected } from "../utils/redux/townSlice";
 import { PICTURES_DIR } from "../utils/constants";
 import DisplayingText from "./DisplayingText";
 import { selectionEffect } from "../utils/cssReact";
+import "../assets/css/fullHD.css";
 
 const Towns = ({ handleSelectedProposition, questionContent }) => {
   const stateActs = useSelector((state) => state.act);
   const stateTowns = useSelector((state) => state.town);
   const dispatch = useDispatch();
+
 
   const displayDescription = (idElement) => {
     const descriptionBox = document.querySelector(`#${idElement}`);
@@ -45,8 +46,8 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
       direction={"column"}
       alignItems={"center"}
       justifyContent={"center"}
-      width={"85%"}
-      height={`${(1 - questionContent?.backgroundImg?.height) * 100}%`}
+      width={"100%"}
+      height={`100%`}
     >
       {stateActs.currentQuestion ? (
         <Box
@@ -113,7 +114,11 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                 <Box
                   key={answer._id}
                   width={`100%`}
-                  height={`${answer?.content?.img?.height * 100}%`}
+                  height={
+                    window.innerHeight >= 1080
+                      ? `${answer?.content?.img?.height * 100 + 5}%`
+                      : `${answer?.content?.img?.height * 100}%`
+                  }
                   display={"flex"}
                   justifyContent={"center"}
                   alignItems={"center"}
@@ -129,15 +134,6 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                       cursor: "pointer",
                       backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
                       backgroundSize: "100% 100%",
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":{
-                        height: `${answer?.content?.img?.height * 100 + 5}%`,
-                      },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":{
-                        height: `${answer?.content?.img?.height * 100 + 5}%`,
-                      },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":{
-                        height: `${answer?.content?.img?.height * 100 + 10}%`,
-                      }
                     },
                     selectionEffect(answer),
                   ]}
@@ -148,6 +144,7 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                     textAlign={"center"}
                     padding={2}
                     fontWeight={600}
+                    id={"town-answer-text"}
                   />
                 </Box>
               ))}
@@ -254,12 +251,7 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                             textColor={colors.titleBackLight}
                             fontWeight={400}
                             textAlign={"center"}
-                            sx={{
-                              "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                                {
-                                  fontSize: "100%",
-                                },
-                            }}
+                            id={"town-name"}
                           >
                             {town?.name}
                           </Typography>
@@ -277,20 +269,7 @@ const Towns = ({ handleSelectedProposition, questionContent }) => {
                             paddingRight={2}
                             paddingTop={1}
                             textAlign={"center"}
-                            sx={{
-                              "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
-                                {
-                                  fontSize: "90%",
-                                },
-                              "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
-                                {
-                                  fontSize: "80%",
-                                },
-                              "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                                {
-                                  fontSize: "60%",
-                                },
-                            }}
+                            id={"town-desc"}
                           >
                             {town?.description}
                           </Typography>

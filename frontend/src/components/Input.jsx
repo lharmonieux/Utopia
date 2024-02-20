@@ -9,10 +9,8 @@ export const InputRegister = ({ setValue, value, placeholder, height }) => {
       onChange={(e) => setValue(e.target.value)}
       sx={{
         height: { height },
-        "@media screen and (min-width: 2560px)": {
-          fontSize: "2em",
-        },
       }}
+      className="input-register"
     />
   );
 };

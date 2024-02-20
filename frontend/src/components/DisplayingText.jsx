@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-// import React from "react";
 import { Typography } from "@mui/joy";
+import React from "react";
 import { useSelector } from "react-redux";
 import { ReactTyped } from "react-typed";
 
@@ -16,6 +16,7 @@ const DisplayingText = ({
   backgroundText,
   style,
   animated,
+  id,
   onComplete,
 }) => {
   const stateUser = useSelector((state) => state.user);
@@ -26,6 +27,9 @@ const DisplayingText = ({
     .replace("stateUser.partyName", stateUser?.partyName)
     .replace("stateUser.town.region", stateUser?.town?.region)
     .replace("stateUser.symbol", stateUser?.symbol);
+
+  sentence = sentence.split("⌁");
+
   return (
     <Typography
       level={level}
@@ -35,22 +39,46 @@ const DisplayingText = ({
       textAlign={textAlign}
       marginLeft={marginLeft}
       marginTop={marginTop}
+      id={id}
+      borderRadius={10}
       sx={{
-        backgroundColor: !animated && backgroundText,
+        backgroundColor: backgroundText,
         ...style,
       }}
     >
       {animated ? (
-        <ReactTyped
-          strings={[sentence]}
-          typeSpeed={10}
-          showCursor={false}
-          on
-          onComplete={onComplete || function () {}}
-          style={{ whiteSpace: "pre-line", background: backgroundText }}
-        />
+        sentence.map((subSentence, index) => (
+          <ReactTyped
+            key={index}
+            strings={[subSentence]}
+            showCursor={false}
+            onComplete={
+              sentence.length == index + 1
+                ? onComplete || function () {}
+                : function () {}
+            }
+            style={{ whiteSpace: "pre-line" }}
+          />
+        ))
       ) : (
-        `${sentence}`
+        <>
+          {/* Display text + treatment italic text */}
+          {sentence.map((subSentence, i) => {
+            if (subSentence.length == 0) return null;
+            return (
+              <React.Fragment key={i}>
+                {subSentence.split("\n").map((line, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      {line[0] == "«" ? <em>{line}</em> : line}
+                      <br />
+                    </React.Fragment>
+                  );
+                })}
+              </React.Fragment>
+            );
+          })}
+        </>
       )}
     </Typography>
   );

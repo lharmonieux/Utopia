@@ -47,17 +47,7 @@ const ScaleProposition = ({
               fontWeight={400}
               textColor={answer.content.textColor}
               textAlign={"center"}
-              sx={{
-                "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-                  {
-                    fontSize: "90%",
-                  },
-                "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                  {
-                    fontSize: "90%",
-                    padding: "5%",
-                  },
-              }}
+              id={"answer-scale-text"}
             >
               {answer.content.text.text}
             </Typography>
