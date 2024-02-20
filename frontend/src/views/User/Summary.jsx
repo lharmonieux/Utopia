@@ -1,3 +1,4 @@
+import "../../assets/css/fullHD.css";
 import {
   Box,
   CircularProgress,
@@ -18,6 +19,9 @@ import { IoInformationCircle } from "react-icons/io5";
 import apiRequest from "../../api/requestAPI";
 import { createUserError } from "../../utils/redux/userSlice";
 import CustomButton from "../../components/CustomButton";
+import "../../assets/css/1600screen.css";
+import "../../assets/css/1400screen.css";
+import "../../assets/css/1024screen.css";
 
 const Summary = () => {
   const stateActs = useSelector((state) => state.act);
@@ -135,18 +139,6 @@ const Summary = () => {
             display: "flex",
             alignItems: "center",
             padding: 0,
-            "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)": {
-              height: "80%",
-              width: "85%",
-            },
-            "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)": {
-              height: "85%",
-              width: "70%",
-            },
-            "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)": {
-              height: "55%",
-              width: "80%",
-            },
           }}
           className="animate__animated animate__zoomIn"
         >
@@ -235,8 +227,7 @@ const Summary = () => {
                   fontWeight={500}
                   paddingLeft={"10%"}
                   paddingRight={"10%"}
-                  sx={{
-                  }}
+                  sx={{}}
                 >
                   {question}
                 </Typography>
@@ -279,7 +270,7 @@ const Summary = () => {
           {/* Submit Button */}
           <CustomButton
             width={"15%"}
-            height={"15%"}
+            height={"10%"}
             clickMethod={submitFeelings}
             backgroundColor={colors.buttonLight}
             hoverColor={colors.buttonLightHover}
@@ -349,30 +340,9 @@ const Summary = () => {
                   <Typography
                     level="title-lg"
                     textColor={"white"}
-                    fontWeight={400}
+                    fontWeight={600}
                     marginLeft={"8%"}
-                    sx={{
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
-                        {
-                          fontSize: "1.6em",
-                          marginLeft: "4.5%",
-                        },
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
-                        {
-                          fontSize: "1.3em",
-                          marginLeft: "6%",
-                        },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-                        {
-                          fontSize: "1.2em",
-                          marginLeft: "5%",
-                        },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                        {
-                          fontSize: "1.1em",
-                          marginLeft: "5%",
-                        },
-                    }}
+                    id={"summary-title-act"}
                   >
                     {`ACTE ${act.chapter}`}
                   </Typography>
@@ -386,28 +356,7 @@ const Summary = () => {
                     }
                     fontWeight={400}
                     marginLeft={"15%"}
-                    sx={{
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
-                        {
-                          fontSize: "1.3em",
-                          marginLeft: "7%",
-                        },
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
-                        {
-                          fontSize: "1.3em",
-                          marginLeft: "8%",
-                        },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-                        {
-                          fontSize: "1.1em",
-                          marginLeft: "5%",
-                        },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                        {
-                          fontSize: "1.1em",
-                          marginLeft: "6%",
-                        },
-                    }}
+                    id={"summary-text-act"}
                   >
                     {`${act.name}`}
                   </Typography>
@@ -415,20 +364,7 @@ const Summary = () => {
 
                 {/* Play button */}
                 {act.status == "IN PROGRESS" && (
-                  <Box
-                    height={"5vh"}
-                    width={"18%"}
-                    sx={{
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
-                        {
-                          height: "6vh",
-                        },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                        {
-                          height: "6vh",
-                        },
-                    }}
-                  >
+                  <Box height={"5vh"} width={"18%"} id={"summary-button"}>
                     <CustomButton
                       width={"100%"}
                       height={"100%"}

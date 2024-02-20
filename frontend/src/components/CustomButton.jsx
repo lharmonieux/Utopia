@@ -1,5 +1,6 @@
 import { Typography } from "@mui/joy";
 import { useState } from "react";
+import "../assets/css/fullHD.css";
 
 /* eslint-disable react/prop-types */
 const CustomButton = ({
@@ -48,25 +49,6 @@ const CustomButton = ({
         textColor={textColor || "black"}
         fontWeight={600}
         level={level || "title-lg"}
-        sx={{
-          "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 1009px)":
-            {
-              fontSize: "150%",
-            },
-          "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 1008px)":
-            {
-              fontSize: "120%",
-            },
-          "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-            {
-              fontSize: "110%",
-            },
-          "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-            {
-              fontSize: "100%",
-            },
-          fontSize: "200%",
-        }}
       >
         {children}
       </Typography>

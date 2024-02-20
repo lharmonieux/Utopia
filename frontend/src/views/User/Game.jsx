@@ -80,6 +80,8 @@ const Game = () => {
   const [percentFinalAnswer, setPercentFinalAnswer] = useState({});
   const [answersToLogs, setAnswersToLogs] = useState(new Map());
   const [displayRankView, setDisplayRankView] = useState(false);
+  const [displayAnswer, setDisplayAnswer] = useState(false);
+  const [animateText, setAnimateText] = useState(true);
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -501,6 +503,7 @@ const Game = () => {
                 level="h3"
                 textColor={colors.titleBackLight}
                 fontWeight={400}
+                id={"modal-title"}
               >
                 {feedback.title}
               </Typography>
@@ -519,18 +522,7 @@ const Game = () => {
                 textColor={"black"}
                 animated={true}
                 textAlign={"justify"}
-                style={{
-                  width: "80%",
-                  "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-width: 858px)":
-                    {
-                      fontSize: "110%",
-                    },
-                  "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-width: 858px)":
-                    {
-                      fontSize: "90%",
-                      marginTop: "10%",
-                    },
-                }}
+                id={"modal-text"}
               />
 
               {/* Text area for some answers */}
@@ -546,7 +538,10 @@ const Game = () => {
                     }
                     rows={6}
                     cols={45}
-                    style={{ resize: "none" }}
+                    style={{
+                      resize: "none",
+                      fontSize: window.innerWidth >= 1920 ? "1.7em" : "1em",
+                    }}
                   />
 
                   {!answerModal.hasAnswer && (
@@ -715,8 +710,7 @@ const Game = () => {
                   level="h3"
                   textColor={"white"}
                   fontWeight={400}
-                  sx={{
-                  }}
+                  id={"end-modal-title"}
                 >{`Résolution de l'ACTE ${stateActs.currentAct?.chapter}`}</Typography>
               </Box>
 
@@ -742,14 +736,11 @@ const Game = () => {
                       sentence={resolutionText}
                       animated={true}
                       backgroundText={"rgba(70, 8, 134, 0.7)"}
+                      padding={"5%"}
                       onComplete={function () {
                         setDisplayRankView(true);
                       }}
-                      style={{
-                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":{
-                          padding: "5%"
-                        }
-                      }}
+                      id={"end-modal-res-text"}
                     />
                   </>
                 ) : (
@@ -927,6 +918,8 @@ const Game = () => {
     setTextareaValue(new Map(textareaValue));
     percentAnswers.clear();
     setPercentAnswers(new Map(percentAnswers));
+    setDisplayAnswer(false);
+    setAnimateText(true);
   };
 
   // Manage for the next element to display
@@ -1134,28 +1127,11 @@ const Game = () => {
         >
           <ModalClose variant="outlined" />
           <DialogTitle
+            id={"modal-scale-feedback-title"}
             sx={{
               marginTop: "10%",
               marginLeft: "45%",
               color: colors.titleBackLight,
-              "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)": {
-                fontSize: "110%",
-                marginTop: "13%"
-              },
-              "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)": {
-                fontSize: "110%",
-                marginTop: "18%"
-              },
-              "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)": {
-                fontSize: "110%",
-                marginTop: "15%",
-                marginLeft: "38%"
-              },
-              "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)": {
-                fontSize: "110%",
-                marginTop: "26%",
-                marginLeft: "38%"
-              }    
             }}
           >
             Votre devise
@@ -1170,15 +1146,7 @@ const Game = () => {
             justifyContent={"space-evenly"}
             alignItems={"center"}
           >
-            <Typography
-              textAlign={"justify"}
-              sx={{
-                "@media screen and (min-width: 1920px)": {
-                  fontSize: "1.15em",
-                  padding: 3,
-                },
-              }}
-            >
+            <Typography textAlign={"justify"} id={"modal-scale-feedback-text"}>
               En se basant sur vos notes, la devise qui vous convient le mieux
               est :{" "}
               <Typography fontWeight={800}>
@@ -1394,29 +1362,61 @@ const Game = () => {
                                 >
                                   <DisplayingText
                                     sentence={questionContent.text}
-                                    level={
-                                      questionContent.textLevel || "title-md"
-                                    }
+                                    level={questionContent.textLevel || "h4"}
                                     textColor={questionContent.textColor}
                                     padding={5}
                                     textAlign={"center"}
                                     marginLeft={`${questionContent.marginLeft}%`}
-                                    animated={true}
-                                    style={{
-                                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-                                        {
-                                          fontSize: "90%",
-                                          padding: "5%"
-                                        },
-                                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                                        {
-                                          fontSize: "90%",
-                                          padding: "3%"
-                                        },
+                                    animated={animateText}
+                                    onComplete={function () {
+                                      setDisplayAnswer(true);
+                                      setAnimateText(false);
                                     }}
+                                    id={"question-text"}
                                   />
                                 </Box>
-                                {answerToDisplay(questionContent)}
+
+                                {/* Answer content */}
+                                {displayAnswer && (
+                                  <Box
+                                    id="box-answer"
+                                    width={
+                                      stateActs.currentQuestion?.visual
+                                        ?.directionAnswer == "row" ||
+                                      stateActs?.currentQuestion
+                                        ?.additionalContent.length > 0
+                                        ? "100%"
+                                        : `
+                                  ${
+                                    (0.9 -
+                                      questionContent?.backgroundImg?.width) *
+                                    100
+                                  }%`
+                                    }
+                                    height={
+                                      stateActs.currentQuestion?.visual
+                                        ?.directionAnswer == "row"
+                                        ? `${
+                                            (0.9 -
+                                              questionContent?.backgroundImg
+                                                ?.height) *
+                                            100
+                                          }%`
+                                        : "90%"
+                                    }
+                                    className={
+                                      questionContent?.answerType?.name !=
+                                        "texte" &&
+                                      questionContent?.answerType?.name !=
+                                        "texte_ville" &&
+                                      questionContent?.answerType?.name !=
+                                        "texte_fete" &&
+                                      "zoom-in"
+                                    }
+                                  >
+                                    {answerToDisplay(questionContent)}
+                                  </Box>
+                                )}
                               </Box>
                             );
                           }

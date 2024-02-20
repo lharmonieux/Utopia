@@ -21,6 +21,7 @@ import { loginFail, setToken } from "../utils/redux/authSlice.js";
 import apiRequest from "../api/requestAPI.js";
 import { textAreaStyle } from "../utils/cssReact.js";
 import CustomButton from "../components/CustomButton.jsx";
+import "../assets/css/fullHD.css";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -141,82 +142,23 @@ const Home = () => {
                   height={"100%"}
                   display={"flex"}
                   flexDirection={"column"}
-                  sx={{
-                    marginTop: "15%",
-                  }}
+                  justifyContent={"space-evenly"}
+                  alignItems={"center"}
                 >
                   <Typography
                     textColor={colors.titleBackDark}
                     level="h2"
                     textAlign={"center"}
-                    sx={{
-                      "@media screen and (min-width: 2560px) and (min-height: 1906px)":
-                        {
-                          fontSize: "3.5em",
-                          padding: "5%",
-                        },
-                      "@media screen and (min-width: 2560px) and (min-height: 1285px) and (max-height: 1905px)":
-                        {
-                          fontSize: "3.5em",
-                          padding: "0% 2% 0% 2%",
-                        },
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 1009px)":
-                        {
-                          fontSize: "2em",
-                          padding: "5%",
-                        },
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 1008px)":
-                        {
-                          fontSize: "1.8em",
-                          padding: "0% 5% 0% 5%",
-                        },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-                        {
-                          fontSize: "1.4em",
-                          padding: "7% 5% 0% 5%",
-                        },
-                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                        {
-                          fontSize: "1.2em",
-                          padding: "0% 10% 0% 10%",
-                        },
-                    }}
+                    paddingLeft={"15%"}
+                    id={"home-left-title"}
                   >
                     Bienvenue cher visiteur !
                   </Typography>
                   <Typography
                     padding={3}
                     textColor={"white"}
-                    level="body-sm"
+                    level="body-lg"
                     textAlign={"center"}
-                    sx={{
-                      "@media screen and (min-width: 2560px) and (min-height: 1906px)":
-                        {
-                          fontSize: "2em",
-                          padding: "10%",
-                        },
-                      "@media screen and (min-width: 2560px) and (min-height: 1285px) and (max-height: 1905px)":
-                        {
-                          fontSize: "1.8em",
-                          padding: "4%",
-                        },
-
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 1009px)":
-                        {
-                          fontSize: "1.2em",
-                          padding: "5%",
-                        },
-                        "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 1008px)":
-                        {
-                          fontSize: "0.9em",
-                          padding: "2% 5% 0% 5%",
-                        },
-                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                        {
-                          fontSize: "0.8em",
-                          padding: "5% 10% 0% 10%",
-                        },
-                    }}
                   >
                     {`Vous allez être plongés dans une aventure extraordinaire, dans
                 laquelle vous incarnerez un héros en proie à des choix décisifs
@@ -233,38 +175,6 @@ const Home = () => {
                     textColor={colors.titleBackDark}
                     level="h3"
                     textAlign={"center"}
-                    sx={{
-                      "@media screen and (min-width: 2560px) and (min-height: 1906px)":
-                        {
-                          fontSize: "3em",
-                          padding: "10%",
-                        },
-                      "@media screen and (min-width: 2560px) and (min-height: 1285px) and (max-height: 1905px) ":
-                        {
-                          fontSize: "2.3em",
-                          padding: "2%",
-                        },
-                      "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 1009px)":
-                        {
-                          fontSize: "1.7em",
-                          padding: "5%",
-                        },
-                        "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 1008px)":
-                        {
-                          fontSize: "1.3em",
-                          padding: "2% 5% 0% 5%",
-                        },
-                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-                        {
-                          fontSize: "1em",
-                          padding: "7% 5% 0% 5%",
-                        },
-                        "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                        {
-                          fontSize: "1em",
-                          padding: "0% 10% 0% 10%",
-                        },
-                    }}
                   >
                     Vous êtes prêts ?
                   </Typography>
@@ -291,16 +201,7 @@ const Home = () => {
                   marginTop={"15%"}
                   spacing={1}
                 >
-                  <Typography
-                    level="h3"
-                    textColor={"white"}
-                    fontWeight={400}
-                    sx={{
-                      "@media screen and (min-width: 2560px)": {
-                        fontSize: "2.5em",
-                      },
-                    }}
-                  >
+                  <Typography level="h3" textColor={"white"} fontWeight={400}>
                     Se connecter
                   </Typography>
 
@@ -325,7 +226,7 @@ const Home = () => {
                             placeholder: "Email...",
                             ...textAreaStyle,
                             fontSize:
-                              window.innerWidth >= 1920 ? "1.5em" : "1em",
+                              window.innerWidth >= 1920 ? "1.4em" : "1.2em",
                           }}
                         />
                       </Box>
@@ -344,7 +245,8 @@ const Home = () => {
                           type="password"
                           style={{
                             placeholder: "Mot de passe...",
-                            fontSize: 15,
+                            fontSize:
+                              window.innerWidth >= 1920 ? "1.4em" : "1.2em",
                             ...textAreaStyle,
                           }}
                         />
@@ -382,30 +284,21 @@ const Home = () => {
                     textColor={"white"}
                     fontWeight={500}
                     textAlign={"center"}
+                    level="body-lg"
                     sx={{
                       cursor: "pointer",
                       "&:hover": {
                         backgroundColor: colors.buttonDarkHover,
                       },
                       borderRadius: 5,
-                      "@media screen and (min-width: 1920px)": {
-                        fontSize: "1.8em",
-                      },
                     }}
                     onClick={() => setOpenRegisterModal(true)}
                   >
                     Pas encore de compte ? Créez le ici
                   </Typography>
                   {authState.error && (
-                    <Alert
-                      sx={{
-                        "@media screen and (min-width: 2560px)": {
-                          fontSize: "1.8em",
-                        },
-                      }}
-                      color="danger"
-                    >
-                      {authState.error}
+                    <Alert color="danger">
+                      <Typography level="body-md">{authState.error}</Typography>
                     </Alert>
                   )}
                 </Stack>

@@ -20,23 +20,34 @@ const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
     setTextareaValue(newTextareaValue);
   };
 
+  console.log("rendu");
+
   return (
     <Box
-      width={`${questionContent?.textArea?.width * 100}%`}
-      height={`${questionContent?.textArea?.height * 100}%`}
-      sx={{
-        backgroundImage: `url(${PICTURES_DIR}/${questionContent?.textArea?.img})`,
-        backgroundSize: "100% 100%",
-      }}
+      width={"100%"}
+      height={"100%"}
+      display={"flex"}
+      justifyContent={"center"}
+      alignItems={"center"}
     >
-      <textarea
-        value={textareaValue.get(questionContent.text)?.answerText}
-        onChange={(e) => handleFormValue(e)}
-        onKeyDown={(e) =>
-          questionContent.answerType?.name == "texte_ville" && handleKeyDown(e)
-        }
-        style={textAreaStyle}
-      />
+      <Box
+        width={`${questionContent?.textArea?.width * 100}%`}
+        height={`${questionContent?.textArea?.height * 100}%`}
+        sx={{
+          backgroundImage: `url(${PICTURES_DIR}/${questionContent?.textArea?.img})`,
+          backgroundSize: "100% 100%",
+        }}
+      >
+        <textarea
+          value={textareaValue.get(questionContent.text)?.answerText}
+          onChange={(e) => handleFormValue(e)}
+          onKeyDown={(e) =>
+            questionContent.answerType?.name == "texte_ville" &&
+            handleKeyDown(e)
+          }
+          style={textAreaStyle}
+        />
+      </Box>
     </Box>
   );
 };

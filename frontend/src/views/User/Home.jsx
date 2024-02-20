@@ -8,6 +8,7 @@ import "animate.css";
 import CustomButton from "../../components/CustomButton";
 import { colors } from "../../utils/colors";
 import { ReactTyped } from "react-typed";
+import "../../assets/css/fullHD.css";
 
 const Home = () => {
   const stateActs = useSelector((state) => state.act);
@@ -29,7 +30,7 @@ const Home = () => {
       flexDirection={"column"}
       sx={{
         backgroundImage: `url(${backgroundImg})`,
-        backgroundSize: `cover`,
+        backgroundSize: `100% 100%`,
       }}
       className={"animate__animated animate__zoomIn"}
     >
@@ -45,18 +46,13 @@ const Home = () => {
       <Box width={"70%"}>
         <Typography
           textColor={"white"}
-          level="title-lg"
+          level={"h3"}
           fontWeight={500}
           textAlign={"justify"}
+          padding={"5%"}
+          borderRadius={10}
           sx={{
-            "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
-              {
-                fontSize: "1.4em",
-              },
-            "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px) ":
-              {
-                fontSize: "1em",
-              },
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
           }}
         >
           <ReactTyped
@@ -69,9 +65,8 @@ const Home = () => {
             showCursor={false}
             style={{
               whiteSpace: "pre-line",
-              backgroundColor: "rgba(0, 0, 0, 0.6)",
-              borderRadius: 5,
             }}
+            id="home-text"
           />
         </Typography>
       </Box>
@@ -79,7 +74,7 @@ const Home = () => {
       {/* navigation */}
       <Box
         width={"40%"}
-        height={"10%"}
+        height={"7%"}
         display={"flex"}
         justifyContent={"space-evenly"}
         alignItems={"center"}
@@ -104,11 +99,6 @@ const Home = () => {
         <Box
           width={"30%"}
           height={"100%"}
-          sx={{
-            "@media screen and (min-width: 1200px) and (max-width: 1920px)": {
-              width: "35%",
-            },
-          }}
         >
           <CustomButton
             width={"100%"}
