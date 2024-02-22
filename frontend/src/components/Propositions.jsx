@@ -7,8 +7,6 @@ import { AiFillLike, AiFillDislike } from "react-icons/ai";
 import { useEffect } from "react";
 import DisplayingText from "./DisplayingText";
 import { selectionEffect } from "../utils/cssReact";
-import { TbArrowBigDownFilled, TbArrowBigUpFilled } from "react-icons/tb";
-import ButtonNavScroll from "./ButtonNavScroll";
 import CustomButton from "./CustomButton";
 import { GrPowerReset } from "react-icons/gr";
 import "animate.css";
@@ -21,7 +19,6 @@ const Propositions = ({
   questionContent,
 }) => {
   const stateActs = useSelector((state) => state.act);
-  const stateUser = useSelector((state) => state.user);
 
   useEffect(() => {
     // Initializing of percent values for propositions
@@ -257,7 +254,6 @@ const Propositions = ({
   return (
     // Waiting of datas
     stateActs.currentQuestion ? (
-      <>
         <Box
           width={"100%"}
           height={"100%"}
@@ -416,81 +412,8 @@ const Propositions = ({
                 </Box>
               </Box>
             ))}
-
-            {/* additionnal content  */}
-            {stateActs.currentQuestion.additionalContent.length > 0 &&
-              stateActs.currentQuestion.additionalContent.map((element) => {
-                const isVignette = element.img.includes(
-                  "stateUser.secondCharacter.vignette"
-                );
-                const img = element.img.replace(
-                  "stateUser.secondCharacter.vignette",
-                  stateUser.secondCharacter.vignette
-                );
-                return (
-                  <Box
-                    key={element._id}
-                    position={"absolute"}
-                    width={`${element.scale.width * 100}%`}
-                    height={`${element.scale.height * 100}%`}
-                    top={`${element.position.top}%`}
-                    left={`${element.position.left}%`}
-                    display={"flex"}
-                    alignItems={"center"}
-                    sx={{
-                      backgroundImage: `url(${PICTURES_DIR}/${img})`,
-                      backgroundSize: "100% 100%",
-                      borderRadius: isVignette ? 30 : 0,
-                    }}
-                  >
-                    <Typography
-                      level={element?.textLevel || "title-sm"}
-                      textAlign={"center"}
-                      padding={"5%"}
-                      sx={{
-                        color: element?.textColor || "black",
-                      }}
-                    >
-                      <DisplayingText
-                        sentence={element.text}
-                        animated={false}
-                        textAlign={"justify"}
-                        id={"add-content-text"}
-                      />
-                    </Typography>
-                  </Box>
-                );
-              })}
           </Stack>
         </Box>
-        {/* Nav Buttons */}
-        <ButtonNavScroll
-          id="up-nav-button"
-          color="warning"
-          directionScroll={-1}
-          left={-10}
-          top={45}
-          height={0.1}
-          idContainer={"proposition-container"}
-          widthMove={200}
-          alignMvnt={"column"}
-        >
-          <TbArrowBigUpFilled />
-        </ButtonNavScroll>
-        <ButtonNavScroll
-          id="down-nav-button"
-          color="warning"
-          directionScroll={1}
-          left={-10}
-          top={60}
-          height={0.1}
-          idContainer={"proposition-container"}
-          widthMove={200}
-          alignMvnt={"column"}
-        >
-          <TbArrowBigDownFilled />
-        </ButtonNavScroll>{" "}
-      </>
     ) : (
       <Box
         height={"100%"}

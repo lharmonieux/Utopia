@@ -33,6 +33,7 @@ import {
 const PreFetch = () => {
   const authState = useSelector((state) => state.auth);
   const stateUser = useSelector((state) => state.user);
+  const stateActs = useSelector((state) => state.act);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -52,6 +53,7 @@ const PreFetch = () => {
               })
             );
           } else {
+            dispatch(setToken({ token: null, error: response?.data?.message }));
             dispatch(createUserError(response?.data?.message));
             navigate("/");
           }
@@ -185,46 +187,16 @@ const PreFetch = () => {
       });
   }, [authState.token]);
 
-  //CRUD
-  // useEffect(() => {
-  // Update Act
-  //   if (newActs.type == "updated") {
-  //     axios
-  //       .put(
-  //         `${import.meta.env.VITE_REACT_URL_BACK}/acts/${newActs.idAct}`,
-  //         newActs.act
-  //       )
-  //       .then(() => {
-  //         setRefresh((refresh) => ++refresh);
-  //       })
-  //       .catch((error) => {
-  //         console.log(error.message);
-  //       });
-  //   }
-  //   // Delete Act
-  //   else if (newActs.type == "deleted") {
-  //     axios
-  //       .delete(`${import.meta.env.VITE_REACT_URL_BACK}/acts/${newActs.idAct}`)
-  //       .then(() => setRefresh((refresh) => ++refresh))
-  //       .catch((error) => console.log(error.message));
-  //   }
-  // }, [newActs]);
-
-  // useEffect(() => {
-  //   setMainContentDOM(document.querySelector("#main-content"));
-
-  //   if (mainContentDOM) {
-  //     // Main content sizes
-  //     setWidthMainContent(mainContentDOM.clientWidth);
-  //     setHeightMainContent(mainContentDOM.clientHeight);
-  //   }
-
-  //   if (widthMainContent && heightMainContent)
-  //     dispatch(
-  //       setSizes({ width: widthMainContent, height: heightMainContent })
-  //     );
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [mainContentDOM, widthMainContent, heightMainContent, loading]);
+  // Background Music Manager
+  useEffect(() => {
+    if (authState.token) {
+      const audioPlayer = document.querySelector("#audio-player");
+      if (audioPlayer) {
+        console.log("here");
+        audioPlayer.volume = 0.05;
+      }
+    }
+  }, [authState.token]);
 
   return !loading ? (
     <CssVarsProvider theme={typographyTheme}>
@@ -246,6 +218,12 @@ const PreFetch = () => {
           id={"main-content"}
           position={"relative"}
         >
+          <audio autoPlay={true} loop={true} id="audio-player">
+            <source
+              src={stateActs.currentAct?.backgroundSong}
+              type="audio/mp3"
+            />
+          </audio>
           <Outlet />
         </Box>
       </GlobalContainer>
