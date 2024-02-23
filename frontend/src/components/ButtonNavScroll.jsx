@@ -25,7 +25,7 @@ const ButtonNavScroll = ({
         position: "absolute",
         left: left,
         top: top,
-        zIndex: 2,
+        zIndex: 1000,
         height: height,
       }}
     >

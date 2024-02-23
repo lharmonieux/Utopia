@@ -45,7 +45,7 @@ const Home = () => {
       <Box width={"70%"}>
         <Typography
           textColor={"white"}
-          level={"h3"}
+          level={"h4"}
           fontWeight={500}
           textAlign={"justify"}
           padding={"5%"}

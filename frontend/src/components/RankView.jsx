@@ -7,13 +7,14 @@ import "../assets/css/fullHD.css";
 const RankView = ({ text }) => {
   return (
     <Box
-      width={"70%"}
+      width={"80%"}
       height={"30%"}
       display={"flex"}
       justifyContent={"center"}
       alignItems={"center"}
       marginTop={"5%"}
       className={"animate__animated animate__zoomIn"}
+      id={"rank-view-text"}
       sx={{
         backgroundImage: `url(${PICTURES_DIR}/rankImg.svg)`,
         backgroundSize: "100% 100%",

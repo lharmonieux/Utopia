@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../api/userAPi";
-import { createUserError, createUserSuccess } from "../utils/redux/userSlice";
+import { setErrorRegister, setSuccessRegister } from "../utils/redux/userSlice";
 import CustomButton from "./CustomButton";
 import { colors } from "../utils/colors";
 import { InputRegister } from "./Input";
@@ -49,11 +49,11 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
     const result = createUser({ firstname, lastname, email, password });
     result
       .then((response) => {
-        if (response) dispatch(createUserSuccess(response.data.message));
+        if (response) dispatch(setSuccessRegister(response.data.message));
         setLoading(false);
       })
       .catch((error) => {
-        dispatch(createUserError(error.response.data.message));
+        dispatch(setErrorRegister(error.response.data.message));
         setLoading(false);
       });
   };
@@ -62,7 +62,8 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
     <Modal
       open={openRegisterModal}
       onClose={() => {
-        dispatch(createUserSuccess(null));
+        dispatch(setSuccessRegister(null));
+        dispatch(setErrorRegister(null));
         setOpenRegisterModal(false);
       }}
     >
@@ -134,16 +135,18 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
         </form>
 
         {/* feedback server  */}
-        {creationState.error && (
+        {creationState.errorRegister && (
           <Alert color={"danger"}>
-            <Typography level="body-md">{creationState.error}</Typography>
+            <Typography level="body-md">
+              {creationState.errorRegister}
+            </Typography>
           </Alert>
         )}
 
-        {creationState.successLogin && (
+        {creationState.succesRegister && (
           <Alert color={"success"}>
             <Typography level="body-md">
-              {creationState.successLogin}
+              {creationState.succesRegister}
             </Typography>
           </Alert>
         )}

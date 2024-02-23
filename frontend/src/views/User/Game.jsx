@@ -83,6 +83,10 @@ const Game = () => {
   const [answersToLogs, setAnswersToLogs] = useState(new Map());
   const [displayRankView, setDisplayRankView] = useState(false);
   const [timer, setTimer] = useState(null);
+  const [displayVerticalNav, setDisplayVerticalNav] = useState(true);
+  const [isAnswerDisplayed, setIsAnswerDisplayed] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
+  const [currentQuestionOK, setCurrentQuestionOK] = useState(false);
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -137,33 +141,15 @@ const Game = () => {
           setScoresThematic(newScoresThematic);
           setShowMainContent(true);
         }
+        setCurrentQuestionOK(true);
       }
 
       if (fullContentBox) {
         if (stateActs.currentQuestion) {
-          // Display question Box
-          let timer;
-          for (let questionContent of stateActs.currentQuestion.content) {
-            const questionBox = document.querySelector(
-              `#question-box-${questionContent._id}`
-            );
-            if (questionBox) {
-              timer = setTimeout(() => {
-                questionBox.style.display = "flex";
-                timer = setTimeout(() => {
-                  const answerBox = document.querySelector(
-                    `#answer-box-${questionContent._id}`
-                  );
-                  if (answerBox) answerBox.style.display = "block";
-                }, 2500);
-              }, 1000);
-            }
-          }
-          setTimer(timer);
-
-          // For manage multi-form
+          // For manage multi-form and if we must to display vertical nav buttons
           const allTextareas = new Map();
-          for (let content of stateActs.currentQuestion.content)
+          let isPersonnagePage = false;
+          for (let content of stateActs.currentQuestion.content) {
             if (
               content?.answerType?.name == "texte" ||
               content?.answerType?.name == "texte_ville" ||
@@ -173,8 +159,12 @@ const Game = () => {
                 answerText: "",
                 answerType: "",
               });
-            }
+            } else if (content?.answerType?.name == "personnage")
+              isPersonnagePage = true;
+          }
+
           setTextareaValue(allTextareas);
+          setDisplayVerticalNav(!isPersonnagePage);
 
           //Loading of question's datas
           // If we are at the end of act, load the end act's image
@@ -201,6 +191,60 @@ const Game = () => {
     showMainContent,
     openFeedbackModal,
     openScaleModal,
+  ]);
+
+  // Animations
+  useEffect(() => {
+    if (
+      currentQuestionOK &&
+      !animationStarted &&
+      stateActs.currentQuestion?.content[0].answerType.name != "texte_fete"
+    ) {
+      setAnimationStarted(true);
+    } else if (
+      stateActs.currentQuestion?.content[0].answerType.name == "texte_fete"
+    )
+      setAnimationStarted(false);
+
+    if (animationStarted) {
+      // Display question Box
+      const questionBox = document.getElementById("question-box");
+
+      if (questionBox) {
+        // eslint-disable-next-line no-unused-vars
+        const isQuestionfinishedAnim = new Promise((resolve, reject) => {
+          const timerQuestion = setTimeout(() => {
+            questionBox.style.display = "flex";
+            resolve("question displaying");
+          }, 1000);
+
+          return () => clearTimeout(timerQuestion);
+        });
+
+        isQuestionfinishedAnim.then(() => {
+          // eslint-disable-next-line no-unused-vars
+          const isAnswerFinishedAnim = new Promise((resolve, reject) => {
+            const timerAnswer = setTimeout(() => {
+              const answerBox = document.getElementById("answer-box");
+              if (answerBox) {
+                answerBox.style.display = "block";
+                resolve(true);
+              }
+            }, 2500);
+            return () => clearTimeout(timerAnswer);
+          });
+
+          isAnswerFinishedAnim.then(() => {
+            setIsAnswerDisplayed(true);
+          });
+        });
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentQuestionOK,
+    animationStarted,
+    showMainContent,
   ]);
 
   const updateStoreAnswer = (selectedAnswer, answerType) => {
@@ -485,6 +529,7 @@ const Game = () => {
             position: "relative",
             paddingTop: "5%",
           }}
+          id={"modal-feedback-box"}
         >
           <ModalClose variant="outlined" />
           <Box
@@ -500,7 +545,7 @@ const Game = () => {
             <Typography
               level="h3"
               textColor={colors.titleBackLight}
-              fontWeight={400}
+              fontWeight={600}
               id={"modal-title"}
             >
               {feedback.title}
@@ -513,6 +558,7 @@ const Game = () => {
             flexDirection={"column"}
             alignItems={"center"}
             justifyContent={"space-evenly"}
+            marginTop={"5%"}
           >
             <DisplayingText
               sentence={feedback.content}
@@ -917,6 +963,8 @@ const Game = () => {
     setPercentAnswers(new Map(percentAnswers));
     clearTimeout(timer);
     setTimer(null);
+    setAnimationStarted(false);
+    setCurrentQuestionOK(false);
   };
 
   // Manage for the next element to display
@@ -980,7 +1028,7 @@ const Game = () => {
           "classement" ||
           stateActs?.currentQuestion?.content[0]?.answerType?.name ==
             "classement_symbol") &&
-        storeAnswer.length < stateActs?.currentQuestion?.answers?.length
+        orderedAnswers.length < stateActs?.currentQuestion?.answers?.length
       ) {
         setShowAlertBadAnswerNumber(true);
         return;
@@ -1313,9 +1361,10 @@ const Game = () => {
                                   questionContent?.backgroundImg?.height * 100
                                 }%`}
                                 display={
-                                  stateActs.currentQuestion?.content?.length > 1
-                                    ? "flex"
-                                    : "none"
+                                  stateActs.currentQuestion?.content?.length ==
+                                  1
+                                    ? "none"
+                                    : "flex"
                                 }
                                 justifyContent={"center"}
                                 alignItems={
@@ -1347,11 +1396,8 @@ const Game = () => {
                                   backgroundSize: "100% 100%",
                                   zIndex: 1000,
                                 }}
-                                id={`question-box-${questionContent._id}`}
-                                className={
-                                  stateActs.currentQuestion?.content?.length ==
-                                    1 && "fade-in"
-                                }
+                                id={`question-box`}
+                                className={animationStarted ? "fade-in" : ""}
                               >
                                 <DisplayingText
                                   sentence={questionContent.text}
@@ -1366,7 +1412,7 @@ const Game = () => {
 
                               {/* Answer content */}
                               <Box
-                                id={`answer-box-${questionContent._id}`}
+                                id={`answer-box`}
                                 width={
                                   stateActs.currentQuestion?.visual
                                     ?.directionAnswer == "row" ||
@@ -1392,14 +1438,12 @@ const Game = () => {
                                     : "90%"
                                 }
                                 display={
-                                  stateActs.currentQuestion?.content?.length > 1
-                                    ? "flex"
-                                    : "none"
-                                }
-                                className={
                                   stateActs.currentQuestion?.content?.length ==
-                                    1 && "zoom-in"
+                                  1
+                                    ? "none"
+                                    : "flex"
                                 }
+                                className={animationStarted ? "zoom-in" : ""}
                                 sx={{ zIndex: 1000 }}
                               >
                                 {answerToDisplay(questionContent)}
@@ -1408,6 +1452,8 @@ const Game = () => {
                               {/* additionnal content  */}
                               {stateActs.currentQuestion.additionalContent
                                 .length > 0 &&
+                                stateActs.currentQuestion?.content[0]
+                                  ?.answerType?.name != "town" &&
                                 stateActs.currentQuestion.additionalContent.map(
                                   (element) => {
                                     const isVignette = element.img.includes(
@@ -1499,34 +1545,36 @@ const Game = () => {
                     </Box>
 
                     {/* Nav Buttons for proposition's answers*/}
-                    <Box position={"absolute"} height={"30%"} width={"10%"}>
-                      <ButtonNavScroll
-                        id="up-nav-button"
-                        color="warning"
-                        directionScroll={-1}
-                        left={"-60%"}
-                        top={"-160%"}
-                        height={0.1}
-                        idContainer={"proposition-container"}
-                        widthMove={200}
-                        alignMvnt={"column"}
-                      >
-                        <TbArrowBigUpFilled />
-                      </ButtonNavScroll>
-                      <ButtonNavScroll
-                        id="down-nav-button"
-                        color="warning"
-                        directionScroll={1}
-                        left={"-60%"}
-                        top={"-130%"}
-                        height={0.1}
-                        idContainer={"proposition-container"}
-                        widthMove={200}
-                        alignMvnt={"column"}
-                      >
-                        <TbArrowBigDownFilled />
-                      </ButtonNavScroll>
-                    </Box>
+                    {displayVerticalNav && isAnswerDisplayed && (
+                      <Box bgcolor={'red'}>
+                        <ButtonNavScroll
+                          id="up-nav-button"
+                          color="warning"
+                          directionScroll={-1}
+                          left={"-10%"}
+                          top={"40%"}
+                          height={0.05}
+                          idContainer={"proposition-container"}
+                          widthMove={200}
+                          alignMvnt={"column"}
+                        >
+                          <TbArrowBigUpFilled />
+                        </ButtonNavScroll>
+                        <ButtonNavScroll
+                          id="down-nav-button"
+                          color="warning"
+                          directionScroll={1}
+                          left={"-10%"}
+                          top={"50%"}
+                          height={0.05}
+                          idContainer={"proposition-container"}
+                          widthMove={200}
+                          alignMvnt={"column"}
+                        >
+                          <TbArrowBigDownFilled />
+                        </ButtonNavScroll>
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               </>

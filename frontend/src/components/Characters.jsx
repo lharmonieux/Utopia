@@ -37,6 +37,7 @@ const Characters = ({
     <Box
       height={`100%`}
       width={"100%"}
+      position={"relative"}
       // sx={{
       //   "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
       //     {
@@ -155,8 +156,8 @@ const Characters = ({
 
       <ButtonNavScroll
         id="left-nav-button"
-        left={-7}
-        top={40}
+        left={"-5%"}
+        top={"30%"}
         height={0.3}
         directionScroll={-1}
         color="warning"
@@ -168,8 +169,8 @@ const Characters = ({
       </ButtonNavScroll>
       <ButtonNavScroll
         id="right-nav-button"
-        left={100}
-        top={40}
+        left={"100%"}
+        top={"30%"}
         height={0.3}
         directionScroll={1}
         color="warning"
