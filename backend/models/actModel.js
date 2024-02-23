@@ -36,6 +36,7 @@ const actSchema = new mongoose.Schema({
     titleImg: String,
     logoAppImg: String,
   },
+  backgroundSong: String,
   questions: [
     {
       content: [
@@ -54,7 +55,7 @@ const actSchema = new mongoose.Schema({
           textArea: {
             width: Number,
             height: Number,
-            img: String
+            img: String,
           },
           answerType: {
             type: mongoose.SchemaTypes.ObjectId,
@@ -114,11 +115,13 @@ const actSchema = new mongoose.Schema({
             text: {
               text: String,
               secondText: String,
+              secondTextColor: String,
               hiddenText: Boolean,
               textLevel: String,
+              textBackground: String,
               position: {
                 marginLeft: Number,
-                marginTop: Number
+                marginTop: Number,
               },
             },
             textColor: String,

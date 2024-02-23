@@ -22,6 +22,7 @@ import apiRequest from "../api/requestAPI.js";
 import { textAreaStyle } from "../utils/cssReact.js";
 import CustomButton from "../components/CustomButton.jsx";
 import "../assets/css/fullHD.css";
+import "../assets/css/1600screen.css";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -118,7 +119,11 @@ const Home = () => {
             }}
             className={"animate__animated animate__zoomIn animate__slow"}
           >
-            {stateUser.error && <Alert color="danger">{stateUser.error}</Alert>}
+            {stateUser.error && (
+              <Alert color="danger">
+                <Typography id={"error-text"}>{stateUser.error}</Typography>{" "}
+              </Alert>
+            )}
             <Box
               height={"100%"}
               width={"100%"}
@@ -159,6 +164,7 @@ const Home = () => {
                     textColor={"white"}
                     level="body-lg"
                     textAlign={"center"}
+                    id={"home-main-left-text"}
                   >
                     {`Vous allez être plongés dans une aventure extraordinaire, dans
                 laquelle vous incarnerez un héros en proie à des choix décisifs
@@ -175,6 +181,7 @@ const Home = () => {
                     textColor={colors.titleBackDark}
                     level="h3"
                     textAlign={"center"}
+                    id={"home-ready-text"}
                   >
                     Vous êtes prêts ?
                   </Typography>

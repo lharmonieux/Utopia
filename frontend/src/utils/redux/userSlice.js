@@ -8,6 +8,8 @@ const userSlice = createSlice({
     lastname: null,
     successLogin: null,
     error: null,
+    successRegister: null,
+    errorRegister: null,
     character: null,
     secondCharacter: null,
     currentAct: null,
@@ -95,6 +97,14 @@ const userSlice = createSlice({
       state.idUser = action.payload;
       return state;
     },
+    setSuccessRegister: (state, action)=>{
+      state.successRegister = action.payload;
+      return state;
+    },
+    setErrorRegister: (state, action)=>{
+      state.errorRegister = action.payload;
+      return state;
+    }
   },
 });
 
@@ -114,7 +124,9 @@ export const {
   setCurrentAct,
   setPartyName,
   setSymbol,
-  setFeelings
+  setFeelings,
+  setSuccessRegister,
+  setErrorRegister
 } = userSlice.actions;
 
 export default userSlice.reducer;

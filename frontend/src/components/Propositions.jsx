@@ -7,8 +7,6 @@ import { AiFillLike, AiFillDislike } from "react-icons/ai";
 import { useEffect } from "react";
 import DisplayingText from "./DisplayingText";
 import { selectionEffect } from "../utils/cssReact";
-import { TbArrowBigDownFilled, TbArrowBigUpFilled } from "react-icons/tb";
-import ButtonNavScroll from "./ButtonNavScroll";
 import CustomButton from "./CustomButton";
 import { GrPowerReset } from "react-icons/gr";
 import "animate.css";
@@ -21,7 +19,6 @@ const Propositions = ({
   questionContent,
 }) => {
   const stateActs = useSelector((state) => state.act);
-  const stateUser = useSelector((state) => state.user);
 
   useEffect(() => {
     // Initializing of percent values for propositions
@@ -177,10 +174,7 @@ const Propositions = ({
                 textAlign: "center",
                 width: "90%",
                 height: "100%",
-                fontSize:
-                  window.innerWidth >= 1440 && window.innerWidth <= 2559
-                    ? "1.1em"
-                    : "0.9em",
+                fontSize: window.innerWidth >= 1920 ? "1.4em" : "1.2em",
               }}
             />
             <CustomButton
@@ -257,240 +251,172 @@ const Propositions = ({
   return (
     // Waiting of datas
     stateActs.currentQuestion ? (
-      <>
-        <Box
+      <Box
+        width={"100%"}
+        height={"100%"}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        id={"proposition-container"}
+        sx={{
+          overflow: "scroll",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          "&::-webkit-scrollbar": { display: "none" },
+        }}
+      >
+        <Stack
           width={"100%"}
           height={"100%"}
           display={"flex"}
-          justifyContent={"center"}
+          justifyContent="space-evenly"
           alignItems={"center"}
+          flexWrap={
+            !stateActs.currentQuestion?.additionalContent.length > 0 && "wrap"
+          }
+          direction={stateActs.currentQuestion?.visual?.directionAnswer}
+          useFlexGap
+          left={
+            stateActs.currentQuestion?.additionalContent.length > 0 &&
+            stateActs.currentQuestion?.visual?.boxAnswersImg &&
+            `${stateActs.currentQuestion?.visual?.boxAnswersImg?.left}%`
+          }
+          top={
+            stateActs.currentQuestion?.additionalContent.length > 0 &&
+            stateActs.currentQuestion?.visual?.boxAnswersImg &&
+            `${stateActs.currentQuestion?.visual?.boxAnswersImg?.top}%`
+          }
           sx={{
-            overflow: "scroll",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            "&::-webkit-scrollbar": { display: "none" },
+            backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.boxAnswersImg?.img})`,
+            backgroundSize: "100% 100%",
+            gap: "1%",
           }}
         >
-          <Stack
-            width={"100%"}
-            height={"100%"}
-            display={"flex"}
-            justifyContent="space-evenly"
-            alignItems={"center"}
-            flexWrap={
-              !stateActs.currentQuestion?.additionalContent.length > 0 && "wrap"
-            }
-            direction={stateActs.currentQuestion?.visual?.directionAnswer}
-            useFlexGap
-            left={
-              stateActs.currentQuestion?.additionalContent.length > 0 &&
-              stateActs.currentQuestion?.visual?.boxAnswersImg &&
-              `${stateActs.currentQuestion?.visual?.boxAnswersImg?.left}%`
-            }
-            top={
-              stateActs.currentQuestion?.additionalContent.length > 0 &&
-              stateActs.currentQuestion?.visual?.boxAnswersImg &&
-              `${stateActs.currentQuestion?.visual?.boxAnswersImg?.top}%`
-            }
-            sx={{
-              backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.boxAnswersImg?.img})`,
-              backgroundSize: "100% 100%",
-              gap: "1%",
-            }}
-          >
-            {stateActs.currentQuestion?.answers.map((answer) => (
-              <Box
-                key={answer._id}
-                width={`${
-                  (answer?.content?.img?.width +
-                    (answer?.choiceImg?.img?.width || 0)) *
-                  100
-                }%`}
-                height={`${answer?.content?.img?.height * 100}%`}
-                display={"flex"}
-                flexDirection={
-                  answer.choiceImg && answer.choiceImg.align == "left"
-                    ? "row"
-                    : "row-reverse"
-                }
-                justifyContent={"space-evenly"}
-                alignItems={"center"}
-                position={
-                  stateActs?.currentQuestion?.additionalContent.length > 0
-                    ? "absolute"
-                    : "relative"
-                }
-                left={
-                  stateActs?.currentQuestion?.additionalContent.length > 0
-                    ? `${answer.content.img.left}%`
-                    : 0
-                }
-                top={
-                  stateActs?.currentQuestion?.additionalContent.length > 0
-                    ? `${answer.content.img.top}%`
-                    : 0
-                }
-                zIndex={1}
-              >
-                {/* Box choice visual/area */}
-                {answer.choiceImg && (
-                  <Box
-                    width={`15%`}
-                    height={`60%`}
-                    display={"flex"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    sx={{
-                      backgroundImage: `url(${PICTURES_DIR}/${answer.choiceImg.img.name})`,
-                      backgroundSize: "100% 100%",
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-                        {
-                          height: "45%",
-                        },
-                      "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-                        {
-                          height: "45%",
-                        },
-                    }}
-                  >
-                    {contentChoice(answer)}
-                  </Box>
-                )}
-                {/* Answer Box */}
+          {stateActs.currentQuestion?.answers.map((answer) => (
+            <Box
+              key={answer._id}
+              width={`${
+                (answer?.content?.img?.width +
+                  (answer?.choiceImg?.img?.width || 0)) *
+                100
+              }%`}
+              height={`${answer?.content?.img?.height * 100}%`}
+              display={"flex"}
+              flexDirection={
+                answer.choiceImg && answer.choiceImg.align == "left"
+                  ? "row"
+                  : "row-reverse"
+              }
+              justifyContent={"space-evenly"}
+              alignItems={"center"}
+              position={
+                stateActs?.currentQuestion?.additionalContent.length > 0
+                  ? "absolute"
+                  : "relative"
+              }
+              left={
+                stateActs?.currentQuestion?.additionalContent.length > 0
+                  ? `${answer.content.img.left}%`
+                  : 0
+              }
+              top={
+                stateActs?.currentQuestion?.additionalContent.length > 0
+                  ? `${answer.content.img.top}%`
+                  : 0
+              }
+              zIndex={1}
+            >
+              {/* Box choice visual/area */}
+              {answer.choiceImg && (
                 <Box
-                  width={answer.choiceImg ? `80%` : "100%"}
-                  height={`100%`}
+                  width={`15%`}
+                  height={`60%`}
                   display={"flex"}
                   justifyContent={"center"}
                   alignItems={"center"}
-                  onClick={() =>
-                    questionContent.answerType.name != "pourcentage" &&
-                    handleSelectedProposition(
-                      answer,
-                      questionContent?.answerType?.name,
-                      ""
-                    )
-                  }
-                  sx={[
-                    {
-                      cursor:
-                        questionContent.answerType.name != "pourcentage" &&
-                        "pointer",
-                      backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
-                      backgroundSize: "100% 100%",
-                    },
-                    selectionEffect(answer),
-                  ]}
+                  sx={{
+                    backgroundImage: `url(${PICTURES_DIR}/${answer.choiceImg.img.name})`,
+                    backgroundSize: "100% 100%",
+                    "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                      {
+                        height: "45%",
+                      },
+                    "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                      {
+                        height: "45%",
+                      },
+                  }}
                 >
-                  {/* Display text if it isn't hidden */}
-                  {!answer.content.text.hiddenText && (
-                    <DisplayingText
-                      marginLeft={`${answer.content.text.position?.marginLeft}%`}
-                      marginTop={`${answer.content.text.position?.marginTop}%`}
-                      sentence={answer.content.text.text}
-                      textColor={answer.content.textColor}
-                      fontWeight={600}
-                      textAlign={"center"}
-                      backgroundText={answer.content.text.textBackground}
-                      padding={"5%"}
-                      level={
-                        stateActs?.currentQuestion?.visual?.textAnswerLevel ||
-                        "title-md"
-                      }
-                      id={"answer-proposition-text"}
-                    />
-                  )}
-
-                  {/* Display second text on selection */}
-                  {answer.content.text.secondText && answer.selected && (
-                    <DisplayingText
-                      sentence={answer?.content?.text?.secondText}
-                      level={"title-lg"}
-                      textColor={
-                        answer?.content?.text?.secondTextColor || "black"
-                      }
-                      textAlign={"center"}
-                      padding={"30%"}
-                    />
-                  )}
+                  {contentChoice(answer)}
                 </Box>
-              </Box>
-            ))}
-
-            {/* additionnal content  */}
-            {stateActs.currentQuestion.additionalContent.length > 0 &&
-              stateActs.currentQuestion.additionalContent.map((element) => {
-                const isVignette = element.img.includes(
-                  "stateUser.secondCharacter.vignette"
-                );
-                const img = element.img.replace(
-                  "stateUser.secondCharacter.vignette",
-                  stateUser.secondCharacter.vignette
-                );
-                return (
-                  <Box
-                    key={element._id}
-                    position={"absolute"}
-                    width={`${element.scale.width * 100}%`}
-                    height={`${element.scale.height * 100}%`}
-                    top={`${element.position.top}%`}
-                    left={`${element.position.left}%`}
-                    display={"flex"}
-                    alignItems={"center"}
-                    sx={{
-                      backgroundImage: `url(${PICTURES_DIR}/${img})`,
-                      backgroundSize: "100% 100%",
-                      borderRadius: isVignette ? 30 : 0,
+              )}
+              {/* Answer Box */}
+              <Box
+                width={answer.choiceImg ? `80%` : "100%"}
+                height={`100%`}
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+                onClick={() =>
+                  questionContent.answerType.name != "pourcentage" &&
+                  handleSelectedProposition(
+                    answer,
+                    questionContent?.answerType?.name,
+                    ""
+                  )
+                }
+                sx={[
+                  {
+                    cursor:
+                      questionContent.answerType.name != "pourcentage" &&
+                      "pointer",
+                    backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
+                    backgroundSize: "100% 100%",
+                  },
+                  selectionEffect(answer),
+                ]}
+              >
+                {/* Display text if it isn't hidden */}
+                {!answer.content.text.hiddenText && (
+                  <DisplayingText
+                    marginLeft={`${answer.content.text.position?.marginLeft}%`}
+                    marginTop={`${answer.content.text.position?.marginTop}%`}
+                    sentence={answer.content.text.text}
+                    textColor={answer.content.textColor}
+                    fontWeight={600}
+                    textAlign={"center"}
+                    backgroundText={answer.content.text.textBackground}
+                    padding={"5%"}
+                    level={
+                      stateActs?.currentQuestion?.visual?.textAnswerLevel ||
+                      "title-md"
+                    }
+                    id={"answer-proposition-text"}
+                    style={{
+                      "@media screen and (min-width: 1600px) and (max-width: 1919px)":{
+                        marginTop: `${answer.content.text.position?.marginTop - 10 }%`
+                      }
                     }}
-                  >
-                    <Typography
-                      level={element?.textLevel || "title-sm"}
-                      textAlign={"center"}
-                      padding={"5%"}
-                      sx={{
-                        color: element?.textColor || "black",
-                      }}
-                    >
-                      <DisplayingText
-                        sentence={element.text}
-                        animated={false}
-                        textAlign={"justify"}
-                        id={"add-content-text"}
-                      />
-                    </Typography>
-                  </Box>
-                );
-              })}
-          </Stack>
-        </Box>
-        {/* Nav Buttons */}
-        <ButtonNavScroll
-          id="up-nav-button"
-          color="warning"
-          directionScroll={-1}
-          left={-10}
-          top={45}
-          height={0.1}
-          idContainer={"proposition-container"}
-          widthMove={200}
-          alignMvnt={"column"}
-        >
-          <TbArrowBigUpFilled />
-        </ButtonNavScroll>
-        <ButtonNavScroll
-          id="down-nav-button"
-          color="warning"
-          directionScroll={1}
-          left={-10}
-          top={60}
-          height={0.1}
-          idContainer={"proposition-container"}
-          widthMove={200}
-          alignMvnt={"column"}
-        >
-          <TbArrowBigDownFilled />
-        </ButtonNavScroll>{" "}
-      </>
+                  />
+                )}
+
+                {/* Display second text on selection */}
+                {answer.content.text.secondText && answer.selected && (
+                  <DisplayingText
+                    sentence={answer?.content?.text?.secondText}
+                    level={"title-lg"}
+                    textColor={
+                      answer?.content?.text?.secondTextColor || "black"
+                    }
+                    textAlign={"center"}
+                    padding={"30%"}
+                  />
+                )}
+              </Box>
+            </Box>
+          ))}
+        </Stack>
+      </Box>
     ) : (
       <Box
         height={"100%"}

@@ -140,6 +140,7 @@ const Summary = () => {
             alignItems: "center",
             padding: 0,
           }}
+          id={"recap-modal"}
           className="animate__animated animate__zoomIn"
         >
           <ModalClose variant="outlined" sx={{ zIndex: 1000 }} />
@@ -184,11 +185,6 @@ const Summary = () => {
                 level="h3"
                 fontWeight={600}
                 textColor={"white"}
-                sx={{
-                  "@media screen and (min-width: 1920px)": {
-                    fontSize: "1.8em",
-                  },
-                }}
               >
                 BRAVO,
               </Typography>
@@ -254,7 +250,7 @@ const Summary = () => {
                   {feelingsAnswer.get(question).noAnswer && (
                     <Typography
                       marginTop={"-2%"}
-                      level="body-sm"
+                      level="body-xs"
                       fontWeight={600}
                       textColor={"red"}
                       startDecorator={<IoInformationCircle />}
@@ -338,7 +334,7 @@ const Summary = () => {
                   }}
                 >
                   <Typography
-                    level="title-lg"
+                    level="h4"
                     textColor={"white"}
                     fontWeight={600}
                     marginLeft={"8%"}
@@ -348,7 +344,7 @@ const Summary = () => {
                   </Typography>
 
                   <Typography
-                    level="title-lg"
+                    level="h4"
                     textColor={
                       act.status == "DONE"
                         ? colors.titleBackLight

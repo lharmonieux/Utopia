@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import "animate.css";
 import CustomButton from "../../components/CustomButton";
 import { colors } from "../../utils/colors";
-import { ReactTyped } from "react-typed";
 import "../../assets/css/fullHD.css";
 
 const Home = () => {
@@ -46,28 +45,21 @@ const Home = () => {
       <Box width={"70%"}>
         <Typography
           textColor={"white"}
-          level={"h3"}
+          level={"h4"}
           fontWeight={500}
           textAlign={"justify"}
           padding={"5%"}
           borderRadius={10}
+          className="zoom-in"
           sx={{
             backgroundColor: "rgba(0, 0, 0, 0.6)",
+            whiteSpace: "pre-line",
           }}
         >
-          <ReactTyped
-            strings={[
-              `2027 ne fut décidemment pas une année comme les autres. Un premier terrien sur Mars, une base sur la Lune… et une nouvelle exoplanète découverte parfaitement habitable !
+          {`2027 ne fut décidemment pas une année comme les autres. Un premier terrien sur Mars, une base sur la Lune… et une nouvelle exoplanète découverte parfaitement habitable !
           Ce nouvel astre fut nommé Exploria, et il fallut plus de 300 ans à l'humanité pour s'y installer… En 2357, une poignée d'humains fondèrent la première colonie. Ce fut le point de départ d'une importante immigration, et 50 ans plus tard, près de 10 000 000 habitants la peuplaient.
           De la capitale Méridian essaimèrent une dizaine de villes moyennes, administrant chacune un nouveau territoire.
-          Né dans l'une de ces villes beaucoup trop moyennes pour vous, vous n'avez qu'un rêve : fonder votre propre Cité !`,
-            ]}
-            showCursor={false}
-            style={{
-              whiteSpace: "pre-line",
-            }}
-            id="home-text"
-          />
+          Né dans l'une de ces villes beaucoup trop moyennes pour vous, vous n'avez qu'un rêve : fonder votre propre Cité !`}
         </Typography>
       </Box>
 
@@ -96,10 +88,7 @@ const Home = () => {
         </Box>
 
         {/* right button  */}
-        <Box
-          width={"30%"}
-          height={"100%"}
-        >
+        <Box width={"30%"} height={"100%"}>
           <CustomButton
             width={"100%"}
             height={"100%"}

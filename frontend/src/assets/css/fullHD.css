@@ -1,40 +1,39 @@
 @media screen and (min-width: 1920px) {
+  /* Home page */
+  p{
+    font-size: 1.4em !important;
+  }
+  h2{
+    font-size: 2.5em !important;
+  }
+  h3{
+    font-size: 2.1em !important;
+  }
+  h4{
+    font-size: 1.7em !important;
+  }
+  span{
+    font-size: 1.2em !important;
+  }
   /* Summary page  */
   #summary-title-act {
     margin-left: 6%;
   }
 
   #summary-text-act {
-    margin-left: 12%;
+    margin-left: 10%;
   }
 
   #summary-button {
     height: 6vh;
   }
-
-  /* Game page */
-  #question-text {
-  }
-
-  /* Character view  */
-  #character-name-text {
-  }
-
-  #character-char-name {
+  #recap-modal{
+    width: 80%;
+    height: 75%;
   }
 
   #character-char-detail {
     padding: 5%;
-  }
-
-  /* Town view  */
-  #town-name {
-  }
-
-  #town-desc {
-  }
-
-  #town-answer-text {
   }
 
   /* Modal Feedback view  */
@@ -42,17 +41,14 @@
     width: 80%;
   }
 
-  #modal-title {
-  }
-
-  /* Scale Proposition */
-  #answer-scale-text {
+  #modal-feedback-box {
+    width: 80%;
   }
 
   /* Scale modal feedback */
   #modal-scale-feedback-title {
-    margin-top: 16%;
-    margin-left: 40%;
+    margin-top: 18%;
+    margin-left: 32%;
   }
 
   #modal-scale-feedback-text {
@@ -62,19 +58,6 @@
   /* Proposition view  */
   #answer-proposition-text {
     /* font-size: 125%; */
-    padding: 5%;
-  }
-
-  #add-content-text {
-  }
-
-  /* Modal End of ACt  */
-  #end-modal-title {
-  }
-
-  #end-modal-res-text {
-  }
-
-  #rank-text {
+    padding: 10%;
   }
 }

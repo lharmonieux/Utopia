@@ -20,8 +20,6 @@ const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
     setTextareaValue(newTextareaValue);
   };
 
-  console.log("rendu");
-
   return (
     <Box
       width={"100%"}
