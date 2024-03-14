@@ -102,6 +102,20 @@ const Game = () => {
   let actQuestionsLength = stateActs.currentAct?.questions?.length;
   //Var for modal entrance animation
   let animationModalIn = "animate__animated animate__zoomIn animate__fast";
+  // Control of page reload
+  useEffect(() => {
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      const confirmation = window.confirm(
+        "Votre progression pour cet acte sera perdue. Etes vous sûr de vouloir recharger la page ?"
+      );
+      if (confirmation) {
+        window.location.reload();
+      } else {
+        e.returnValue = "";
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (showActPresentation) {
@@ -870,10 +884,17 @@ const Game = () => {
           }
           if (oldMaxScore) {
             // Max possible score
-            newScoresThematic.set(
-              `${selectedAnswer.thematic.name}-max-score`,
-              oldMaxScore - currentQuestionMaxScore
-            );
+            if (answerType == "personnage") {
+              newScoresThematic.set(
+                `${selectedAnswer.thematic.name}-max-score`,
+                oldMaxScore - 5
+              );
+            } else {
+              newScoresThematic.set(
+                `${selectedAnswer.thematic.name}-max-score`,
+                oldMaxScore - currentQuestionMaxScore
+              );
+            }
           }
           setScoresThematic(newScoresThematic);
         } else {
@@ -904,10 +925,17 @@ const Game = () => {
                 );
 
                 // Max possible score
-                newScoresThematic.set(
-                  `${selectedAnswer.thematic.name}-max-score`,
-                  oldMaxScore ? oldMaxScore - currentQuestionMaxScore : 0
-                );
+                if (answerType == "personnage") {
+                  newScoresThematic.set(
+                    `${selectedAnswer.thematic.name}-max-score`,
+                    oldMaxScore ? oldMaxScore - 5 : 0
+                  );
+                } else {
+                  newScoresThematic.set(
+                    `${selectedAnswer.thematic.name}-max-score`,
+                    oldMaxScore ? oldMaxScore - currentQuestionMaxScore : 0
+                  );
+                }
               }
             }
           }
@@ -931,12 +959,19 @@ const Game = () => {
           );
 
           // Max possible score
-          newScoresThematic.set(
-            `${selectedAnswer.thematic.name}-max-score`,
-            currentQuestionMaxScore && oldMaxScore
-              ? oldMaxScore + currentQuestionMaxScore
-              : currentQuestionMaxScore
-          );
+          if (answerType == "personnage") {
+            newScoresThematic.set(
+              `${selectedAnswer.thematic.name}-max-score`,
+              oldMaxScore ? oldMaxScore + 5 : 5
+            );
+          } else {
+            newScoresThematic.set(
+              `${selectedAnswer.thematic.name}-max-score`,
+              currentQuestionMaxScore && oldMaxScore
+                ? oldMaxScore + currentQuestionMaxScore
+                : currentQuestionMaxScore
+            );
+          }
 
           setScoresThematic(newScoresThematic);
         }
