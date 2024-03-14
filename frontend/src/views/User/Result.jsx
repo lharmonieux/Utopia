@@ -333,7 +333,11 @@ const Result = () => {
                 backgroundSize: "100% 100%",
               }}
             >
-              <Box marginTop={"5%"} padding={"5%"}>
+              <Box marginTop={"5%"} padding={"5%"} sx={{
+                "media screen and (min-width: 1920px) and (max-width: 2559px)":{
+                  padding: "10%"
+                }
+              }}>
                 <Typography
                   level="h1"
                   textColor={colors.titleBackDark}
