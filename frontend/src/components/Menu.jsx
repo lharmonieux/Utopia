@@ -11,9 +11,12 @@ import { FaHome } from "react-icons/fa";
 import { MdSummarize } from "react-icons/md";
 import { RiLogoutBoxFill } from "react-icons/ri";
 import apiRequest from "../api/requestAPI";
+import { TbDetails, TbDetailsOff } from "react-icons/tb";
+import { useSelector } from "react-redux";
 
 // eslint-disable-next-line react/prop-types
 const Menu = ({ showDrawer, setShowDrawer }) => {
+  const stateActs = useSelector((state) => state.act);
   const listValues = [
     {
       title: "Accueil",
@@ -24,6 +27,12 @@ const Menu = ({ showDrawer, setShowDrawer }) => {
       title: "Sommaire",
       href: "/summary",
       icon: <MdSummarize />,
+    },
+    {
+      title: "Récapitulatif",
+      href: "/result",
+      icon: stateActs.currentAct ? <TbDetailsOff /> : <TbDetails />,
+      disabled: stateActs.currentAct ? true : false,
     },
   ];
   return (
@@ -44,6 +53,7 @@ const Menu = ({ showDrawer, setShowDrawer }) => {
                   window.location.href = value.href;
                   setShowDrawer(false);
                 }}
+                disabled={value.disabled}
                 sx={{
                   "&:hover": {
                     border: "1px solid",

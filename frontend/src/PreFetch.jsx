@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Box, CircularProgress, CssVarsProvider, IconButton } from "@mui/joy";
 import GlobalContainer from "./components/GlobalContainer.jsx";
+import CustomButton from "./components/CustomButton.jsx";
 import { typographyTheme } from "./utils/themeJoy.js";
 import MenuDrawer from "./components/Menu.jsx";
 import { AiOutlineMenuFold } from "react-icons/ai";
@@ -38,6 +39,7 @@ const PreFetch = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [audioPlayed, setAudioPlayed] = useState(false);
   //Getting datas from api
 
   // Refresh token
@@ -188,17 +190,28 @@ const PreFetch = () => {
   }, [authState.token]);
 
   // Background Music Manager
-  useEffect(() => {
-    if (authState.token) {
-      const audioPlayer = document.querySelector("#audio-player");
-      if (audioPlayer) {
-        console.log("here");
-        audioPlayer.volume = 0.05;
+  const audioPlayFunc = () => {
+    const audioPlayer = document.querySelector("#audio-player");
+    if (authState.token && audioPlayer) {
+      if (!audioPlayed) {
+        const playPromise = audioPlayer.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setAudioPlayed(true);
+            })
+            .catch((error) => {
+              console.error("Impossible de démarrer la lecture:", error);
+            });
+        }
+      } else {
+        audioPlayer.pause();
+        setAudioPlayed(false);
       }
     }
-  }, [authState.token]);
+  };
 
-  return !loading ? (
+  return (
     <CssVarsProvider theme={typographyTheme}>
       <GlobalContainer>
         {/* Menu button  */}
@@ -218,26 +231,35 @@ const PreFetch = () => {
           id={"main-content"}
           position={"relative"}
         >
-          <audio autoPlay={true} loop={true} id="audio-player">
-            <source
-              src={stateActs.currentAct?.backgroundSong}
-              type="audio/mp3"
-            />
-          </audio>
-          <Outlet />
+          {/* Music management */}
+          <CustomButton
+            style={{ position: "absolute", left: "100%", zIndex: 100 }}
+            clickMethod={() => audioPlayFunc()}
+            width={"20%"}
+          >
+            {audioPlayed ? "Arrêter la musique" : "Démarrer la musique"}
+          </CustomButton>
+          <audio
+            loop={true}
+            id="audio-player"
+            src={stateActs.currentAct?.backgroundSong}
+          />
+          {!loading ? (
+            <Outlet />
+          ) : (
+            <Box
+              height={"100%"}
+              width={"100%"}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <CircularProgress variant="soft" color="success" />
+            </Box>
+          )}
         </Box>
       </GlobalContainer>
     </CssVarsProvider>
-  ) : (
-    <Box
-      height={"100%"}
-      width={"100%"}
-      display={"flex"}
-      alignItems={"center"}
-      justifyContent={"center"}
-    >
-      <CircularProgress variant="soft" color="success" />
-    </Box>
   );
 };
 

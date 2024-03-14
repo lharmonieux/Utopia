@@ -71,7 +71,7 @@ const Home = () => {
         justifyContent={"space-evenly"}
         alignItems={"center"}
       >
-        {/* left button  */}
+        {/* Game button  */}
         <Box width={"40%"} height={"100%"}>
           <CustomButton
             width={"100%"}
@@ -87,7 +87,7 @@ const Home = () => {
           </CustomButton>
         </Box>
 
-        {/* right button  */}
+        {/* summary button  */}
         <Box width={"30%"} height={"100%"}>
           <CustomButton
             width={"100%"}

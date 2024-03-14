@@ -47,7 +47,7 @@ export const login = async (req, res) => {
     const refreshToken = jwt.sign(
       { email: foundAccount.email },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "5h" }
+      { expiresIn: "2h" }
     );
 
     // Create secure cookie with access token
