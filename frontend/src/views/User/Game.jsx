@@ -102,20 +102,18 @@ const Game = () => {
   let actQuestionsLength = stateActs.currentAct?.questions?.length;
   //Var for modal entrance animation
   let animationModalIn = "animate__animated animate__zoomIn animate__fast";
+
   // Control of page reload
-  useEffect(() => {
-    window.addEventListener("beforeunload", (e) => {
-      e.preventDefault();
-      const confirmation = window.confirm(
-        "Votre progression pour cet acte sera perdue. Etes vous sûr de vouloir recharger la page ?"
-      );
-      if (confirmation) {
-        window.location.reload();
-      } else {
-        e.returnValue = "";
-      }
-    });
-  }, []);
+  // function confirmationRechargement(e) {
+  //   const confirmationMessage =
+  //     "Veuillez accepter de quitter la page si vous passez à l'acte suivant. Mais si vous essayez d'actualiser, votre progression en cours sera perdue. Continuer ?";
+  //   e.returnValue = confirmationMessage;
+  //   return confirmationMessage;
+  // }
+
+  // useEffect(() => {
+  //   window.addEventListener("beforeunload", confirmationRechargement);
+  // }, []);
 
   useEffect(() => {
     if (showActPresentation) {
@@ -693,15 +691,15 @@ const Game = () => {
 
         //Calcul of percentage ranking of user
         const percentRank = 100 - (totalResidents / maxResidents) * 100;
-        if (percentRank < 100 && percentRank >= 80)
+        if (percentRank <= 100 && percentRank >= 80)
           setRankUserText(
             `\n\nVous faites partie des 80% les meilleurs. Il va falloir accélérer, tout reste à conquérir !`
           );
-        else if (percentRank < 80 && percentRank >= 50)
+        else if (percentRank < 80 && percentRank >= 30)
           setRankUserText(
             `\n\nVous faites partie des 50% les meilleurs. Encore un effort, vous êtes sur la bonne voie !`
           );
-        else if (percentRank < 50 && percentRank >= 0)
+        else if (percentRank < 30 && percentRank >= 0)
           setRankUserText(
             `\n\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
           );
@@ -720,7 +718,7 @@ const Game = () => {
         onClose={() => {
           animateOut(openEndModal, "#modal-end", () => {
             setOpenEndModal(false);
-            window.location.href = "/summary";
+            window.location = "/summary";
             initializingState();
           });
         }}
