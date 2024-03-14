@@ -87,6 +87,7 @@ const Game = () => {
   const [isAnswerDisplayed, setIsAnswerDisplayed] = useState(false);
   const [animationStarted, setAnimationStarted] = useState(false);
   const [currentQuestionOK, setCurrentQuestionOK] = useState(false);
+  const [currentQuestionMaxScore, setCurrentQuestionMaxScore] = useState(false);
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -166,6 +167,13 @@ const Game = () => {
           setTextareaValue(allTextareas);
           setDisplayVerticalNav(!isPersonnagePage);
 
+          // Setting of max answer score
+          let maxScore = 0;
+          for (let answer of stateActs.currentQuestion.answers) {
+            if (answer.score > maxScore) maxScore = answer.score;
+          }
+          setCurrentQuestionMaxScore(maxScore);
+
           //Loading of question's datas
           // If we are at the end of act, load the end act's image
           if (stateActs.questionOrder == actQuestionsLength - 1) {
@@ -240,12 +248,8 @@ const Game = () => {
         });
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    currentQuestionOK,
-    animationStarted,
-    showMainContent,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestionOK, animationStarted, showMainContent]);
 
   const updateStoreAnswer = (selectedAnswer, answerType) => {
     // Remove answer if selected again
@@ -841,12 +845,16 @@ const Game = () => {
       case "personnage":
       case "notation":
       case "classement":
+      case "classement_symbol":
       case "pourcentage":
       case "town":
         // update store if answer is selected again
         if (selectedAnswer.selected) {
           let newScoresThematic = new Map(scoresThematic);
           const oldScore = newScoresThematic.get(selectedAnswer.thematic.name);
+          const oldMaxScore = newScoresThematic.get(
+            `${selectedAnswer.thematic.name}-max-score`
+          );
           const oldGivenResidents = newScoresThematic.get("residents");
 
           if (oldScore)
@@ -860,33 +868,55 @@ const Game = () => {
               oldGivenResidents - selectedAnswer.givenResidents
             );
           }
+          if (oldMaxScore) {
+            // Max possible score
+            newScoresThematic.set(
+              `${selectedAnswer.thematic.name}-max-score`,
+              oldMaxScore - currentQuestionMaxScore
+            );
+          }
           setScoresThematic(newScoresThematic);
         } else {
           //update score for thematic
           let oldScore;
+          let oldMaxScore;
           let oldGivenResidents = scoresThematic.get("residents");
           let newScoresThematic = new Map(scoresThematic);
 
           //Remove score of the previous selected answer
-          for (let answer of stateActs.currentQuestion.answers) {
-            if (answer.selected) {
-              oldScore = newScoresThematic.get(answer.thematic.name);
-              newScoresThematic.set(
-                "residents",
-                oldGivenResidents
-                  ? oldGivenResidents - answer.givenResidents
-                  : 0
-              );
+          if (answerType != "proposition_multiple") {
+            for (let answer of stateActs.currentQuestion.answers) {
+              if (answer.selected) {
+                oldScore = newScoresThematic.get(answer.thematic.name);
+                oldMaxScore = newScoresThematic.get(
+                  `${answer.thematic.name}-max-score`
+                );
+                newScoresThematic.set(
+                  "residents",
+                  oldGivenResidents
+                    ? oldGivenResidents - answer.givenResidents
+                    : 0
+                );
 
-              newScoresThematic.set(
-                answer.thematic.name,
-                oldScore ? oldScore - answer.score : 0
-              );
+                newScoresThematic.set(
+                  answer.thematic.name,
+                  oldScore ? oldScore - answer.score : 0
+                );
+
+                // Max possible score
+                newScoresThematic.set(
+                  `${selectedAnswer.thematic.name}-max-score`,
+                  oldMaxScore ? oldMaxScore - currentQuestionMaxScore : 0
+                );
+              }
             }
           }
 
           //Store new score
           oldScore = newScoresThematic.get(selectedAnswer.thematic.name);
+          oldMaxScore = newScoresThematic.get(
+            `${selectedAnswer.thematic.name}-max-score`
+          );
           oldGivenResidents = newScoresThematic.get("residents");
           newScoresThematic.set(
             "residents",
@@ -899,14 +929,26 @@ const Game = () => {
             selectedAnswer.thematic.name,
             oldScore ? oldScore + selectedAnswer.score : selectedAnswer.score
           );
+
+          // Max possible score
+          newScoresThematic.set(
+            `${selectedAnswer.thematic.name}-max-score`,
+            currentQuestionMaxScore && oldMaxScore
+              ? oldMaxScore + currentQuestionMaxScore
+              : currentQuestionMaxScore
+          );
+
           setScoresThematic(newScoresThematic);
         }
 
         break;
 
       case "reponse_double":
-        if (answers) {
+        if (answers.length > 0) {
           let newScoresThematic = new Map(scoresThematic);
+          let oldMaxScore = newScoresThematic.get(
+            `${answers[0].thematic.name}-max-score`
+          );
           for (let answer of answers) {
             const oldScore = newScoresThematic.get(answer.thematic.name);
             const oldGivenResidents = newScoresThematic.get("residents");
@@ -926,6 +968,12 @@ const Game = () => {
               );
             }
           }
+
+          // Max possible score
+          newScoresThematic.set(
+            `${answers[0].thematic.name}-max-score`,
+            oldMaxScore ? oldMaxScore + 10 : 10
+          );
           setScoresThematic(newScoresThematic);
         }
         break;
@@ -1546,7 +1594,7 @@ const Game = () => {
 
                     {/* Nav Buttons for proposition's answers*/}
                     {displayVerticalNav && isAnswerDisplayed && (
-                      <Box bgcolor={'red'}>
+                      <Box bgcolor={"red"}>
                         <ButtonNavScroll
                           id="up-nav-button"
                           color="warning"

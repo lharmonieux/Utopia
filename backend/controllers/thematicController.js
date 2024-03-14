@@ -38,21 +38,40 @@ export const createThematic = async (req, res) => {
         .status(constants.CREATED)
         .json({ message: "Thematiques créées avec succès." });
     } else {
-        const { name } = req.body;
-        if (!name) return res.status(constants.VALIDATION_ERROR).json({message: "Veuillez renseigner tous les champs."});
+      const { name } = req.body;
+      if (!name)
+        return res
+          .status(constants.VALIDATION_ERROR)
+          .json({ message: "Veuillez renseigner tous les champs." });
 
-        const duplicate = await Thematic.findOne({name}).exec();
-        if (duplicate) return res.status(constants.CONFLICT).json({message: "Cette thématique existe déjà."});
+      const duplicate = await Thematic.findOne({ name }).exec();
+      if (duplicate)
+        return res
+          .status(constants.CONFLICT)
+          .json({ message: "Cette thématique existe déjà." });
 
-        await Thematic.create({name});
-        return res.status(constants.CREATED).json({message: "Thématique créée avec succès."});
+      await Thematic.create({ name });
+      return res
+        .status(constants.CREATED)
+        .json({ message: "Thématique créée avec succès." });
     }
   } catch (error) {
     console.log(error.message);
-    return res
-      .status(constants.SERVER_ERROR)
-      .json({
-        errorMessage: `La thématique de nom "${error.keyValue.name}" existe déjà.`,
-      });
+    return res.status(constants.SERVER_ERROR).json({
+      errorMessage: `La thématique de nom "${error.keyValue.name}" existe déjà.`,
+    });
+  }
+};
+
+export const getAllThematics = async (req, res) => {
+  try {
+    const thematics = await Thematic.find({});
+    if (!thematics)
+      return res
+        .status(constants.NOT_FOUND)
+        .json({ message: "Aucune thématique trouvée." });
+    return res.status(constants.SUCCESS).send(thematics);
+  } catch (error) {
+    throw error.message;
   }
 };

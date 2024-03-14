@@ -229,7 +229,7 @@ const Summary = () => {
                 </Typography>
                 {/* textarea */}
                 <Box
-                  height={"70%"}
+                  height={"100%"}
                   width={"80%"}
                   sx={{
                     backgroundImage: `url(${PICTURES_DIR}/textarea_end.svg)`,
@@ -242,7 +242,7 @@ const Summary = () => {
                   }}
                 >
                   <textarea
-                    style={textAreaStyle}
+                    style={{...textAreaStyle, width: "90%", fontSize: "1em"}}
                     value={feelingsAnswer.get(question).answer}
                     onChange={(e) => handleTextArea(e, question)}
                     placeholder="Entrez votre réponse..."

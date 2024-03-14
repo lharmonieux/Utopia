@@ -7,14 +7,18 @@ body {
   background-color: #1f1409;
 }
 
-.zoom-in{
+.zoom-in {
   animation: zoomInSelf 1.5s ease;
   animation-iteration-count: 1;
 }
 
-.fade-in{
+.fade-in {
   animation: fadeIn 1.5s ease;
   animation-iteration-count: 1;
+}
+
+.progress-bar {
+  animation: progressBar 2.5s ease;
 }
 
 @keyframes zoomInSelf {
@@ -34,8 +38,17 @@ body {
     opacity: 0;
   }
 
-  to{
+  to {
     height: 100%;
     opacity: 1;
+  }
+}
+
+@keyframes progressBar {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
   }
 }
