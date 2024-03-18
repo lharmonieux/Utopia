@@ -22,6 +22,7 @@ import CustomButton from "../../components/CustomButton";
 import "../../assets/css/1600screen.css";
 import "../../assets/css/1400screen.css";
 import "../../assets/css/1024screen.css";
+import "../../assets/css/800screen.css";
 
 const Summary = () => {
   const stateActs = useSelector((state) => state.act);

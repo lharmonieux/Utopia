@@ -24,6 +24,7 @@ const Result = () => {
   const [openModal, setOpenModal] = useState(false);
   const authState = useSelector((state) => state.auth);
   const stateUser = useSelector((state) => state.user);
+  const stateActs = useSelector((state) => state.act);
 
   const explanations = [
     {
@@ -144,6 +145,9 @@ const Result = () => {
   ];
 
   useEffect(() => {
+    //Control if you can access to the page
+    if (stateActs.currentAct) window.location = "/user";
+
     // Fetch user's scores
     if (stateUser.saves.length > 0 && logScores.length == 0) {
       setLogScores(
@@ -278,7 +282,11 @@ const Result = () => {
                 </Typography>
 
                 {/* Footer */}
-                <Typography level="h4" textAlign={"center"} marginBottom={"10%"}>
+                <Typography
+                  level="h4"
+                  textAlign={"center"}
+                  marginBottom={"10%"}
+                >
                   {thematicToDesc.scoreValue < 5
                     ? explanationsMap.get(thematicToDesc.name).weak.footer
                     : thematicToDesc.scoreValue >= 5 &&
@@ -333,11 +341,16 @@ const Result = () => {
                 backgroundSize: "100% 100%",
               }}
             >
-              <Box marginTop={"5%"} padding={"5%"} sx={{
-                "media screen and (min-width: 1920px) and (max-width: 2559px)":{
-                  padding: "10%"
-                }
-              }}>
+              <Box
+                marginTop={"5%"}
+                padding={"5%"}
+                sx={{
+                  "media screen and (min-width: 1920px) and (max-width: 2559px)":
+                    {
+                      padding: "10%",
+                    },
+                }}
+              >
                 <Typography
                   level="h1"
                   textColor={colors.titleBackDark}
