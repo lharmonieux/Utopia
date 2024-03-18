@@ -19,6 +19,7 @@ const Home = () => {
         "/home/snowy-mountain-peak-starry-galaxy-majesty-generative-ai.jpg"
     );
   }, []);
+
   return (
     <Box
       width={"100%"}

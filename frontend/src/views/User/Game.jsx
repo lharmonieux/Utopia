@@ -638,6 +638,7 @@ const Game = () => {
 
   // Modal for end of act / Summary
   const endOfAct = () => {
+    // window.removeEventListener("beforeunload", confirmationRechargement);
     const copyScoresThematic = new Map(scoresThematic);
     const totalResidents = copyScoresThematic.get("residents");
     copyScoresThematic.delete("residents");
@@ -1046,6 +1047,7 @@ const Game = () => {
     setTimer(null);
     setAnimationStarted(false);
     setCurrentQuestionOK(false);
+    // window.removeEventListener("beforeunload", confirmationRechargement);
   };
 
   // Manage for the next element to display
@@ -1310,7 +1312,7 @@ const Game = () => {
                 hoverColor={colors.buttonLightHover}
                 height={"100%"}
                 textColor={colors.titleBackLight}
-                clickMethod={() =>
+                clickMethod={() => {
                   animateOut(openScaleModal, "#modal-scale", () => {
                     setOpenScaleModal(false);
                     dispatch(setMotto(choosenMotto[0]?.content?.text?.text));
@@ -1319,8 +1321,8 @@ const Game = () => {
                       choosenMotto[0]
                     );
                     initializingState();
-                  })
-                }
+                  });
+                }}
               >
                 Continuer
               </CustomButton>

@@ -1,11 +1,19 @@
 @media screen and (min-width: 1024px) and (max-width: 1399px) {
-    /* Summary page  */
+  p {
+    font-size: 0.9em !important;
+  } 
+
+  h4{
+    font-size: 1.1em !important;
+  }
+  
+  /* Summary page  */
     #summary-title-act {
-      margin-left: 8%;
+      margin-left: 5%;
     }
   
     #summary-text-act {
-      margin-left: 6%;
+      margin-left: 10%;
     }
   
     #summary-button {

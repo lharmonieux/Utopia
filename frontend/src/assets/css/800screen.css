@@ -1,10 +1,14 @@
-@media screen and (min-width: 1400px) and (max-width: 1599px) {
+@media screen and (min-width: 800px) and (max-width: 1023px) {
   p {
-    font-size: 1em !important;
+    font-size: 0.7em !important;
+  }
+
+  h4 {
+    font-size: 0.85em !important;
   }
   /* Summary page  */
   #summary-title-act {
-    margin-left: 7%;
+    margin-left: 6%;
   }
 
   #summary-text-act {
@@ -13,6 +17,11 @@
 
   #summary-button {
     height: 6vh;
+  }
+
+  #recap-modal{
+    width: 80%;
+    height: 45%;
   }
 
   /* Game page */
@@ -65,7 +74,7 @@
   /* Proposition view  */
   #answer-proposition-text {
     /* font-size: 125%; */
-    padding: 10%;
+    padding: 12%;
   }
 
   #add-content-text {
