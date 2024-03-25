@@ -182,11 +182,7 @@ const Summary = () => {
               alignItems={"center"}
               zIndex={1}
             >
-              <Typography
-                level="h3"
-                fontWeight={600}
-                textColor={"white"}
-              >
+              <Typography level="h3" fontWeight={600} textColor={"white"}>
                 BRAVO,
               </Typography>
               <Typography
@@ -243,7 +239,7 @@ const Summary = () => {
                   }}
                 >
                   <textarea
-                    style={{...textAreaStyle, width: "90%", fontSize: "1em"}}
+                    style={{ ...textAreaStyle, width: "90%", fontSize: "1em" }}
                     value={feelingsAnswer.get(question).answer}
                     onChange={(e) => handleTextArea(e, question)}
                     placeholder="Entrez votre réponse..."
@@ -423,6 +419,18 @@ const Summary = () => {
               </Stack>
             );
           })}
+
+          {/* See recap */}
+          {!stateActs.currentAct && (
+            <Box height={"5%"} marginTop={"20%"}>
+              <CustomButton
+                height={"100%"}
+                clickMethod={() => navigate("/result")}
+              >
+                Voir les résultats
+              </CustomButton>
+            </Box>
+          )}
         </Stack>
       ) : (
         <Box

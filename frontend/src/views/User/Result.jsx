@@ -14,6 +14,7 @@ import apiRequest from "../../api/requestAPI";
 import { useSelector } from "react-redux";
 import CustomButton from "../../components/CustomButton";
 import "animate.css";
+import { useNavigate } from "react-router-dom";
 
 const Result = () => {
   const [thematics, setThematics] = useState([]);
@@ -25,6 +26,7 @@ const Result = () => {
   const authState = useSelector((state) => state.auth);
   const stateUser = useSelector((state) => state.user);
   const stateActs = useSelector((state) => state.act);
+  const navigate = useNavigate();
 
   const explanations = [
     {
@@ -391,6 +393,7 @@ const Result = () => {
               display={"flex"}
               flexDirection={"column"}
               justifyContent={"space-evenly"}
+              alignItems={"center"}
             >
               {thematics &&
                 thematics.map((thematic) => {
@@ -404,7 +407,7 @@ const Result = () => {
                       flexDirection={"column"}
                       justifyContent={"space-evenly"}
                       width={"95%"}
-                      height={"15%"}
+                      height={"20%"}
                     >
                       <Box
                         display={"flex"}
@@ -470,6 +473,14 @@ const Result = () => {
                     </Box>
                   );
                 })}
+              <Box height={"5%"} marginTop={"5%"}>
+                <CustomButton
+                  height={"100%"}
+                  clickMethod={() => navigate("/summary")}
+                >
+                  Retour au sommaire
+                </CustomButton>
+              </Box>
             </Box>
           </Box>
 

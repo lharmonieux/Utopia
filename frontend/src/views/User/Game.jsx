@@ -67,7 +67,7 @@ const Game = () => {
   const [showAlertBadAnswerNumber, setShowAlertBadAnswerNumber] =
     useState(false);
   const [textareaValue, setTextareaValue] = useState(new Map());
-  const [rankUserText, setRankUserText] = useState("");
+  // const [rankUserText, setRankUserText] = useState("");
   const [showActPresentation, setShowActPresentation] = useState(true);
   const [showMainContent, setShowMainContent] = useState(false);
   const [scaleAnswers, setScaleAnswers] = useState(new Map());
@@ -87,7 +87,9 @@ const Game = () => {
   const [isAnswerDisplayed, setIsAnswerDisplayed] = useState(false);
   const [animationStarted, setAnimationStarted] = useState(false);
   const [currentQuestionOK, setCurrentQuestionOK] = useState(false);
-  const [currentQuestionMaxScore, setCurrentQuestionMaxScore] = useState(false);
+  const [currentQuestionMaxScore, setCurrentQuestionMaxScore] = useState(0);
+  const [currentQuestionMaxResidents, setCurrentQuestionMaxResidents] =
+    useState(0);
 
   //Images's state
   const [actPresentationImg, setActPresentationImg] = useState();
@@ -179,12 +181,16 @@ const Game = () => {
           setTextareaValue(allTextareas);
           setDisplayVerticalNav(!isPersonnagePage);
 
-          // Setting of max answer score
+          // Setting of max answer score and max possible residents
           let maxScore = 0;
+          let maxResidents = 0;
           for (let answer of stateActs.currentQuestion.answers) {
             if (answer.score > maxScore) maxScore = answer.score;
+            if (answer.givenResidents > maxResidents)
+              maxResidents = answer.givenResidents;
           }
           setCurrentQuestionMaxScore(maxScore);
+          setCurrentQuestionMaxResidents(maxResidents);
 
           //Loading of question's datas
           // If we are at the end of act, load the end act's image
@@ -641,6 +647,7 @@ const Game = () => {
     // window.removeEventListener("beforeunload", confirmationRechargement);
     const copyScoresThematic = new Map(scoresThematic);
     const totalResidents = copyScoresThematic.get("residents");
+    const maxResidents = copyScoresThematic.get("residents-max");
     copyScoresThematic.delete("residents");
     const logScores = Object.fromEntries(copyScoresThematic);
     const logAnswers = Object.fromEntries(answersToLogs);
@@ -675,43 +682,26 @@ const Game = () => {
       data: { ...userToSave, idUser: stateUser.idUser },
     });
 
-    const resultAllUsers = apiRequest("users/all", "get", authState.token);
-    resultAllUsers
-      .then((response) => {
-        const allUsers = response.response.data?.filter(
-          (account) => account.user._id != stateUser.idUser
-        );
-        // Calcul of max resident that one user won
-        let maxResidents = 0;
-        for (let account of allUsers) {
-          const userSave =
-            account.user.saves[stateActs.currentAct?.chapter - 1];
-          const userResidents = userSave?.totalResidents;
-          if (userResidents > maxResidents) maxResidents = userResidents;
-        }
+    let rankUserText = "";
 
-        //Calcul of percentage ranking of user
-        const percentRank = 100 - (totalResidents / maxResidents) * 100;
-        if (percentRank <= 100 && percentRank >= 80)
-          setRankUserText(
-            `\n\nVous faites partie des 80% les meilleurs. Il va falloir accélérer, tout reste à conquérir !`
-          );
-        else if (percentRank < 80 && percentRank >= 30)
-          setRankUserText(
-            `\n\nVous faites partie des 50% les meilleurs. Encore un effort, vous êtes sur la bonne voie !`
-          );
-        else if (percentRank < 30 && percentRank >= 0)
-          setRankUserText(
-            `\n\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
-          );
-        else
-          setRankUserText(
-            `\n\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`
-          );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    //Calcul of percentage ranking of user
+    const percentRank = 100 - (totalResidents / maxResidents) * 100;
+    // If we finished the game
+    if (stateActs.currentAct.chapter == 5) {
+      if (percentRank <= 100 && percentRank >= 80)
+        rankUserText = `\n\nVous faites partie des 80% les meilleurs. Bien joué ! Même si la vie sur Terre semble davantage faite pour vous.`;
+      else if (percentRank < 80 && percentRank >= 30)
+        rankUserText = `\n\nVous faites partie des 50% les meilleurs. Excellent résultat ! Vous êtes prêt à changer de planête !`;
+      else if (percentRank < 30 && percentRank >= 0)
+        rankUserText = `\n\nVous faites partie des 30% les meilleurs ! Bravo, quel exploit ! C'était une aventure faite pour vous.`;
+    } else {
+      if (percentRank <= 100 && percentRank >= 80)
+        rankUserText = `\n\nVous faites partie des 80% les meilleurs. Il va falloir accélérer, tout reste à conquérir !`;
+      else if (percentRank < 80 && percentRank >= 30)
+        rankUserText = `\n\nVous faites partie des 50% les meilleurs. Encore un effort, vous êtes sur la bonne voie !`;
+      else if (percentRank < 30 && percentRank >= 0)
+        rankUserText = `\n\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`;
+    }
 
     return titleEndActImg && rankEndActImg && bgEndActImg ? (
       <Modal
@@ -783,37 +773,21 @@ const Game = () => {
                 justifyContent={"center"}
                 alignItems={"center"}
               >
-                {rankUserText ? (
-                  <>
-                    <DisplayingText
-                      level={stateActs.currentAct?.resolution?.textStyle?.size}
-                      textColor={
-                        stateActs.currentAct?.resolution?.textStyle?.color
-                      }
-                      fontWeight={
-                        stateActs.currentAct?.resolution?.textStyle?.weight
-                      }
-                      sentence={resolutionText}
-                      animated={true}
-                      backgroundText={"rgba(70, 8, 134, 0.7)"}
-                      padding={"5%"}
-                      onComplete={function () {
-                        setDisplayRankView(true);
-                      }}
-                      id={"end-modal-res-text"}
-                    />
-                  </>
-                ) : (
-                  <Box
-                    height={"100%"}
-                    width={"100%"}
-                    display={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                  >
-                    <CircularProgress variant="soft" color="success" />
-                  </Box>
-                )}
+                <DisplayingText
+                  level={stateActs.currentAct?.resolution?.textStyle?.size}
+                  textColor={stateActs.currentAct?.resolution?.textStyle?.color}
+                  fontWeight={
+                    stateActs.currentAct?.resolution?.textStyle?.weight
+                  }
+                  sentence={resolutionText}
+                  animated={true}
+                  backgroundText={"rgba(70, 8, 134, 0.7)"}
+                  padding={"5%"}
+                  onComplete={function () {
+                    setDisplayRankView(true);
+                  }}
+                  id={"end-modal-res-text"}
+                />
 
                 {displayRankView && <RankView text={rankUserText} />}
               </Box>
@@ -868,6 +842,7 @@ const Game = () => {
           const oldMaxScore = newScoresThematic.get(
             `${selectedAnswer.thematic.name}-max-score`
           );
+          const oldMaxResidents = newScoresThematic.get("residents-max");
           const oldGivenResidents = newScoresThematic.get("residents");
 
           if (oldScore)
@@ -895,11 +870,20 @@ const Game = () => {
               );
             }
           }
+
+          // Max residents possible
+          if (oldMaxResidents) {
+            newScoresThematic.set(
+              "residents-max",
+              oldMaxResidents - currentQuestionMaxResidents
+            );
+          }
           setScoresThematic(newScoresThematic);
         } else {
           //update score for thematic
           let oldScore;
           let oldMaxScore;
+          let oldMaxResidents;
           let oldGivenResidents = scoresThematic.get("residents");
           let newScoresThematic = new Map(scoresThematic);
 
@@ -911,10 +895,18 @@ const Game = () => {
                 oldMaxScore = newScoresThematic.get(
                   `${answer.thematic.name}-max-score`
                 );
+                oldMaxResidents = newScoresThematic.get("residents-max");
                 newScoresThematic.set(
                   "residents",
                   oldGivenResidents
                     ? oldGivenResidents - answer.givenResidents
+                    : 0
+                );
+
+                newScoresThematic.set(
+                  "residents-max",
+                  oldMaxResidents
+                    ? oldMaxResidents - currentQuestionMaxResidents
                     : 0
                 );
 
@@ -945,11 +937,20 @@ const Game = () => {
             `${selectedAnswer.thematic.name}-max-score`
           );
           oldGivenResidents = newScoresThematic.get("residents");
+          oldMaxResidents = newScoresThematic.get("residents-max");
           newScoresThematic.set(
             "residents",
             oldGivenResidents
               ? oldGivenResidents + selectedAnswer.givenResidents
               : selectedAnswer.givenResidents
+          );
+
+          // Max residents
+          newScoresThematic.set(
+            "residents-max",
+            oldMaxResidents
+              ? oldMaxResidents + currentQuestionMaxResidents
+              : currentQuestionMaxResidents
           );
 
           newScoresThematic.set(
@@ -986,6 +987,7 @@ const Game = () => {
           for (let answer of answers) {
             const oldScore = newScoresThematic.get(answer.thematic.name);
             const oldGivenResidents = newScoresThematic.get("residents");
+            const oldMaxResidents = newScoresThematic.get("residents-max");
 
             // Check the pair of good answer
             if (answer.selected == answer.boolForScore) {
@@ -994,6 +996,14 @@ const Game = () => {
                 oldGivenResidents
                   ? oldGivenResidents + answer.givenResidents
                   : answer.givenResidents
+              );
+
+              // Max residents
+              newScoresThematic.set(
+                "residents-max",
+                oldMaxResidents
+                  ? oldMaxResidents + currentQuestionMaxResidents
+                  : currentQuestionMaxResidents
               );
 
               newScoresThematic.set(

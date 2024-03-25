@@ -2,6 +2,10 @@
   p {
     font-size: 1em !important;
   }
+
+  h4 {
+    font-size: 1.2em !important;
+  }
   /* Summary page  */
   #summary-title-act {
     margin-left: 7%;
@@ -13,6 +17,11 @@
 
   #summary-button {
     height: 6vh;
+  }
+
+  #recap-modal{
+    width: 70%;
+    height: 60%;
   }
 
   /* Game page */
@@ -54,7 +63,7 @@
 
   /* Scale modal feedback */
   #modal-scale-feedback-title {
-    margin-top: 16%;
+    margin-top: 22%;
     margin-left: 40%;
   }
 
@@ -65,7 +74,7 @@
   /* Proposition view  */
   #answer-proposition-text {
     /* font-size: 125%; */
-    padding: 10%;
+    padding: 12%;
   }
 
   #add-content-text {
