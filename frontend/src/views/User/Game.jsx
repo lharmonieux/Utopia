@@ -649,7 +649,6 @@ const Game = () => {
     const totalResidents = copyScoresThematic.get("residents");
     const maxResidents = copyScoresThematic.get("residents-max");
     copyScoresThematic.delete("residents");
-    copyScoresThematic.delete("residents-max");
     const logScores = Object.fromEntries(copyScoresThematic);
     const logAnswers = Object.fromEntries(answersToLogs);
     let resolutionText = stateActs.currentAct.resolution.text;
