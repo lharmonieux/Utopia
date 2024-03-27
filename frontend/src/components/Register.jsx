@@ -102,9 +102,11 @@ const Register = ({ openRegisterModal, setOpenRegisterModal }) => {
               value={email}
               setValue={setEmail}
               height={"15%"}
+              type={"email"}
             />
             <InputRegister
               placeholder={"Mot de passe"}
+              type={"password"}
               value={password}
               setValue={setPassword}
               height={"15%"}

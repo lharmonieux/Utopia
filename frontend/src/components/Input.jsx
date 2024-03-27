@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Input } from "@mui/joy";
 
-export const InputRegister = ({ setValue, value, placeholder, height }) => {
+export const InputRegister = ({ setValue, value, placeholder, height, type }) => {
   return (
     <Input
       placeholder={placeholder}
@@ -11,6 +11,7 @@ export const InputRegister = ({ setValue, value, placeholder, height }) => {
         height: { height },
       }}
       className="input-register"
+      type={type}
     />
   );
 };
