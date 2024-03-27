@@ -694,12 +694,16 @@ const Game = () => {
         rankUserText = `\n\nVous faites partie des 50% les meilleurs. Excellent résultat ! Vous êtes prêt à changer de planête !`;
       else if (percentRank < 30 && percentRank >= 0)
         rankUserText = `\n\nVous faites partie des 30% les meilleurs ! Bravo, quel exploit ! C'était une aventure faite pour vous.`;
+      else
+        rankUserText = `\n\nVous faites partie des 30% les meilleurs ! Bravo, quel exploit ! C'était une aventure faite pour vous.`;
     } else {
       if (percentRank <= 100 && percentRank >= 80)
         rankUserText = `\n\nVous faites partie des 80% les meilleurs. Il va falloir accélérer, tout reste à conquérir !`;
       else if (percentRank < 80 && percentRank >= 30)
         rankUserText = `\n\nVous faites partie des 50% les meilleurs. Encore un effort, vous êtes sur la bonne voie !`;
       else if (percentRank < 30 && percentRank >= 0)
+        rankUserText = `\n\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`;
+      else
         rankUserText = `\n\nVous faites partie des 30% les meilleurs ! Quelle performance, continuez comme ça !`;
     }
 
