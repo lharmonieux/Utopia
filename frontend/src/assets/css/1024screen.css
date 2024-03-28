@@ -1,15 +1,23 @@
 @media screen and (min-width: 1024px) and (max-width: 1399px) {
   p {
-    font-size: 0.9em !important;
+    font-size: 0.8em !important;
   } 
 
   h4{
-    font-size: 1.1em !important;
+    font-size: 1em !important;
+  }
+
+  h3 {
+    font-size: 1.2em !important;
+  }
+
+  h2{
+    font-size: 1.6em !important;
   }
   
   /* Summary page  */
     #summary-title-act {
-      margin-left: 5%;
+      margin-left: 7%;
     }
   
     #summary-text-act {
@@ -21,7 +29,7 @@
     }
 
     #recap-modal{
-      width: 75%;
+      width: 70%;
       height: 60%;
     }
   
@@ -64,17 +72,22 @@
   
     /* Scale modal feedback */
     #modal-scale-feedback-title {
-      margin-top: 25%;
-      margin-left: 40%;
+      top: 15%;
+      left: 35%;
     }
   
     #modal-scale-feedback-text {
       width: 80%;
     }
+
+    #modal-feedback-box {
+      width: 40%;
+      height: 70%;
+    }
   
     /* Proposition view  */
     #answer-proposition-text {
-      padding: 10%;
+      padding: 15%;
     }
   
     #add-content-text {

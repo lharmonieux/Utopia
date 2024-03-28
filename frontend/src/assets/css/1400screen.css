@@ -1,6 +1,6 @@
 @media screen and (min-width: 1400px) and (max-width: 1599px) {
   p {
-    font-size: 1em !important;
+    font-size: 0.9em !important;
   }
 
   h4 {
@@ -19,9 +19,9 @@
     height: 6vh;
   }
 
-  #recap-modal{
-    width: 70%;
-    height: 60%;
+  #recap-modal {
+    width: 60%;
+    height: 70%;
   }
 
   /* Game page */
@@ -63,8 +63,8 @@
 
   /* Scale modal feedback */
   #modal-scale-feedback-title {
-    margin-top: 22%;
-    margin-left: 40%;
+    top: 15%;
+    left: 38%;
   }
 
   #modal-scale-feedback-text {
