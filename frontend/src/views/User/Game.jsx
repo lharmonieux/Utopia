@@ -6,7 +6,6 @@ import {
   Modal,
   ModalDialog,
   ModalClose,
-  DialogTitle,
   CircularProgress,
   Alert,
 } from "@mui/joy";
@@ -117,6 +116,7 @@ const Game = () => {
   //   window.addEventListener("beforeunload", confirmationRechargement);
   // }, []);
 
+  console.log(scoresThematic);
   useEffect(() => {
     if (showActPresentation) {
       //Loading images
@@ -988,10 +988,10 @@ const Game = () => {
           let oldMaxScore = newScoresThematic.get(
             `${answers[0].thematic.name}-max-score`
           );
+          const oldMaxResidents = newScoresThematic.get("residents-max");
           for (let answer of answers) {
             const oldScore = newScoresThematic.get(answer.thematic.name);
             const oldGivenResidents = newScoresThematic.get("residents");
-            const oldMaxResidents = newScoresThematic.get("residents-max");
 
             // Check the pair of good answer
             if (answer.selected == answer.boolForScore) {
@@ -1002,14 +1002,6 @@ const Game = () => {
                   : answer.givenResidents
               );
 
-              // Max residents
-              newScoresThematic.set(
-                "residents-max",
-                oldMaxResidents
-                  ? oldMaxResidents + currentQuestionMaxResidents
-                  : currentQuestionMaxResidents
-              );
-
               newScoresThematic.set(
                 answer.thematic.name,
                 oldScore ? oldScore + answer.score : answer.score
@@ -1017,10 +1009,17 @@ const Game = () => {
             }
           }
 
+          // Max residents
+          newScoresThematic.set(
+            "residents-max",
+            oldMaxResidents
+              ? oldMaxResidents + 18000
+              : 18000
+          );
           // Max possible score
           newScoresThematic.set(
             `${answers[0].thematic.name}-max-score`,
-            oldMaxScore ? oldMaxScore + 10 : 10
+            oldMaxScore ? oldMaxScore + 12 : 12
           );
           setScoresThematic(newScoresThematic);
         }
@@ -1268,16 +1267,18 @@ const Game = () => {
           }}
         >
           <ModalClose variant="outlined" />
-          <DialogTitle
+
+          {/* Title */}
+          <Box
+            position={"absolute"}
+            top={"10%"}
+            left={"45%"}
             id={"modal-scale-feedback-title"}
-            sx={{
-              marginTop: "10%",
-              marginLeft: "45%",
-              color: colors.titleBackLight,
-            }}
           >
-            Votre devise
-          </DialogTitle>
+            <Typography level="h3" textColor={colors.titleBackLight}>
+              Votre devise
+            </Typography>
+          </Box>
 
           {/* Main content */}
           <Box
@@ -1287,6 +1288,7 @@ const Game = () => {
             flexDirection={"column"}
             justifyContent={"space-evenly"}
             alignItems={"center"}
+            marginTop={"30%"}
           >
             <Typography textAlign={"justify"} id={"modal-scale-feedback-text"}>
               En se basant sur vos notes, la devise qui vous convient le mieux

@@ -4,16 +4,16 @@
     font-size: 1.15em !important;
   }
   h2{
-    font-size: 2em !important;
+    font-size: 1.9em !important;
   }
   h3{
-    font-size: 2.1em !important;
+    font-size: 2em !important;
   }
   h4{
-    font-size: 1.45em !important;
+    font-size: 1.35em !important;
   }
   span{
-    font-size: 1em !important;
+    font-size: 0.9em !important;
   }
   /* Summary page  */
   #summary-title-act {
@@ -38,7 +38,7 @@
 
   #recap-modal{
     width: 60%;
-    height: 75%;
+    height: 90%;
   }
 
   /* Modal Feedback view  */
@@ -52,8 +52,8 @@
 
   /* Scale modal feedback */
   #modal-scale-feedback-title {
-    margin-top: 14%;
-    margin-left: 35%;
+    top: 15%;
+    left: 38%;
   }
 
   #modal-scale-feedback-text {

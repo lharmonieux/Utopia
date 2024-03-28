@@ -397,7 +397,7 @@ const Propositions = ({
                         marginTop: `${answer.content.text.position?.marginTop - 10 }%`
                       },
                       "@media screen and (min-width: 1024px) and (max-width: 1399px)":{
-                        marginTop: `${answer.content.text.position?.marginTop - 10 }%`
+                        marginTop: `${answer.content.text.position?.marginTop - 5 }%`
                       },
                       "@media screen and (min-width: 1920px) and (max-width: 2559px)":{
                         marginTop: `${answer.content.text.position?.marginTop + 5 }%`

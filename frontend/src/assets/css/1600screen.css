@@ -1,19 +1,19 @@
 @media screen and (min-width: 1600px) and (max-width: 1919px){
   /* Home page */
   p{
-    font-size: 1.2em !important;
+    font-size: 1.1em !important;
   }
   h2{
-    font-size: 2.2em !important;
+    font-size: 2em !important;
   }
   h3{
-    font-size: 1.8em !important;
+    font-size: 1.7em !important;
   }
   h4{
-    font-size: 1.4em !important;
+    font-size: 1.2em !important;
   }
   span{
-    font-size: 1em !important;
+    font-size: 0.9em !important;
   }
   /* Summary page  */
   #summary-title-act {
@@ -28,8 +28,8 @@
     height: 6vh;
   }
   #recap-modal{
-    width: 70%;
-    height: 70%;
+    width: 60%;
+    height: 80%;
   }
 
   #character-char-detail {
@@ -43,8 +43,8 @@
 
   /* Scale modal feedback */
   #modal-scale-feedback-title {
-    margin-top: 22%;
-    margin-left: 32%;
+    top: 15%;
+    left: 40%;
   }
 
   #modal-scale-feedback-text {

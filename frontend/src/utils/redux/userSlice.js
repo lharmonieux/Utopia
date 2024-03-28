@@ -63,7 +63,7 @@ const userSlice = createSlice({
     setThematicScore: (state, action) => {
       const { scoresThematic, givenResidents } = action.payload;
       state.save.logScores = scoresThematic;
-      state.save.totalResidents += givenResidents;
+      state.save.totalResidents = givenResidents;
       return state;
     },
     setTown: (state, action) => {
