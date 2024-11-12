@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import constants from "../constants.js";
+import constants from "../utils/constants.js";
 
 export const verifiJWT = (req, res, next) => {
   //When token is passed by header
@@ -18,6 +18,7 @@ export const verifiJWT = (req, res, next) => {
       return res
         .status(constants.FORBIDDEN)
         .json({ message: "Votre temps de connexion a expiré..." });
+
     req.email = decoded.UserInfo.email;
     req.role = decoded.UserInfo.role;
     next();

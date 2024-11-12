@@ -7,7 +7,8 @@ import { verifiJWT } from "../middlewares/verfyJWT.js";
 
 const router = express.Router();
 
+router.use(verifiJWT);
 router.post("/create", createThematic);
-router.get("/", verifiJWT, getAllThematics);
+router.get("/", getAllThematics);
 
 export default router;

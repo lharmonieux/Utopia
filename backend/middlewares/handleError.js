@@ -1,20 +1,20 @@
-import constants from "../constants.js";
+import constants from "../utils/constants.js";
 
 export const handleValidationErrorsAct = ({
   name,
-  chapter,
+  chapterNumber,
   townStatus,
-  resolution,
+  ending,
   questions,
   constants}
 ) => {
-  if (!name || !chapter || !resolution || !townStatus)
+  if (!name || !chapterNumber || !ending || !townStatus)
     return {
       status: constants.VALIDATION_ERROR,
       message: "Renseignez tous les champs oligatoires",
     };
 
-  if (isNaN(chapter) || chapter < 1)
+  if (isNaN(chapterNumber) || chapterNumber < 1)
     return {
       status: constants.VALIDATION_ERROR,
       message: "Le numéro de l'acte doit être supérieur à 0",

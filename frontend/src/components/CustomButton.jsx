@@ -48,7 +48,8 @@ const CustomButton = ({
       <Typography
         textColor={textColor || "black"}
         fontWeight={600}
-        level={level || "title-lg"}
+        level={level || "title-md"}
+        padding={1}
       >
         {children}
       </Typography>

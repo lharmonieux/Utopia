@@ -5,7 +5,10 @@ import authSlice from "./authSlice";
 import DOMSlice from "./DOMSlice";
 import characterSlice from "./characterSlice";
 import townSlice from "./townSlice";
-
+import projectSlice from "./projectSlice";
+import companySlice from "./companySlice";
+import commnentSlice from "./commentSlice";
+import thematicSlice from "./thematicSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +17,10 @@ export const store = configureStore({
     auth: authSlice,
     dom: DOMSlice,
     character: characterSlice,
-    town: townSlice
+    town: townSlice,
+    project: projectSlice,
+    company: companySlice,
+    comment: commnentSlice,
+    thematic: thematicSlice,
   },
 });

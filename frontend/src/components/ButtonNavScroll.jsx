@@ -27,6 +27,7 @@ const ButtonNavScroll = ({
         top: top,
         zIndex: 1000,
         height: height,
+        width: "10%"
       }}
     >
       {children}

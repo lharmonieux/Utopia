@@ -1,162 +1,169 @@
 import mongoose from "mongoose";
 import unique_validator from "mongoose-unique-validator";
 
-const actSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  chapter: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
-  description: {
-    type: String,
-  },
-  townStatus: {
-    type: String,
-    required: true,
-  },
-  resolution: {
-    text: String,
-    textStyle: {
-      color: String,
-      size: String,
-      weight: String,
+const actSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    titleImg: String,
-    rankImg: String,
-    backgroundImg: String,
-  },
-  visual: {
-    backgroundImg: String,
-    decorationImg: String,
-    titleImg: String,
-    logoAppImg: String,
-  },
-  backgroundSong: String,
-  questions: [
-    {
-      content: [
-        {
-          text: String,
+    chapterNumber: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    townStatus: {
+      type: String,
+      required: true,
+    },
+    ending: {
+      text: String,
+      textStyle: {
+        color: String,
+        size: String,
+        weight: String,
+      },
+      titleImg: String,
+      rankImg: String,
+      backgroundImg: String,
+    },
+    visual: {
+      backgroundImg: String,
+      decorationImg: String,
+      titleImg: String,
+      logoAppImg: String,
+    },
+    backgroundSong: String,
+    questions: [
+      {
+        text: {
+          content: String,
           marginLeft: Number,
-          backgroundImg: {
-            img: String,
-            width: Number,
-            height: Number,
-            left: Number,
-            top: Number,
-          },
+          marginTop: Number,
           justifyContent: String,
           textColor: String,
-          textArea: {
-            width: Number,
-            height: Number,
-            img: String,
-          },
-          answerType: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: "AnswerType",
-          },
+          level: String
         },
-      ],
-      order: {
-        type: Number,
-        required: true,
-      },
-      additionalContent: [
-        {
-          text: String,
-          textLevel: String,
-          textColor: String,
+        textArea: {
+          width: Number,
+          height: Number,
           img: String,
-          scale: {
-            width: Number,
-            height: Number,
-          },
-          position: {
-            top: Number,
-            left: Number,
-          },
         },
-      ],
-      visual: {
-        bgImgMainContent: String,
-        boxAnswersImg: {
+        backgroundImg: {
           img: String,
           width: Number,
           height: Number,
           left: Number,
           top: Number,
         },
-        directionAnswer: String,
-        mapView: {
-          marginTop: Number,
-          backgroundImg: String,
-          mapImg: String,
-          buttonImg: {
-            button: String,
-            buttonGif: String,
-          },
-          descriptionImg: String,
-          hasAnswers: Boolean,
+        questionType: {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: "QuestionType",
         },
-        feedbackImg: String,
-        textAnswerLevel: String,
-        spaceAnswer: String,
+        order: {
+          type: Number,
+          required: true,
+        },
+        additionalContent: [
+          {
+            text: String,
+            textLevel: String,
+            textColor: String,
+            img: String,
+            scale: {
+              width: Number,
+              height: Number,
+            },
+            position: {
+              top: Number,
+              left: Number,
+            },
+            zIndex: Number,
+          },
+        ],
+        bgImgMainContent: String,
+        directionAnswer: String,
         nbOfAnswersRequired: Number,
-      },
-      answers: [
-        {
-          content: {
+
+        thematic: {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: "Thematic",
+        },
+        visual: {
+          textAnswerLevel: String,
+          spaceAnswer: String,
+        },
+        answers: [
+          {
             text: {
-              text: String,
-              secondText: String,
-              secondTextColor: String,
-              hiddenText: Boolean,
+              content: String,
               textLevel: String,
-              textBackground: String,
               position: {
                 marginLeft: Number,
                 marginTop: Number,
               },
+              textColor: String,
+              hidden: Boolean,
+              textBGColor: String,
             },
-            textColor: String,
-            img: {
+            bgImg: {
               name: String,
               top: Number,
               left: Number,
               width: Number,
               height: Number,
             },
-          },
-          choiceImg: {
-            align: String,
-            img: {
-              name: String,
-              top: Number,
-              left: Number,
-              width: Number,
-              height: Number,
+            alternatifText: {
+              content: String,
+              textColor: String,
+              hidden: Boolean,
+              img: String,
             },
+            selectionImg: {
+              align: String,
+              img: {
+                name: String,
+                top: Number,
+                left: Number,
+                width: Number,
+                height: Number,
+              },
+            },
+            score: Number,
+            boolForScore: Boolean,
+            feedback: {
+              text: String,
+              img: String,
+            },
+            thematic: {
+              type: mongoose.SchemaTypes.ObjectId,
+              ref: "Thematic",
+            },
+            feedbackHasQuestion: Boolean,
+            givenResidents: Number,
           },
-          score: Number,
-          boolForScore: Boolean,
-          feedback: String,
-          feedbackHasQuestion: Boolean,
-          thematic: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: "Thematic",
-          },
-          givenResidents: Number,
-        },
-      ],
+        ],
+      },
+    ],
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
-  ],
-});
+  },
+  {
+    timestamps: true,
+    transform: function (doc, ret) {
+      ret.actId = ret._id;
+      delete ret._id;
+      delete ret.__v;
+      delete ret.isDeleted;
+      delete ret.createdAt;
+      delete ret.updatedAt;
+      return ret;
+    },
+  }
+);
 
 actSchema.plugin(unique_validator, {
   message: "{VALUE} existe déjà.",

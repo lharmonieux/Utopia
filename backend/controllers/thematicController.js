@@ -1,4 +1,4 @@
-import constants from "../constants.js";
+import constants from "../utils/constants.js";
 import Thematic from "../models/thematicModel.js";
 
 // @acces Private
@@ -70,7 +70,9 @@ export const getAllThematics = async (req, res) => {
       return res
         .status(constants.NOT_FOUND)
         .json({ message: "Aucune thématique trouvée." });
-    return res.status(constants.SUCCESS).send(thematics);
+    return res
+      .status(constants.SUCCESS)
+      .send({ message: "Thematiques trouvées", thematics });
   } catch (error) {
     throw error.message;
   }

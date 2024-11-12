@@ -1,4 +1,4 @@
-import constants from "../constants.js";
+import constants from "../utils/constants.js";
 import Act from "../models/actModel.js";
 import { handleValidationErrorsAct } from "../middlewares/handleError.js";
 
@@ -6,42 +6,33 @@ import { handleValidationErrorsAct } from "../middlewares/handleError.js";
 export const addAct = async (req, res) => {
   try {
     //Getting body informations
-    const {
-      name,
-      chapter,
-      description,
-      townStatus,
-      resolution,
-      questions,
-      visual,
-    } = req.body;
+    const { name, chapterNumber, townStatus, ending, questions, visual } =
+      req.body;
 
     //Getting the errors
     const error = handleValidationErrorsAct({
       name,
-      chapter,
+      chapterNumber,
       questions,
       townStatus,
-      resolution,
+      ending,
       constants,
     });
     if (error) return res.status(error.status).json({ message: error.message });
 
-    const newAct = {
+    // Save acte
+    const newAct = await Act.create({
       name,
-      chapter,
-      description,
+      chapterNumber,
+      ending,
       townStatus,
-      resolution,
       questions,
       visual,
-    };
-
-    // Save acte
-    await Act.create(newAct);
+    });
 
     return res.status(constants.CREATED).json({
       message: "Acte créé avec succès !",
+      act: newAct,
     });
   } catch (error) {
     console.error(error);
@@ -54,14 +45,17 @@ export const getAct = async (req, res) => {
   try {
     //Getting acts from DB
     const acts = await Act.find({})
-      .populate("questions.content.answerType")
-      .populate("questions.answers.thematic");
-    if (acts) return res.status(constants.SUCCESS).send(acts);
+      .populate("questions.questionType")
+      .populate("questions.thematic")
+      .sort({ chapterNumber: 1 });
+    if (acts)
+      return res
+        .status(constants.SUCCESS)
+        .send({ message: "Actes listés avec succès !", acts });
 
-    //No act in DB
-    return res
-      .status(constants.SUCCESS)
-      .json({ message: "Aucun acte trouvé." });
+    return res.status(constants.NOT_FOUND).json({
+      message: "Aucun acte n'a été trouvé !",
+    });
   } catch (error) {
     console.error(error);
     return res.status(constants.SERVER_ERROR).json({
@@ -73,43 +67,15 @@ export const getAct = async (req, res) => {
 // Update Act
 export const updateAct = async (req, res) => {
   try {
-    const { id_act } = req.params;
-    //Getting body informations
-    const {
-      name,
-      chapter,
-      description,
-      townStatus,
-      resolution,
-      questions,
-      visual,
-    } = req.body;
-
-    //Getting the errors
-    const error = handleValidationErrorsAct({
-      name,
-      chapter,
-      townStatus,
-      resolution,
-      questions,
-      constants,
-    });
-    if (error) return res.status(error.status).json({ message: error.message });
-
+    const { id_act } = req.query;
     //Updating information
     const act = await Act.findByIdAndUpdate(id_act, {
-      name,
-      chapter,
-      townStatus,
-      resolution,
-      description,
-      questions,
-      visual,
+      ...req.body,
     });
 
     if (!act)
       return res.status(constants.NOT_FOUND).json({
-        message: `L'acte d'ID ${id_act} n'existe pas.`,
+        message: `Erreur lors de la recherche de l'acte`,
       });
 
     return res.status(constants.CREATED).json({
@@ -126,8 +92,8 @@ export const updateAct = async (req, res) => {
 // Delete Act
 export const deleteAct = async (req, res) => {
   try {
-    const { id_act } = req.params;
-    const result = await Act.findOneAndDelete(id_act);
+    const { id_act } = req.query;
+    const result = await Act.findOneAndUpdate(id_act, { isDeleted: true });
     if (!result)
       return res.status(constants.NOT_FOUND).json({
         message: "Cet acte n'existe pas",

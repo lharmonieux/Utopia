@@ -1,5 +1,5 @@
-import Personnage from "../models/characterModel.js";
-import constants from "../constants.js";
+import Character from "../models/characterModel.js";
+import constants from "../utils/constants.js";
 import { handleValidationErrorsPersonnages } from "../middlewares/handleError.js";
 
 //Add personnage
@@ -27,7 +27,7 @@ export const addPersonnage = async (req, res) => {
 
       //Save characters
       for (const data of datas)
-        await Personnage.create({
+        await Character.create({
           name: data.name,
           caracteristic: data.caracteristic,
           thematic: data.thematic,
@@ -57,7 +57,7 @@ export const addPersonnage = async (req, res) => {
           .json({ message: resultValidation.message });
 
       //Save data
-      await Personnage.create({
+      await Character.create({
         name,
         caracteristic,
         thematic,
@@ -70,7 +70,6 @@ export const addPersonnage = async (req, res) => {
         .json({ message: "Personnages créé avec succès." });
     }
   } catch (error) {
-    console.log("here");
     console.error(error);
     return res.status(constants.SERVER_ERROR).json({ message: error.message });
   }
@@ -79,8 +78,11 @@ export const addPersonnage = async (req, res) => {
 //Read personnage
 export const getAllPersonnage = async (req, res) => {
   try {
-    const personnages = await Personnage.find({});
-    if (personnages) return res.status(constants.SUCCESS).send(personnages);
+    const characters = await Character.find({}).populate("thematic").exec();
+    if (characters)
+      return res
+        .status(constants.SUCCESS)
+        .send({ message: "Personnages trouvés", characters });
 
     return res.status(constants.SUCCESS).json({
       message: "Aucun personnage trouvé.",

@@ -1,4 +1,4 @@
-import constants from "../constants.js";
+import constants from "../utils/constants.js";
 import Town from "../models/townModel.js";
 
 //Add

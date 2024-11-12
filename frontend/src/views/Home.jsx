@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import {
   Box,
   Stack,
@@ -11,18 +12,18 @@ import {
 import "animate.css";
 import { typographyTheme } from "../utils/themeJoy.js";
 import { colors } from "../utils/colors.js";
-import Register from "../components/Register.jsx";
 import { PICTURES_DIR } from "../utils/constants.js";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../api/authAPI.js";
-import GlobalContainer from "../components/GlobalContainer.jsx";
-import { createUserError } from "../utils/redux/userSlice.js";
+import {
+  createUserError,
+  storeRole,
+  storeUserInfos,
+} from "../utils/redux/userSlice.js";
 import { loginFail, setToken } from "../utils/redux/authSlice.js";
 import apiRequest from "../api/requestAPI.js";
 import { textAreaStyle } from "../utils/cssReact.js";
 import CustomButton from "../components/CustomButton.jsx";
-import "../assets/css/fullHD.css";
-import "../assets/css/1600screen.css";
 
 const Home = () => {
   const [backgroundImg, setBackgroundImg] = useState("");
@@ -30,7 +31,6 @@ const Home = () => {
   const [imgPresentation, setImgPresentation] = useState("");
   const [logo, setLogo] = useState("");
   const [decoration, setDecoration] = useState("");
-  const [openRegisterModal, setOpenRegisterModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -73,14 +73,32 @@ const Home = () => {
         });
     }
 
-    // Token valid then redirect to app
+    // Token valid after login or refresh page, then redirect to app corresponding interface
     if (authState.token) {
       dispatch(createUserError(null));
-      window.location.href = "/user";
+      const decoded_token = jwtDecode(authState.token);
+
+      //store logged user infos
+      dispatch(storeRole(decoded_token.UserInfo.role.name));
+      dispatch(
+        storeUserInfos({
+          firstname: decoded_token.UserInfo.firstname,
+          lastname: decoded_token.UserInfo.lastname,
+          userId: decoded_token.UserInfo.userId,
+        })
+      );
+
+      //redirect to appropriate interface
+      if (
+        decoded_token.UserInfo.role.name === "ADMIN" ||
+        decoded_token.UserInfo.role.name === "SUPERADMIN"
+      )
+        window.location.href = "/admin/home";
+      else window.location.href = "/user";
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authState]);
+  }, [authState.token]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -104,7 +122,14 @@ const Home = () => {
   return (
     <div>
       <CssVarsProvider theme={typographyTheme}>
-        <GlobalContainer>
+        <Stack
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          height={"97vh"}
+          width={"99vw"}
+          position={"relative"}
+        >
           {/* main content  */}
           <Box
             height={"100%"}
@@ -285,24 +310,6 @@ const Home = () => {
                       </Box>
                     </Stack>
                   </form>
-
-                  {/* Create account */}
-                  <Typography
-                    textColor={"white"}
-                    fontWeight={500}
-                    textAlign={"center"}
-                    level="body-lg"
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: colors.buttonDarkHover,
-                      },
-                      borderRadius: 5,
-                    }}
-                    onClick={() => setOpenRegisterModal(true)}
-                  >
-                    Pas encore de compte ? Créez le ici
-                  </Typography>
                   {authState.error && (
                     <Alert color="danger">
                       <Typography level="body-md">{authState.error}</Typography>
@@ -325,15 +332,8 @@ const Home = () => {
                 width={"100%"}
               />
             </Box>
-
-            {openRegisterModal && (
-              <Register
-                openRegisterModal={openRegisterModal}
-                setOpenRegisterModal={setOpenRegisterModal}
-              />
-            )}
           </Box>
-        </GlobalContainer>
+        </Stack>
       </CssVarsProvider>
     </div>
   );

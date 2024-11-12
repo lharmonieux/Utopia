@@ -1,106 +1,72 @@
-@media screen and (min-width: 1024px) and (max-width: 1399px) {
+@media screen and (min-width: 1024px) and (max-width: 1439px) {
   p {
-    font-size: 0.8em !important;
-  } 
+    font-size: 0.7em !important;
+  }
 
-  h4{
-    font-size: 1em !important;
+  h4 {
+    font-size: 0.9em !important;
   }
 
   h3 {
     font-size: 1.2em !important;
   }
 
-  h2{
-    font-size: 1.6em !important;
+  h2 {
+    font-size: 1.5em !important;
   }
-  
+
+  h1 {
+    font-size: 1.8em !important;
+  }
+
+  span {
+    font-size: 0.55em !important;
+  }
+
   /* Summary page  */
-    #summary-title-act {
-      margin-left: 7%;
-    }
-  
-    #summary-text-act {
-      margin-left: 10%;
-    }
-  
-    #summary-button {
-      height: 6vh;
-    }
-
-    #recap-modal{
-      width: 70%;
-      height: 60%;
-    }
-  
-    /* Game page */
-    #question-text {
-    }
-  
-    /* Character view  */
-    #character-name-text {
-    }
-  
-    #character-char-name {
-    }
-  
-    #character-char-detail {
-      padding: 5%;
-    }
-  
-    /* Town view  */
-    #town-name {
-    }
-  
-    #town-desc {
-    }
-  
-    #town-answer-text {
-    }
-  
-    /* Modal Feedback view  */
-    #modal-text {
-      width: 80%;
-    }
-  
-    #modal-title {
-    }
-  
-    /* Scale Proposition */
-    #answer-scale-text {
-    }
-  
-    /* Scale modal feedback */
-    #modal-scale-feedback-title {
-      top: 15%;
-      left: 35%;
-    }
-  
-    #modal-scale-feedback-text {
-      width: 80%;
-    }
-
-    #modal-feedback-box {
-      width: 40%;
-      height: 70%;
-    }
-  
-    /* Proposition view  */
-    #answer-proposition-text {
-      padding: 15%;
-    }
-  
-    #add-content-text {
-    }
-  
-    /* Modal End of ACt  */
-    #end-modal-title {
-    }
-  
-    #end-modal-res-text {
-    }
-  
-    #rank-text {
-    }
+  #summary-title-act {
+    margin-left: 7%;
   }
-  
+
+  #summary-text-act {
+    margin-left: 10%;
+  }
+
+  #summary-button {
+    height: 6vh;
+  }
+
+  #recap-modal {
+    width: 80%;
+    height: 60%;
+  }
+
+  #character-char-detail {
+    padding: 5%;
+  }
+
+  /* Modal Feedback view  */
+  #modal-text {
+    width: 80%;
+    padding: 10%;
+  }
+  #modal-feedback-box {
+    width: 50%;
+    height: 70%;
+  }
+
+  /* Scale modal feedback */
+  #modal-scale-feedback-title {
+    top: 15%;
+    left: 35%;
+  }
+
+  #modal-scale-feedback-text {
+    width: 80%;
+  }
+
+  /* Proposition view  */
+  #answer-proposition-text {
+    padding: 15%;
+  }
+}

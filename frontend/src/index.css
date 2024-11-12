@@ -21,6 +21,12 @@ body {
   animation: progressBar 2.5s ease;
 }
 
+.reveal-left {
+  overflow: hidden; /* Cache l'extérieur pendant le scale */
+  display: inline-block; /* Permet à scaleX de fonctionner correctement */
+  animation: revealFromLeft 3s ease-out forwards;
+}
+
 @keyframes zoomInSelf {
   from {
     transform: scale(0.5);
@@ -50,5 +56,17 @@ body {
   }
   to {
     width: 100%;
+  }
+}
+
+@keyframes revealFromLeft {
+  0% {
+    opacity: 0;
+    transform: scaleX(0); /* Réduit la largeur à 0% */
+    transform-origin: left; /* Définit l'origine du zoom à gauche */
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1); /* Atteint 100% de la largeur normale */
   }
 }

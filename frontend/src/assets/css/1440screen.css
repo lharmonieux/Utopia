@@ -1,0 +1,18 @@
+@media screen and (min-width: 1440px) and (max-width: 1535px) {
+  /* Home page */
+  p {
+    font-size: 1em !important;
+  }
+  h2 {
+    font-size: 1.8em !important;
+  }
+  h3 {
+    font-size: 1.5em !important;
+  }
+  h4 {
+    font-size: 1.2em !important;
+  }
+  span {
+    font-size: 0.85em !important;
+  }
+}

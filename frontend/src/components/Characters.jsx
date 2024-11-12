@@ -2,8 +2,7 @@
 import { Stack, Typography, Box } from "@mui/joy";
 import { TbArrowBigRightFilled, TbArrowBigLeftFilled } from "react-icons/tb";
 import { colors } from "../utils/colors";
-import { useDispatch, useSelector } from "react-redux";
-import { updateCharactersSelected } from "../utils/redux/characterSlice";
+import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../utils/constants";
 import { selectionEffect } from "../utils/cssReact";
 import ButtonNavScroll from "./ButtonNavScroll";
@@ -11,11 +10,10 @@ import "../assets/css/fullHD.css";
 
 const Characters = ({
   setObjectCharacterSelected,
-  objectSelectedCharacter
+  objectSelectedCharacter,
 }) => {
   const stateCharacters = useSelector((state) => state.character);
   const stateUser = useSelector((state) => state.user);
-  const dispatch = useDispatch();
 
   const handleSelectedCharacter = (selectedCharacter) => {
     //If selected again
@@ -24,13 +22,6 @@ const Characters = ({
     } else {
       setObjectCharacterSelected(selectedCharacter);
     }
-
-    dispatch(
-      updateCharactersSelected({
-        characters: stateCharacters.characters,
-        selectedCharacter,
-      })
-    );
   };
 
   return (
@@ -38,24 +29,6 @@ const Characters = ({
       height={`100%`}
       width={"100%"}
       position={"relative"}
-      // sx={{
-      //   "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 858px)":
-      //     {
-      //       height: `${(0.75 - questionContent?.backgroundImg?.height) * 100}%`,
-      //     },
-      //   "@media screen and (min-width: 1440px) and (max-width: 2559px) and (min-height: 680px) and (max-height: 857px)":
-      //     {
-      //       height: `${(0.9 - questionContent?.backgroundImg?.height) * 100}%`,
-      //     },
-      //   "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
-      //     {
-      //       height: `${(0.8 - questionContent?.backgroundImg?.height) * 100}%`,
-      //     },
-      //   "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
-      //     {
-      //       height: `${(0.8 - questionContent?.backgroundImg?.height) * 100}%`,
-      //     },
-      // }}
     >
       <Stack
         height={"100%"}
@@ -72,7 +45,7 @@ const Characters = ({
       >
         {/* Carte de personnage  */}
         {stateCharacters.characters?.map((character) => {
-          if (stateUser.character?._id != character?._id)
+          if (stateUser.character != character?._id) {
             return (
               <Box
                 key={character._id}
@@ -82,7 +55,7 @@ const Characters = ({
                   handleSelectedCharacter(character);
                 }}
                 position="relative"
-                zIndex={2}
+                zIndex={100}
                 sx={[
                   {
                     flex: "none",
@@ -91,7 +64,8 @@ const Characters = ({
                     backgroundSize: "100% 100%",
                     cursor: "pointer",
                   },
-                  selectionEffect(character),
+                  character._id == objectSelectedCharacter?._id &&
+                    selectionEffect(character),
                 ]}
               >
                 {/* Character's name */}
@@ -124,6 +98,7 @@ const Characters = ({
                     textColor={colors.titleBackDark}
                     fontWeight={400}
                     id={"character-char-name"}
+                    
                   >
                     Caractéristiques
                   </Typography>
@@ -143,7 +118,7 @@ const Characters = ({
                     level={"body-sm"}
                     textAlign={"center"}
                     textColor={"white"}
-                    padding={2}
+                    padding={"5%"}
                     id={"character-char-detail"}
                   >
                     {character.caracteristic}
@@ -151,12 +126,13 @@ const Characters = ({
                 </Box>
               </Box>
             );
+          }
         })}
       </Stack>
 
       <ButtonNavScroll
         id="left-nav-button"
-        left={"-5%"}
+        left={"-10%"}
         top={"30%"}
         height={0.3}
         directionScroll={-1}

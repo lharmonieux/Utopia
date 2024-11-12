@@ -3,7 +3,7 @@ import { Box } from "@mui/joy";
 import { PICTURES_DIR } from "../utils/constants.js";
 import { textAreaStyle } from "../utils/cssReact.js";
 
-const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
+const TextArea = ({ textareaValue, setTextareaValue, question }) => {
   const newTextareaValue = new Map(textareaValue);
   //Accept just letters
   const handleKeyDown = (e) => {
@@ -13,9 +13,9 @@ const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
   };
 
   const handleFormValue = (e) => {
-    newTextareaValue.set(questionContent.text, {
+    newTextareaValue.set(question.text.content, {
       answerText: e.target.value,
-      answerType: questionContent.answerType.name,
+      questionType: question.questionType.name,
     });
     setTextareaValue(newTextareaValue);
   };
@@ -29,18 +29,18 @@ const TextArea = ({ textareaValue, setTextareaValue, questionContent }) => {
       alignItems={"center"}
     >
       <Box
-        width={`${questionContent?.textArea?.width * 100}%`}
-        height={`${questionContent?.textArea?.height * 100}%`}
+        width={`${question?.textArea?.width * 100}%`}
+        height={`${question?.textArea?.height * 100}%`}
         sx={{
-          backgroundImage: `url(${PICTURES_DIR}/${questionContent?.textArea?.img})`,
+          backgroundImage: `url(${PICTURES_DIR}/${question?.textArea?.img})`,
           backgroundSize: "100% 100%",
         }}
       >
         <textarea
-          value={textareaValue.get(questionContent.text)?.answerText}
+          value={textareaValue.get(question?.text.content)?.answerText}
           onChange={(e) => handleFormValue(e)}
           onKeyDown={(e) =>
-            questionContent.answerType?.name == "texte_ville" &&
+            question?.questionType?.name == "texte_ville" &&
             handleKeyDown(e)
           }
           style={textAreaStyle}

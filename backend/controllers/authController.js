@@ -1,8 +1,7 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import constants from "../constants.js";
-import Account from "../models/accountModel.js";
+import constants from "../utils/constants.js";
 
 // @access Public
 export const login = async (req, res) => {
@@ -16,14 +15,12 @@ export const login = async (req, res) => {
     }
 
     // search user
-    const foundAccount = await Account.findOne({ email })
-      .populate("user")
-      .exec();
+    const foundAccount = await User.findOne({ email }).populate("role").exec();
 
     if (!foundAccount) {
       return res
         .status(constants.UNAUTHORIZED)
-        .json({ message: `Email incorrect` });
+        .json({ message: `Email ou mot de passe incorrect` });
     }
 
     const match = await bcrypt.compare(password, foundAccount.password);
@@ -31,13 +28,17 @@ export const login = async (req, res) => {
     if (!match)
       return res
         .status(constants.UNAUTHORIZED)
-        .json({ message: `Mot de passe incorrect` });
+        .json({ message: `Email ou mot de passe incorrect` });
 
     const accessToken = jwt.sign(
       {
         UserInfo: {
           email: foundAccount.email,
-          role: foundAccount.user.role,
+          role: foundAccount.role,
+          firstname: foundAccount.firstname,
+          lastname: foundAccount.lastname,
+          userId: foundAccount._id,
+          isPasswordChanged: foundAccount.isPasswordChanged,
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
@@ -50,7 +51,7 @@ export const login = async (req, res) => {
       { expiresIn: "2h" }
     );
 
-    // Create secure cookie with access token
+    // Create secure cookie with refresh token
     res.cookie("jwt", refreshToken, {
       httpOnly: true, //accessible only by web server
       secure: true, //https
@@ -95,10 +96,10 @@ export const refresh = async (req, res) => {
             .json({ message: "Veuillez vous reconnecter" });
 
         // Control of user's exist
-        const foundAccount = await Account.findOne({
+        const foundAccount = await User.findOne({
           email: decoded.email,
         })
-          .populate("user")
+          .populate("role")
           .exec();
 
         if (!foundAccount)
@@ -110,7 +111,11 @@ export const refresh = async (req, res) => {
           {
             UserInfo: {
               email: foundAccount.email,
-              role: foundAccount.user.role,
+              role: foundAccount.role,
+              firstname: foundAccount.firstname,
+              lastname: foundAccount.lastname,
+              userId: foundAccount._id,
+              isPasswordChanged: foundAccount.isPasswordChanged,
             },
           },
           process.env.ACCESS_TOKEN_SECRET,

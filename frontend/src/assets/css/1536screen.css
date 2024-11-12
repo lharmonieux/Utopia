@@ -1,0 +1,28 @@
+@media screen and (min-width: 1536px) and (max-width: 1919px) {
+  /* Home page */
+  p {
+    font-size: 1.05em !important;
+  }
+  h2 {
+    font-size: 1.9em !important;
+  }
+  h3 {
+    font-size: 1.6em !important;
+  }
+  h4 {
+    font-size: 1.3em !important;
+  }
+  span {
+    font-size: 0.95em !important;
+  }
+
+  /* Summary page */
+  #recap-modal {
+    width: 80%;
+    height: 80%;
+  }
+
+  #summary-text-act {
+    margin-left: 10%;
+  }
+}
