@@ -8,9 +8,11 @@ import "animate.css";
 import CustomButton from "../../components/CustomButton";
 import { colors } from "../../utils/colors";
 import "../../assets/css/fullHD.css";
+import { jwtDecode } from "jwt-decode";
 
 const Home = () => {
   const stateActs = useSelector((state) => state.act);
+  const authState = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [backgroundImg, setBackgroundImg] = useState("");
   useEffect(() => {
@@ -19,6 +21,19 @@ const Home = () => {
         "/home/snowy-mountain-peak-starry-galaxy-majesty-generative-ai.jpg"
     );
   }, []);
+
+  // Right control
+  useEffect(() => {
+    if (authState.token) {
+      const decoded_token = jwtDecode(authState.token);
+      if (
+        decoded_token?.UserInfo?.role?.name === "ADMIN" ||
+        decoded_token?.UserInfo?.role?.name === "SUPERADMIN"
+      ) {
+        window.location.href = "/admin/home";
+      }
+    }
+  });
 
   return (
     <Box
@@ -82,7 +97,7 @@ const Home = () => {
             backgroundColor={colors.buttonLight}
             hoverColor={colors.buttonLightHover}
           >
-            {stateActs.currentAct?.chapter > 1
+            {stateActs?.currentAct?.chapterNumber > 1
               ? "Continuer l'aventure"
               : "Commencer à jouer"}
           </CustomButton>

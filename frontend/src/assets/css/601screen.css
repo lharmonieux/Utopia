@@ -1,0 +1,47 @@
+@media screen and (min-width: 601px) and (max-width: 799px) {
+  p {
+    font-size: 0.45em !important;
+  }
+
+  h4 {
+    font-size: 0.65em !important;
+  }
+
+  h3 {
+    font-size: 0.9em !important;
+  }
+
+  h2 {
+    font-size: 1.2em !important;
+  }
+
+  h1 {
+    font-size: 1.4em !important;
+  }
+
+  span {
+    font-size: 0.35em !important;
+  }
+
+  /* Summary page  */
+  #summary-title-act {
+    margin-left: 6%;
+  }
+
+  #summary-text-act {
+    margin-left: 8%;
+  }
+
+  #summary-button {
+    height: 6vh;
+  }
+
+  #recap-modal {
+    width: 95%;
+    height: 40%;
+  }
+
+  #left-box-result-title {
+    margin-top: 35%;
+  }
+}

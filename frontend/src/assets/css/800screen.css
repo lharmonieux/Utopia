@@ -1,15 +1,28 @@
 @media screen and (min-width: 800px) and (max-width: 1023px) {
   p {
-    font-size: 0.8em !important;
+    font-size: 0.6em !important;
   }
 
   h4 {
-    font-size: 0.9em !important;
+    font-size: 0.75em !important;
   }
 
   h3 {
-    font-size: 1.15em !important;
+    font-size: 1em !important;
   }
+
+  h2 {
+    font-size: 1.3em !important;
+  }
+
+  h1 {
+    font-size: 1.6em !important;
+  }
+
+  span {
+    font-size: 0.45em !important;
+  }
+
   /* Summary page  */
   #summary-title-act {
     margin-left: 6%;
@@ -26,71 +39,5 @@
   #recap-modal {
     width: 80%;
     height: 45%;
-  }
-
-  /* Game page */
-  #question-text {
-  }
-
-  /* Character view  */
-  #character-name-text {
-  }
-
-  #character-char-name {
-  }
-
-  #character-char-detail {
-    padding: 5%;
-  }
-
-  /* Town view  */
-  #town-name {
-  }
-
-  #town-desc {
-  }
-
-  #town-answer-text {
-  }
-
-  /* Modal Feedback view  */
-  #modal-text {
-    width: 80%;
-  }
-
-  #modal-title {
-  }
-
-  /* Scale Proposition */
-  #answer-scale-text {
-  }
-
-  /* Scale modal feedback */
-  #modal-scale-feedback-title {
-    top: 16%;
-    left: 38%;
-  }
-
-  #modal-scale-feedback-text {
-    width: 80%;
-  }
-
-  /* Proposition view  */
-  #answer-proposition-text {
-    /* font-size: 125%; */
-    padding: 12%;
-  }
-
-  #add-content-text {
-  }
-
-  /* Modal End of ACt  */
-  #end-modal-title {
-  }
-
-  #end-modal-res-text {
-  }
-
-  #rank-text {
   }
 }

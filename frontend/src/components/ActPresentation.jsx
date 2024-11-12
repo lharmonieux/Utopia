@@ -81,7 +81,7 @@ const ActPresentation = ({
                 textColor={colors.titleBackLight}
                 fontWeight={400}
               >
-                ACTE {stateActs.currentAct?.chapter}
+                ACTE {stateActs.currentAct?.chapterNumber}
               </Typography>
             </Box>
 

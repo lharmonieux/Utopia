@@ -1,35 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import cloudinary from "./utils/cloudinary.js";
+import { jwtDecode } from "jwt-decode";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Box, CircularProgress, CssVarsProvider, IconButton } from "@mui/joy";
+import { Box, CssVarsProvider, IconButton, Typography } from "@mui/joy";
 import GlobalContainer from "./components/GlobalContainer.jsx";
-import CustomButton from "./components/CustomButton.jsx";
 import { typographyTheme } from "./utils/themeJoy.js";
 import MenuDrawer from "./components/Menu.jsx";
 import { AiOutlineMenuFold } from "react-icons/ai";
 import { setToken } from "./utils/redux/authSlice.js";
-import { storeCurrentAct, updateStatusActs } from "./utils/redux/actSlice.js";
+import { storeCurrentAct, storeActs } from "./utils/redux/actSlice.js";
 import apiRequest from "./api/requestAPI.js";
 import { storeCharacters } from "./utils/redux/characterSlice.js";
 import { storeTowns } from "./utils/redux/townSlice.js";
 import {
   createUserError,
-  setCurrentAct,
-  setFeelings,
-  setIdUser,
-  setMotto,
-  setPartyName,
-  setThematicScore,
-  setTown,
-  setTownStatus,
-  setUserCharacter,
-  setUserInfos,
-  setUserSecondCharacter,
+  storeUserCurrentAct,
+  storeMotto,
+  storePartyName,
+  storeTown,
+  storeTownStatus,
+  storeUserCharacter,
+  storeUserInfos,
+  storeUserSecondCharacter,
   storeSaves,
   storeTownName,
+  storeRole,
+  storeScoreAndAnswer,
+  storeUserComments,
+  storeIsPasswordChanged,
 } from "./utils/redux/userSlice.js";
+import { storeProjects } from "./utils/redux/projectSlice.js";
+import { storeCompanies } from "./utils/redux/companySlice.js";
+import { storeComments } from "./utils/redux/commentSlice.js";
+import Loading from "./views/Loading.jsx";
+import { PICTURES_DIR } from "./utils/constants.js";
+import { colors } from "./utils/colors.js";
 
 const PreFetch = () => {
   const authState = useSelector((state) => state.auth);
@@ -42,21 +48,185 @@ const PreFetch = () => {
   const [audioPlayed, setAudioPlayed] = useState(false);
   //Getting datas from api
 
-  // Refresh token
+  // Refresh token and store user infos
   useEffect(() => {
-    if (!authState.token && !stateUser.successLogin) {
-      apiRequest("auth/refresh", "get", authState.token, {})
-        .then((response) => {
-          if (response.response) {
+    apiRequest("auth/refresh", "get", authState.token, {})
+      .then((result) => {
+        if (result.response.status >= 200 && result.response.status < 300) {
+          // Decode token's infos
+          const token = result?.response?.data?.accessToken;
+          const decoded_token = jwtDecode(token);
+
+          // Store token in redux
+          dispatch(
+            setToken({
+              token,
+              error: null,
+            })
+          );
+
+          // Getting of all user's infos
+          apiRequest("users", "get", token, {}).then((resultUser) => {
+            if (
+              resultUser.response.status >= 200 &&
+              resultUser.response.status < 300
+            ) {
+              const { user } = resultUser.response.data;
+
+              // Store user's datas in redux
+              user.character && dispatch(storeUserCharacter(user.character));
+              user.motto && dispatch(storeMotto(user.motto));
+              user.townName && dispatch(storeTownName(user.townName));
+              user.secondCharacter &&
+                dispatch(storeUserSecondCharacter(user.secondCharacter));
+              user.town && dispatch(storeTown(user.town));
+              user.partyName && dispatch(storePartyName(user.partyName));
+              user.symbol && dispatch(storePartyName(user.symbol));
+              if (user.currentAct) {
+                dispatch(storeUserCurrentAct(user.currentAct.actId));
+                dispatch(storeTownStatus(user.currentAct.townStatus));
+              }
+              if (user?.comments?.length > 0)
+                dispatch(storeUserComments(user.comments));
+
+              // Last save
+              if (user.saves && user.saves.length > 0) {
+                const indexLastSave = user.saves.length - 1;
+                dispatch(
+                  storeScoreAndAnswer({
+                    act: null,
+                    logScores: user.saves[indexLastSave]?.logScores || [],
+                    logAnswers: [],
+                    totalResidentsGot:
+                      user.saves[indexLastSave]?.totalResidentsGot || 0,
+                    totalResidentsPossible:
+                      user.saves[indexLastSave]?.totalResidentsPossible || 0,
+                  })
+                );
+              }
+
+              // all saves
+              dispatch(storeSaves({ saves: user.saves || [] }));
+
+              setLoading(false);
+            } else {
+              // Save error message
+              dispatch(createUserError(resultUser?.data?.message));
+              navigate("/");
+            }
+          });
+
+          // Store user infos of decodedToken in redux
+          dispatch(storeRole(decoded_token.UserInfo.role));
+          dispatch(
+            storeUserInfos({
+              firstname: decoded_token.UserInfo.firstname,
+              lastname: decoded_token.UserInfo.lastname,
+              userId: decoded_token.UserInfo.userId,
+              email: decoded_token.UserInfo.email,
+            })
+          );
+          dispatch(
+            storeIsPasswordChanged(decoded_token.UserInfo.isPasswordChanged)
+          );
+        } else {
+          dispatch(setToken({ token: null, error: result?.data?.message }));
+          dispatch(createUserError(result?.data?.message));
+          navigate("/");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        navigate("/");
+      });
+  }, []);
+
+  // Projects
+  useEffect(() => {
+    if (authState.token && stateUser.idUser) {
+      apiRequest("project", "get", authState.token, {
+        params: { adminId: stateUser.idUser },
+      })
+        .then((res) => {
+          if (res.response.status >= 200 && res.response.status < 300) {
+            if (res.response.data.length > 0) {
+              dispatch(storeProjects(res.response.data));
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [authState.token, stateUser.idUser]);
+
+  //Companies
+  useEffect(() => {
+    if (authState.token) {
+      apiRequest("company", "get", authState.token, {})
+        .then((res) => {
+          if (res.response.status >= 200 && res.response.status < 300) {
+            if (res.response.data.length > 0) {
+              dispatch(storeCompanies(res.response.data));
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [authState.token]);
+
+  // Acts
+  useEffect(() => {
+    setLoading(true);
+    if (authState.token && stateUser.nbOfSaves > -1) {
+      apiRequest("acts", "get", authState.token, {})
+        .then((resultAct) => {
+          if (
+            resultAct.response.status >= 200 &&
+            resultAct.response.status < 300
+          ) {
+            let acts = resultAct.response.data.acts;
+
+            // store acts in redux
+            dispatch(storeActs({ acts, nbOfSaves: stateUser.nbOfSaves }));
+            dispatch(storeCurrentAct(acts[stateUser.nbOfSaves] || null));
             dispatch(
-              setToken({
-                token: response?.response?.data?.accessToken,
-                error: null,
-              })
+              storeTownStatus(acts[stateUser.nbOfSaves]?.townStatus || null)
+            );
+            dispatch(storeUserCurrentAct(acts[stateUser.nbOfSaves] || null));
+
+            setLoading(false);
+          }
+          // Save error message
+          else {
+            dispatch(createUserError(resultAct?.data?.message));
+            navigate("/");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          navigate("/");
+          setLoading(false);
+        });
+    }
+  }, [authState.token, stateUser.nbOfSaves]);
+
+  //Characters
+  useEffect(() => {
+    if (authState.token) {
+      apiRequest("characters", "get", authState.token, {})
+        .then((resultCharacters) => {
+          if (
+            resultCharacters.response.status >= 200 &&
+            resultCharacters.response.status < 300
+          ) {
+            dispatch(
+              storeCharacters(resultCharacters.response.data.characters || [])
             );
           } else {
-            dispatch(setToken({ token: null, error: response?.data?.message }));
-            dispatch(createUserError(response?.data?.message));
+            dispatch(createUserError(resultCharacters?.data?.message));
             navigate("/");
           }
         })
@@ -65,129 +235,46 @@ const PreFetch = () => {
           navigate("/");
         });
     }
-  }, []);
-
-  // Acts
-  useEffect(() => {
-    setLoading(true);
-    apiRequest("acts", "get", authState.token, {})
-      .then((response) => {
-        if (response.response) {
-          //User
-          let acts = response.response.data;
-          apiRequest("users", "get", authState.token, {}).then((response) => {
-            if (response.response) {
-              const account = response.response.data;
-              // User infos
-              dispatch(
-                setUserInfos({
-                  firstname: account.user.firstname,
-                  lastname: account.user.lastname,
-                })
-              );
-              dispatch(setIdUser(account.user._id));
-
-              account.user.character &&
-                dispatch(setUserCharacter(account.user.character));
-              account.user.motto && dispatch(setMotto(account.user.motto));
-              account.user.townName &&
-                dispatch(storeTownName(account.user.townName));
-              account.user.secondCharacter &&
-                dispatch(setUserSecondCharacter(account.user.secondCharacter));
-              account.user.town && dispatch(setTown(account.user.town));
-              account.user.partyName &&
-                dispatch(setPartyName(account.user.partyName));
-              account.user.symbol &&
-                dispatch(setPartyName(account.user.symbol));
-              account.user.feelings &&
-                dispatch(setFeelings(account.user.feelings));
-
-              // Last save
-              const indexLastSave = account.user.saves.length - 1;
-              dispatch(
-                setThematicScore({
-                  scoresThematic:
-                    account.user.saves[indexLastSave]?.logScores || {},
-                  givenResidents:
-                    account.user.saves[indexLastSave]?.totalResidents || 0,
-                })
-              );
-
-              //Current act
-              let currentAct = acts[indexLastSave + 1];
-              if (currentAct) {
-                //for user
-                dispatch(setCurrentAct(currentAct?._id));
-
-                // Current act for act's store
-                dispatch(storeCurrentAct(currentAct));
-                // Store town status
-                dispatch(setTownStatus(currentAct?.townStatus));
-              }
-
-              // all saves
-              dispatch(storeSaves(account.user.saves));
-
-              // store acts with status of user
-              dispatch(
-                updateStatusActs({ acts, nbOfSaves: indexLastSave + 1 })
-              );
-              setLoading(false);
-            } else {
-              // Save error message
-              dispatch(createUserError(response?.data?.message));
-              navigate("/");
-            }
-          });
-        }
-        // Save error message
-        else {
-          dispatch(createUserError(response?.data?.message));
-          navigate("/");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        navigate("/");
-        setLoading(false);
-      });
-  }, [authState.token]);
-
-  //Characters
-  useEffect(() => {
-    apiRequest("characters", "get", authState.token, {})
-      .then((response) => {
-        if (response.response) {
-          dispatch(storeCharacters(response.response.data));
-        } else {
-          dispatch(createUserError(response?.data?.message));
-
-          navigate("/");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        navigate("/");
-      });
   }, [authState.token]);
 
   // Towns
   useEffect(() => {
-    apiRequest("towns", "get", authState.token, {})
-      .then((response) => {
-        if (response.response) {
-          dispatch(storeTowns(response.response.data));
-        } else {
-          dispatch(createUserError(response?.data?.message));
-
+    if (authState.token) {
+      apiRequest("towns", "get", authState.token, {})
+        .then((resulTowns) => {
+          if (resulTowns.response) {
+            dispatch(storeTowns(resulTowns.response.data));
+          } else {
+            dispatch(createUserError(resulTowns?.data?.message));
+            navigate("/");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
           navigate("/");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        navigate("/");
-      });
+        });
+    }
   }, [authState.token]);
+
+  // Comments
+  useEffect(() => {
+    if (authState.token && stateUser.nbOfSaves == 5) {
+      apiRequest("comments", "get", authState.token, {})
+        .then((resultComments) => {
+          if (
+            resultComments.response.status >= 200 &&
+            resultComments.response.status < 300
+          ) {
+            const { comments } = resultComments.response.data;
+            dispatch(storeComments(comments));
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          navigate("/");
+        });
+    }
+  }, [authState.token, stateUser.nbOfSaves]);
 
   // Background Music Manager
   const audioPlayFunc = () => {
@@ -232,31 +319,41 @@ const PreFetch = () => {
           position={"relative"}
         >
           {/* Music management */}
-          <CustomButton
-            style={{ position: "absolute", left: "100%", zIndex: 100 }}
-            clickMethod={() => audioPlayFunc()}
-            width={"20%"}
-          >
-            {audioPlayed ? "Arrêter la musique" : "Démarrer la musique"}
-          </CustomButton>
-          <audio
-            loop={true}
-            id="audio-player"
-            src={stateActs.currentAct?.backgroundSong}
-          />
-          {!loading ? (
-            <Outlet />
-          ) : (
+          {stateUser.role?.name === "JOUEUR" && (
             <Box
-              height={"100%"}
-              width={"100%"}
+              position={"absolute"}
+              left={"101%"}
+              zIndex={100}
+              width={"20%"}
+              height={"10%"}
               display={"flex"}
+              flexDirection={"column"}
               alignItems={"center"}
-              justifyContent={"center"}
+              bgcolor={colors.buttonDark}
+              borderRadius={10}
+              sx={{
+                cursor: "pointer",
+                "&:hover": { backgroundColor: colors.buttonDarkHover },
+              }}
             >
-              <CircularProgress variant="soft" color="success" />
+              <Box onClick={() => audioPlayFunc()} width={"40%"} height={"75%"}>
+                <img
+                  src={`${PICTURES_DIR}/music/music.svg`}
+                  width={"100%"}
+                  height={"100%"}
+                />
+              </Box>
+              <Typography level="title-md" textColor={"white"}>
+                {audioPlayed ? "Arrêter la musique" : "Démarrer la musique"}
+              </Typography>
+              <audio
+                loop={true}
+                id="audio-player"
+                src={stateActs.currentAct?.backgroundSong}
+              />
             </Box>
           )}
+          {!loading ? <Outlet /> : <Loading />}
         </Box>
       </GlobalContainer>
     </CssVarsProvider>

@@ -6,25 +6,29 @@ const userSlice = createSlice({
     idUser: null,
     firstname: null,
     lastname: null,
+    email: null,
+    isPasswordChanged: null,
     successLogin: null,
     error: null,
-    successRegister: null,
-    errorRegister: null,
+    role: null,
     character: null,
     secondCharacter: null,
     currentAct: null,
     motto: null,
-    town: { region: "", description: "" },
+    town: null,
     townName: null,
     townStatus: null,
     partyName: null,
     symbol: null,
-    feelings: null,
+    comments: [],
     saves: [],
+    nbOfSaves: -1,
     save: {
-      logScores: {},
+      act: null,
+      logScores: [],
       logAnswers: [],
-      totalResidents: 0,
+      totalResidentsGot: 0,
+      totalResidentsPossible: 0,
     },
   },
   reducers: {
@@ -36,19 +40,23 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.successLogin = null;
     },
-    setUserCharacter: (state, action) => {
+    storeUserCharacter: (state, action) => {
       state.character = action.payload;
       return state;
     },
-    setUserSecondCharacter: (state, action) => {
+    storeUserSecondCharacter: (state, action) => {
       state.secondCharacter = action.payload;
       return state;
     },
-    setCurrentAct: (state, action) => {
+    storeUserCurrentAct: (state, action) => {
       state.currentAct = action.payload;
       return state;
     },
-    setMotto: (state, action) => {
+    storeRole: (state, action) => {
+      state.role = action.payload;
+      return state;
+    },
+    storeMotto: (state, action) => {
       state.motto = action.payload;
       return state;
     },
@@ -56,77 +64,115 @@ const userSlice = createSlice({
       state.townName = action.payload;
       return state;
     },
-    setTownStatus: (state, action) => {
+    storeTownStatus: (state, action) => {
       state.townStatus = action.payload;
       return state;
     },
-    setThematicScore: (state, action) => {
-      const { scoresThematic, givenResidents } = action.payload;
-      state.save.logScores = scoresThematic;
-      state.save.totalResidents = givenResidents;
+    storeScoreAndAnswer: (state, action) => {
+      state.save = action.payload;
       return state;
     },
-    setTown: (state, action) => {
-      const { region, description } = action.payload;
-      state.town = { region, description };
+    updateScoreAndAnswer: (state, action) => {
+      const {
+        totalResidentsGot,
+        totalResidentsPossible,
+        scoresObject,
+        answersObject,
+      } = action.payload;
+
+      //Scores
+      const { thematic, scoreGot, scoreMaxPossible } = scoresObject;
+
+      //If thematic already stored, just update scores
+      const thematicAlreadyStored = [...state.save.logScores].filter(
+        (e) => e.thematic._id === thematic
+      );
+      if (thematicAlreadyStored[0]?.thematic._id) {
+        const newLogScores = [...state.save.logScores].filter(
+          (e) => e.thematic._id !== thematic
+        );
+        newLogScores.push({
+          thematic: {_id: thematic},
+          scoreGot: scoreGot + thematicAlreadyStored[0].scoreGot,
+          scoreMaxPossible:
+            scoreMaxPossible + thematicAlreadyStored[0].scoreMaxPossible,
+        });
+        state.save.logScores = newLogScores;
+      } else {
+        state.save.logScores.push({ thematic: {_id: thematic}, scoreGot, scoreMaxPossible });
+      }
+
+      //Answers
+      const { question, answers } = answersObject;
+      state.save.logAnswers.push({
+        question,
+        thematic,
+        scoreMaxPossible,
+        nbResidentsMaxPossible: totalResidentsPossible,
+        answers,
+      });
+
+      //Residents
+      state.save.totalResidentsGot += totalResidentsGot;
+      state.save.totalResidentsPossible += totalResidentsPossible;
       return state;
     },
-    setPartyName: (state, action) => {
+    storeTown: (state, action) => {
+      state.town = action.payload;
+      return state;
+    },
+    storePartyName: (state, action) => {
       state.partyName = action.payload;
       return state;
     },
-    setFeelings: (state, action) => {
-      state.feelings = action.payload;
-      return state;
-    },
-    setSymbol: (state, action) => {
+    storeSymbol: (state, action) => {
       state.symbol = action.payload;
       return state;
     },
-    setUserInfos: (state, action) => {
-      const { firstname, lastname } = action.payload;
+    storeUserInfos: (state, action) => {
+      const { firstname, lastname, userId, email } = action.payload;
       state.firstname = firstname;
       state.lastname = lastname;
+      state.idUser = userId;
+      state.email = email;
+      return state;
+    },
+    storeIsPasswordChanged: (state, action) => {
+      state.isPasswordChanged = action.payload;
       return state;
     },
     storeSaves: (state, action) => {
-      state.saves = action.payload;
+      const { saves } = action.payload;
+      state.saves = saves;
+      state.nbOfSaves = saves.length;
       return state;
     },
-    setIdUser: (state, action) => {
-      state.idUser = action.payload;
+    storeUserComments: (state, action) => {
+      state.comments = action.payload;
       return state;
     },
-    setSuccessRegister: (state, action)=>{
-      state.successRegister = action.payload;
-      return state;
-    },
-    setErrorRegister: (state, action)=>{
-      state.errorRegister = action.payload;
-      return state;
-    }
   },
 });
 
 export const {
   createUserSuccess,
   createUserError,
-  setUserCharacter,
-  setUserSecondCharacter,
-  setMotto,
+  storeUserCharacter,
+  storeUserSecondCharacter,
+  storeMotto,
   storeTownName,
-  setTownStatus,
-  setThematicScore,
-  setTown,
-  setUserInfos,
+  storeTownStatus,
+  storeScoreAndAnswer,
+  updateScoreAndAnswer,
+  storeTown,
+  storeUserInfos,
   storeSaves,
-  setIdUser,
-  setCurrentAct,
-  setPartyName,
-  setSymbol,
-  setFeelings,
-  setSuccessRegister,
-  setErrorRegister
+  storeUserCurrentAct,
+  storePartyName,
+  storeSymbol,
+  storeRole,
+  storeUserComments,
+  storeIsPasswordChanged,
 } = userSlice.actions;
 
 export default userSlice.reducer;

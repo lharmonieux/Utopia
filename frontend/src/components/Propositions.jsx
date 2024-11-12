@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Box, CircularProgress, Stack, Typography } from "@mui/joy";
+import { Box, Stack, Typography } from "@mui/joy";
 import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../utils/constants";
 import { IoIosCheckmarkCircle } from "react-icons/io";
@@ -10,27 +10,79 @@ import { selectionEffect } from "../utils/cssReact";
 import CustomButton from "./CustomButton";
 import { GrPowerReset } from "react-icons/gr";
 import "animate.css";
+import Loading from "../views/Loading";
 
 const Propositions = ({
   handleSelectedProposition,
-  orderedAnswer,
+  orderedAnswers,
+  setOrderedAnswers,
   percentAnswers,
   setPercentAnswers,
-  questionContent,
+  question,
+  storeAnswer,
+  objectPropositionSelected,
+  setObjectPropositionSelected,
+  feedback,
+  setFeedback,
+  setContainsFeedback,
+  booleanAnswerSelected,
+  setBooleanAnswerSelected,
 }) => {
   const stateActs = useSelector((state) => state.act);
 
   useEffect(() => {
     // Initializing of percent values for propositions
-    if (questionContent.answerType.name == "pourcentage") {
+    if (question.questionType.name == "pourcentage") {
       let percentAnswers = new Map();
       for (let answer of stateActs.currentQuestion.answers) {
-        percentAnswers.set(answer.content.text.text, 0);
+        percentAnswers.set(answer, 0);
       }
       setPercentAnswers(percentAnswers);
+    } else if (question.questionType.name == "reponse_double") {
+      let booleanAnswers = new Map();
+      for (let answer of stateActs.currentQuestion.answers) {
+        booleanAnswers.set(answer, false);
+      }
+      setBooleanAnswerSelected(booleanAnswers);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleAnswer = (e, selectedAnswer) => {
+    if (question.questionType.name == "proposition") {
+      handleSelectedSingleProposition(selectedAnswer);
+    } else if (
+      question.questionType.name == "classement" ||
+      question.questionType.name == "classement_symbol"
+    ) {
+      handleOrderedAnswer(selectedAnswer);
+    } else if (question.questionType.name == "reponse_double") {
+      handleBooleanAnswer(selectedAnswer);
+    } else {
+      handleSelectedProposition(
+        selectedAnswer,
+        question?.questionType?.name,
+        ""
+      );
+    }
+  };
+  const handleOrderedAnswer = (selectedAnswer) => {
+    let newOrderedAnswers = [...orderedAnswers];
+    if (orderedAnswers.length > 0) {
+      if (orderedAnswers.includes(selectedAnswer)) {
+        newOrderedAnswers = newOrderedAnswers.filter(
+          (e) => e._id != selectedAnswer._id
+        );
+        setOrderedAnswers(newOrderedAnswers);
+      } else {
+        newOrderedAnswers.push(selectedAnswer);
+        setOrderedAnswers(newOrderedAnswers);
+      }
+    } else {
+      newOrderedAnswers.push(selectedAnswer);
+      setOrderedAnswers(newOrderedAnswers);
+    }
+  };
 
   const handlePercentsValue = (e, selectedAnswer) => {
     const newPercentAnswers = new Map(percentAnswers);
@@ -40,7 +92,7 @@ const Propositions = ({
     let givenValue = 0;
 
     // If last value was 0, replace this value automacatily by the new one
-    if (newPercentAnswers.get(selectedAnswer.content.text.text) == 0) {
+    if (newPercentAnswers.get(selectedAnswer) == 0) {
       if (parseInt(e.target.value % 10) == 0)
         givenValue = parseInt(e.target.value) / 10;
       else givenValue = parseInt(e.target.value);
@@ -52,96 +104,71 @@ const Propositions = ({
     for (let answer of stateActs.currentQuestion.answers) {
       if (answer == selectedAnswer) continue;
       restAnswers.push(answer);
-      maxPercentGiven += newPercentAnswers.get(answer.content.text.text);
+      maxPercentGiven += newPercentAnswers.get(answer);
     }
 
     //Sort all values that exist in order
     restAnswers.sort(
-      (a, b) =>
-        newPercentAnswers.get(b.content.text.text) -
-        newPercentAnswers.get(a.content.text.text)
+      (a, b) => newPercentAnswers.get(b) - newPercentAnswers.get(a)
     );
 
     //Control if the new value can pass
     const maxPercentWithAnswer = maxPercentGiven + parseInt(givenValue);
     if (parseInt(givenValue) > maxPercent || parseInt(givenValue) < 0)
       newPercentAnswers.set(
-        selectedAnswer.content.text.text,
-        newPercentAnswers.get(selectedAnswer.content.text.text)
+        selectedAnswer,
+        newPercentAnswers.get(selectedAnswer)
       );
     else if (maxPercentWithAnswer > maxPercent) {
-      newPercentAnswers.set(
-        selectedAnswer.content.text.text,
-        parseInt(givenValue)
-      );
+      newPercentAnswers.set(selectedAnswer, parseInt(givenValue));
 
       //Distribution off values for avoid negatives possibilities
       const valToDeduce = maxPercentWithAnswer - maxPercent;
       let firstNewPercent = 0;
       let secondNewPercent = 0;
-      if (
-        newPercentAnswers.get(restAnswers[0].content.text.text) < valToDeduce
-      ) {
+      if (newPercentAnswers.get(restAnswers[0]) < valToDeduce) {
         secondNewPercent =
-          newPercentAnswers.get(restAnswers[1].content.text.text) -
-          parseInt(
-            valToDeduce -
-              newPercentAnswers.get(restAnswers[0].content.text.text)
-          );
+          newPercentAnswers.get(restAnswers[1]) -
+          parseInt(valToDeduce - newPercentAnswers.get(restAnswers[0]));
       } else {
         firstNewPercent = parseInt(
-          newPercentAnswers.get(restAnswers[0].content.text.text) - valToDeduce
+          newPercentAnswers.get(restAnswers[0]) - valToDeduce
         );
       }
 
-      newPercentAnswers.set(restAnswers[0].content.text.text, firstNewPercent);
+      newPercentAnswers.set(restAnswers[0], firstNewPercent);
       secondNewPercent &&
-        newPercentAnswers.set(
-          restAnswers[1].content.text.text,
-          secondNewPercent
-        );
-    } else if (newPercentAnswers.get(restAnswers[0].content.text.text) == 0) {
-      newPercentAnswers.set(
-        selectedAnswer.content.text.text,
-        parseInt(givenValue)
-      );
+        newPercentAnswers.set(restAnswers[1], secondNewPercent);
+    } else if (newPercentAnswers.get(restAnswers[0]) == 0) {
+      newPercentAnswers.set(selectedAnswer, parseInt(givenValue));
 
-      newPercentAnswers.set(
-        restAnswers[0].content.text.text,
-        maxPercent - maxPercentWithAnswer
-      );
+      newPercentAnswers.set(restAnswers[0], maxPercent - maxPercentWithAnswer);
     } else if (maxPercentWithAnswer < maxPercent) {
-      newPercentAnswers.set(
-        selectedAnswer.content.text.text,
-        parseInt(givenValue)
-      );
+      newPercentAnswers.set(selectedAnswer, parseInt(givenValue));
 
       newPercentAnswers.set(
-        restAnswers[0].content.text.text,
-        newPercentAnswers.get(restAnswers[0].content.text.text) +
+        restAnswers[0],
+        newPercentAnswers.get(restAnswers[0]) +
           (maxPercent - maxPercentWithAnswer)
       );
     }
 
-    //Define final answer
-    const finalAnswer = stateActs.currentQuestion.answers.reduce(
-      (acc, curr) =>
-        newPercentAnswers.get(curr.content.text.text) >
-        newPercentAnswers.get(acc.content.text.text)
-          ? curr
-          : acc,
-      stateActs.currentQuestion.answers[0]
-    );
-
-    handleSelectedProposition(finalAnswer, questionContent.answerType.name, "");
-
     setPercentAnswers(newPercentAnswers);
   };
 
+  const handleBooleanAnswer = (selectedAnswer) => {
+    const newBooleanAnswers = new Map(booleanAnswerSelected);
+    newBooleanAnswers.set(
+      selectedAnswer,
+      !booleanAnswerSelected.get(selectedAnswer)
+    );
+    setBooleanAnswerSelected(newBooleanAnswers);
+  };
+
   const contentChoice = (answer) => {
-    switch (questionContent.answerType.name) {
+    switch (question.questionType.name) {
       case "proposition_multiple":
-        if (answer.selected)
+        if (storeAnswer?.find((e) => e._id == answer._id))
           return <IoIosCheckmarkCircle color="green" size={25} />;
         break;
 
@@ -149,7 +176,7 @@ const Propositions = ({
       case "classement_symbol":
         return (
           <Typography level="title-lg">
-            {orderedAnswer.indexOf(answer._id) + 1 || ""}
+            {orderedAnswers.indexOf(answer) + 1 || ""}
           </Typography>
         );
 
@@ -164,8 +191,11 @@ const Propositions = ({
           >
             <input
               type="number"
-              value={percentAnswers.get(answer.content.text.text) || 0}
+              value={percentAnswers.get(answer) || 0}
               onChange={(e) => handlePercentsValue(e, answer)}
+              onInput={(e) => {
+                e.target.value = e.target.value.replace(/^0+/, ""); // Enlève les zéros en début
+              }}
               key={`input_${answer._id}`}
               style={{
                 border: "none",
@@ -174,7 +204,16 @@ const Propositions = ({
                 textAlign: "center",
                 width: "90%",
                 height: "100%",
-                fontSize: window.innerWidth >= 1920 ? "1.4em" : "1.2em",
+                fontSize:
+                  window.innerWidth >= 1024 && window.innerWidth <= 1439
+                    ? "1em"
+                    : window.innerWidth >= 1920 && window.innerWidth <= 2559
+                    ? "1.6em"
+                    : window.innerWidth >= 800 && window.innerWidth <= 1023
+                    ? "0.75em"
+                    : window.innerWidth >= 601 && window.innerWidth <= 799
+                    ? "0.6em"
+                    : "1.3em",
               }}
             />
             <CustomButton
@@ -198,7 +237,7 @@ const Propositions = ({
         );
 
       case "reponse_double":
-        if (answer.selected)
+        if (booleanAnswerSelected.get(answer))
           return (
             <Box
               width={"100%"}
@@ -213,9 +252,11 @@ const Propositions = ({
                 size={
                   window.innerWidth >= 1024 && window.innerWidth <= 1439
                     ? 25
+                    : window.innerWidth >= 1440 && window.innerWidth <= 1910
+                    ? 30
                     : window.innerWidth >= 1920
                     ? 40
-                    : 30
+                    : 15
                 }
               />
             </Box>
@@ -235,9 +276,11 @@ const Propositions = ({
                 size={
                   window.innerWidth >= 1024 && window.innerWidth <= 1439
                     ? 25
+                    : window.innerWidth >= 1440 && window.innerWidth <= 1910
+                    ? 30
                     : window.innerWidth >= 1920
                     ? 40
-                    : 30
+                    : 15
                 }
               />
             </Box>
@@ -246,6 +289,36 @@ const Propositions = ({
       default:
         break;
     }
+  };
+
+  const handleSelectedSingleProposition = (selectedProposition) => {
+    //If selected again
+    if (selectedProposition._id == objectPropositionSelected?._id) {
+      setObjectPropositionSelected(null);
+    } else {
+      setObjectPropositionSelected(selectedProposition);
+    }
+
+    if (selectedProposition?.feedback?.text) {
+      // If answer selected again
+      if (feedback?.content == selectedProposition.feedback.text) {
+        setFeedback({
+          content: "",
+          title: "",
+          hasQuestion: false,
+          img: "",
+        });
+        setContainsFeedback(false);
+      } else {
+        setFeedback({
+          content: selectedProposition.feedback.text,
+          title: "",
+          hasQuestion: selectedProposition?.feedbackHasQuestion,
+          img: selectedProposition?.feedback.img,
+        });
+        setContainsFeedback(true);
+      }
+    } else setContainsFeedback(false);
   };
 
   return (
@@ -274,36 +347,37 @@ const Propositions = ({
           flexWrap={
             !stateActs.currentQuestion?.additionalContent.length > 0 && "wrap"
           }
-          direction={stateActs.currentQuestion?.visual?.directionAnswer}
+          direction={stateActs.currentQuestion?.directionAnswer}
           useFlexGap
-          left={
-            stateActs.currentQuestion?.additionalContent.length > 0 &&
-            stateActs.currentQuestion?.visual?.boxAnswersImg &&
-            `${stateActs.currentQuestion?.visual?.boxAnswersImg?.left}%`
-          }
-          top={
-            stateActs.currentQuestion?.additionalContent.length > 0 &&
-            stateActs.currentQuestion?.visual?.boxAnswersImg &&
-            `${stateActs.currentQuestion?.visual?.boxAnswersImg?.top}%`
-          }
-          sx={{
-            backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.boxAnswersImg?.img})`,
-            backgroundSize: "100% 100%",
-            gap: "1%",
-          }}
+          gap={3}
+          // left={
+          //   stateActs.currentQuestion?.additionalContent.length > 0 &&
+          //   stateActs.currentQuestion?.visual?.boxAnswersImg &&
+          //   `${stateActs.currentQuestion?.visual?.boxAnswersImg?.left}%`
+          // }
+          // top={
+          //   stateActs.currentQuestion?.additionalContent.length > 0 &&
+          //   stateActs.currentQuestion?.visual?.boxAnswersImg &&
+          //   `${stateActs.currentQuestion?.visual?.boxAnswersImg?.top}%`
+          // }
+          // sx={{
+          //   backgroundImage: `url(${PICTURES_DIR}/${stateActs.currentQuestion?.visual?.boxAnswersImg?.img})`,
+          //   backgroundSize: "100% 100%",
+          //   gap: "1%",
+          // }}
         >
           {stateActs.currentQuestion?.answers.map((answer) => (
             <Box
               key={answer._id}
               width={`${
-                (answer?.content?.img?.width +
-                  (answer?.choiceImg?.img?.width || 0)) *
+                (answer?.bgImg?.width +
+                  (answer?.selectionImg?.img?.width || 0)) *
                 100
               }%`}
-              height={`${answer?.content?.img?.height * 100}%`}
+              height={`${answer?.bgImg?.height * 100}%`}
               display={"flex"}
               flexDirection={
-                answer.choiceImg && answer.choiceImg.align == "left"
+                answer.selectionImg && answer.selectionImg.align == "left"
                   ? "row"
                   : "row-reverse"
               }
@@ -316,18 +390,18 @@ const Propositions = ({
               }
               left={
                 stateActs?.currentQuestion?.additionalContent.length > 0
-                  ? `${answer.content.img.left}%`
+                  ? `${answer.bgImg.left}%`
                   : 0
               }
               top={
                 stateActs?.currentQuestion?.additionalContent.length > 0
-                  ? `${answer.content.img.top}%`
+                  ? `${answer.bgImg.top}%`
                   : 0
               }
               zIndex={1}
             >
               {/* Box choice visual/area */}
-              {answer.choiceImg && (
+              {answer.selectionImg && (
                 <Box
                   width={`15%`}
                   height={`60%`}
@@ -335,15 +409,27 @@ const Propositions = ({
                   justifyContent={"center"}
                   alignItems={"center"}
                   sx={{
-                    backgroundImage: `url(${PICTURES_DIR}/${answer.choiceImg.img.name})`,
+                    backgroundImage: `url(${PICTURES_DIR}/${answer.selectionImg.img.name})`,
                     backgroundSize: "100% 100%",
-                    "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 858px)":
+                    "@media screen and (min-width: 601px) and (max-width: 799px)":
                       {
-                        height: "45%",
+                        height: "30%",
                       },
-                    "@media screen and (min-width: 1024px) and (max-width: 1439px) and (min-height: 578px) and (max-height: 857px)":
+                    "@media screen and (min-width: 800px) and (max-width: 1023px)":
                       {
-                        height: "45%",
+                        height: "35%",
+                      },
+                    "@media screen and (min-width: 1024px) and (max-width: 1439px)":
+                      {
+                        height: "40%",
+                      },
+                    "@media screen and (min-width: 1536px) and (max-width: 1919px)":
+                      {
+                        height: `40%`,
+                      },
+                    "@media screen and (min-width: 1920px) and (max-width: 2559px)":
+                      {
+                        height: `50%`,
                       },
                   }}
                 >
@@ -352,87 +438,84 @@ const Propositions = ({
               )}
               {/* Answer Box */}
               <Box
-                width={answer.choiceImg ? `80%` : "100%"}
+                width={answer.selectionImg ? `80%` : "100%"}
                 height={`100%`}
                 display={"flex"}
                 justifyContent={"center"}
                 alignItems={"center"}
-                onClick={() =>
-                  questionContent.answerType.name != "pourcentage" &&
-                  handleSelectedProposition(
-                    answer,
-                    questionContent?.answerType?.name,
-                    ""
-                  )
-                }
+                onClick={(e) => handleAnswer(e, answer)}
                 sx={[
                   {
                     cursor:
-                      questionContent.answerType.name != "pourcentage" &&
-                      "pointer",
-                    backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
+                      question.questionType.name != "pourcentage" && "pointer",
+                    backgroundImage: `url(${PICTURES_DIR}/${answer?.bgImg?.name})`,
                     backgroundSize: "100% 100%",
                   },
-                  selectionEffect(answer),
+                  (storeAnswer?.find((a) => a._id == answer._id) ||
+                    objectPropositionSelected?._id == answer._id) &&
+                    selectionEffect(answer),
                 ]}
               >
-                {/* Display text if it isn't hidden */}
-                {!answer.content.text.hiddenText && (
-                  <DisplayingText
-                    marginLeft={`${answer.content.text.position?.marginLeft}%`}
-                    marginTop={`${answer.content.text.position?.marginTop}%`}
-                    sentence={answer.content.text.text}
-                    textColor={answer.content.textColor}
-                    fontWeight={600}
-                    textAlign={"center"}
-                    backgroundText={answer.content.text.textBackground}
-                    padding={"5%"}
-                    level={
-                      stateActs?.currentQuestion?.visual?.textAnswerLevel ||
-                      "title-md"
-                    }
-                    id={"answer-proposition-text"}
-                    style={{
-                      "@media screen and (min-width: 1600px) and (max-width: 1919px)":{
-                        marginTop: `${answer.content.text.position?.marginTop - 10 }%`
+                <DisplayingText
+                  marginLeft={`${answer.text?.position?.marginLeft}%`}
+                  marginTop={`${answer.text?.position?.marginTop}%`}
+                  // Display primary or alternatifText
+                  sentence={
+                    storeAnswer.find((e) => e._id == answer._id)?.alternatifText
+                      ?.content &&
+                    !storeAnswer[
+                      storeAnswer.findIndex((e) => e._id == answer._id)
+                    ]?.alternatifText?.hidden
+                      ? answer?.alternatifText?.content
+                      : answer.text?.hidden
+                      ? ""
+                      : answer.text.content
+                  }
+                  textColor={
+                    storeAnswer.find((e) => e._id == answer._id)?.alternatifText
+                      ?.content &&
+                    !storeAnswer[
+                      storeAnswer.findIndex((e) => e._id == answer._id)
+                    ]?.alternatifText?.hidden
+                      ? answer?.alternatifText?.textColor || "black"
+                      : answer.text.textColor
+                  }
+                  fontWeight={600}
+                  textAlign={"center"}
+                  // backgroundText={answer.content.text.textBackground}
+                  padding={"10%"}
+                  level={
+                    stateActs?.currentQuestion?.visual?.textAnswerLevel ||
+                    "title-md"
+                  }
+                  id={"answer-proposition-text"}
+                  style={{
+                    backgroundColor: answer?.text?.textBGColor,
+                    "@media screen and (min-width: 1024px) and (max-width: 1439px)":
+                      {
+                        marginTop: `${answer.text?.position?.marginTop - 5}%`,
                       },
-                      "@media screen and (min-width: 1024px) and (max-width: 1399px)":{
-                        marginTop: `${answer.content.text.position?.marginTop - 5 }%`
+                    "@media screen and (min-width: 1920px) and (max-width: 2559px)":
+                      {
+                        marginTop: `${answer.text?.position?.marginTop - 3}%`,
                       },
-                      "@media screen and (min-width: 1920px) and (max-width: 2559px)":{
-                        marginTop: `${answer.content.text.position?.marginTop + 5 }%`
+                    "@media screen and (min-width: 800px) and (max-width: 1023px)":
+                      {
+                        marginTop: `${answer.text?.position?.marginTop - 15}%`,
                       },
-                    }}
-                  />
-                )}
-
-                {/* Display second text on selection */}
-                {answer.content.text.secondText && answer.selected && (
-                  <DisplayingText
-                    sentence={answer?.content?.text?.secondText}
-                    level={"title-lg"}
-                    textColor={
-                      answer?.content?.text?.secondTextColor || "black"
-                    }
-                    textAlign={"center"}
-                    padding={"30%"}
-                  />
-                )}
+                    "@media screen and (min-width: 601px) and (max-width: 799px)":
+                      {
+                        marginTop: `${answer.text?.position?.marginTop - 25}%`,
+                      },
+                  }}
+                />
               </Box>
             </Box>
           ))}
         </Stack>
       </Box>
     ) : (
-      <Box
-        height={"100%"}
-        width={"100%"}
-        display={"flex"}
-        alignItems={"center"}
-        justifyContent={"center"}
-      >
-        <CircularProgress variant="soft" color="success" />
-      </Box>
+      <Loading />
     )
   );
 };

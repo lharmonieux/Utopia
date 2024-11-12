@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Typography } from "@mui/joy";
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { ReactTyped } from "react-typed";
 
 const DisplayingText = ({
   sentence,
@@ -19,13 +18,20 @@ const DisplayingText = ({
   id,
   onComplete,
 }) => {
+  useEffect(() => {
+    const revealLeft = document.querySelector(".reveal-left");
+    if (revealLeft) {
+      revealLeft.addEventListener("animationend", onComplete);
+    }
+  }, [onComplete]);
+
   const stateUser = useSelector((state) => state.user);
   sentence = sentence
     .replace("stateUser.townName", stateUser?.townName)
     .replace("stateUser.secondCharacter.name", stateUser.secondCharacter?.name)
     .replace("stateUser.townStatus", stateUser?.townStatus)
     .replace("stateUser.partyName", stateUser?.partyName)
-    .replace("stateUser.town.region", stateUser?.town?.region)
+    .replace("stateUser.town.name", stateUser?.town?.name)
     .replace("stateUser.symbol", stateUser?.symbol);
 
   sentence = sentence.split("⌁");
@@ -41,26 +47,13 @@ const DisplayingText = ({
       marginTop={marginTop}
       id={id}
       borderRadius={10}
+      className={animated && "reveal-left"}
       sx={{
         backgroundColor: backgroundText,
         ...style,
       }}
     >
-      {animated ? (
-        sentence.map((subSentence, index) => (
-          <ReactTyped
-            key={index}
-            strings={[subSentence]}
-            showCursor={false}
-            onComplete={
-              sentence.length == index + 1
-                ? onComplete || function () {}
-                : function () {}
-            }
-            style={{ whiteSpace: "pre-line" }}
-          />
-        ))
-      ) : (
+      {
         <>
           {/* Display text + treatment italic text */}
           {sentence.map((subSentence, i) => {
@@ -79,7 +72,7 @@ const DisplayingText = ({
             );
           })}
         </>
-      )}
+      }
     </Typography>
   );
 };

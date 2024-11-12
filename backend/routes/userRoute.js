@@ -1,12 +1,23 @@
 import express from "express";
-import { createUser, getAllUsers, getUser, updateUser } from "../controllers/userController.js";
+import {
+  createUser,
+  getAllUsers,
+  getUser,
+  getUsersByProject,
+  updateUser,
+  editPassword,
+  definePassword,
+} from "../controllers/userController.js";
 import { verifiJWT } from "../middlewares/verfyJWT.js";
 
 const router = express.Router();
 
-router.post("/register", createUser);
+router.post("/register", verifiJWT, createUser);
 router.get("/", verifiJWT, getUser);
-router.get("/all",  verifiJWT, getAllUsers);
-router.put("/update", verifiJWT,  updateUser);
+router.get("/all", verifiJWT, getAllUsers);
+router.get("/project", verifiJWT, getUsersByProject);
+router.patch("/update", verifiJWT, updateUser);
+router.patch("/update_password", verifiJWT, editPassword);
+router.patch("/define_password", verifiJWT, definePassword);
 
 export default router;

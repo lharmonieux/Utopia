@@ -2,16 +2,19 @@ import express from "express";
 import mongoose from "mongoose";
 import actRoute from "./routes/actRoute.js";
 import characterRoute from "./routes/characterRoute.js";
-import cloudinaryRoute from "./routes/cloudinaryRoute.js";
 import townRoute from "./routes/townRoute.js";
 import userRoute from "./routes/userRoute.js";
 import authRoute from "./routes/authRoute.js";
 import thematicRoute from "./routes/thematicRoute.js";
-import answerTypeRoute from "./routes/answerTypeRoute.js";
+import questionTypeRoute from "./routes/questionTypeRoute.js";
+import projectRoute from "./routes/projectRoute.js";
+import companyRoute from "./routes/companyRoute.js";
+import commentRoute from "./routes/commentRoute.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
+import { initializeDB } from "./dbInitTest.js";
 
 export const __dirname = path.resolve();
 
@@ -38,12 +41,14 @@ app.use(cors(corsOptions));
 // Routes admin
 app.use("/acts", actRoute);
 app.use("/characters", characterRoute);
-app.use("/cloudinary", cloudinaryRoute);
 app.use("/towns", townRoute);
 app.use("/users", userRoute);
 app.use("/auth", authRoute);
 app.use("/thematic", thematicRoute);
-app.use("/answer_type", answerTypeRoute);
+app.use("/question_type", questionTypeRoute);
+app.use("/project", projectRoute);
+app.use("/company", companyRoute);
+app.use("/comments", commentRoute);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
@@ -63,14 +68,16 @@ if (process.env.NODE_ENV === "production") {
 }
 
 //Connection Database, Then running server
-mongoose
-  .connect(process.env.MONGO_DB_CONNECT)
-  .then(() => {
-    console.log("App connected to database");
-    app.listen(port, () => {
-      console.log(`App listened to port: ${port}`);
-    });
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+// mongoose
+//   .connect(process.env.MONGO_DB_CONNECT)
+//   .then(() => {
+//     console.log("App connected to database");
+//     app.listen(port, () => {
+//       console.log(`App listened to port: ${port}`);
+//     });
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//   });
+
+initializeDB(app);

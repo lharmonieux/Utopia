@@ -41,7 +41,7 @@ const apiRequest = async (endpoint, method, accessToken, options) => {
       const response = await request(endpoint, method, newAccessToken, options);
       return { accessToken: newAccessToken, response };
     } catch (refreshError) {
-      return refreshError.response || refreshError; // Retourner l'erreur du refresh ou sa réponse s'il y en a une
+      return refreshError; // Retourner l'erreur du refresh ou sa réponse s'il y en a une
     }
   }
 };

@@ -3,11 +3,7 @@ import { Box, CircularProgress, Slider, Stack, Typography } from "@mui/joy";
 import { useSelector } from "react-redux";
 import { PICTURES_DIR } from "../utils/constants";
 
-const ScaleProposition = ({
-  setScaleAnswers,
-  scaleAnswers,
-  questionContent,
-}) => {
+const ScaleProposition = ({ setScaleAnswers, scaleAnswers, question }) => {
   const stateActs = useSelector((state) => state.act);
   // Updating of scales tab
   const handleScaleAnswers = (e, idAnswer) => {
@@ -19,7 +15,7 @@ const ScaleProposition = ({
   return stateActs.currentQuestion ? (
     <Stack
       width={"100%"}
-      height={`${(1 - questionContent?.backgroundImg?.height) * 100}%`}
+      height={`${(1 - question?.backgroundImg?.height) * 100}%`}
       justifyContent="space-evenly"
       flexWrap="wrap"
       direction="row"
@@ -29,27 +25,28 @@ const ScaleProposition = ({
       {stateActs.currentQuestion?.answers?.map((answer) => {
         return (
           <Box
-            width={`${answer?.content?.img?.width * 100}%`}
-            height={`${answer?.content?.img?.height * 100}%`}
+            width={`${answer?.bgImg?.width * 100}%`}
+            height={`${answer?.bgImg?.height * 100}%`}
             key={answer._id}
-            position={answer.content.position && "absolute"}
+            position={answer.text.position && "absolute"}
             sx={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
               borderRadius: 10,
-              backgroundImage: `url(${PICTURES_DIR}/${answer?.content?.img?.name})`,
+              backgroundImage: `url(${PICTURES_DIR}/${answer?.bgImg?.name})`,
               backgroundSize: "100% 100%",
             }}
           >
             <Typography
               fontWeight={400}
-              textColor={answer.content.textColor}
+              textColor={answer.text.textColor}
               textAlign={"center"}
+              level="title-md"
               id={"answer-scale-text"}
             >
-              {answer.content.text.text}
+              {answer.text.content}
             </Typography>
             <Slider
               defaultValue={1}

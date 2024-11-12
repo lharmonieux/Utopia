@@ -5,25 +5,12 @@ const townSlice = createSlice({
   initialState: { towns: null },
   reducers: {
     storeTowns: (state, action) => {
-      const towns = action.payload;
-      state.towns = towns.map(town =>({
-        ...town,
-        selected: false,
-      }));
+      state.towns = action.payload;
       return state;
     },
-
-    updateTownSelected: (state, action) => {
-      const {towns, selectedTown} = action.payload;
-      state.towns = towns?.map(town => ({
-        ...town,
-        selected: selectedTown == town ? !town?.selected : false
-      }));
-      return state;
-    }
   },
 });
 
-export const { storeTowns, updateTownSelected } = townSlice.actions;
+export const { storeTowns } = townSlice.actions;
 
 export default townSlice.reducer;
